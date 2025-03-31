@@ -1,7 +1,7 @@
 package com.halo.eventer.domain.notice.dto;
 
 import com.halo.eventer.domain.notice.Notice;
-import com.halo.eventer.global.common.ArticleType;
+import com.halo.eventer.domain.notice.ArticleType;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;

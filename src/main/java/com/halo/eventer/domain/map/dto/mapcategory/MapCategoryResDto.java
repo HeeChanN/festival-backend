@@ -1,6 +1,7 @@
 package com.halo.eventer.domain.map.dto.mapcategory;
 
 import com.halo.eventer.domain.map.MapCategory;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,13 +12,24 @@ public class MapCategoryResDto {
   private String categoryName;
   private String pin;
   private String icon;
-  private int rank;
+  private int displayOrder;
 
-  public MapCategoryResDto(MapCategory mapCategory) {
-    this.mapCategoryId = mapCategory.getId();
-    this.categoryName = mapCategory.getCategoryName();
-    this.pin = mapCategory.getPin();
-    this.icon = mapCategory.getIcon();
-    this.rank = mapCategory.getCategory_rank();
+  @Builder
+  private MapCategoryResDto(Long mapCategoryId, String categoryName, String pin, String icon, int displayOrder) {
+    this.mapCategoryId = mapCategoryId;
+    this.categoryName = categoryName;
+    this.pin = pin;
+    this.icon = icon;
+    this.displayOrder = displayOrder;
+  }
+
+  public static MapCategoryResDto from(MapCategory mapCategory) {
+    return MapCategoryResDto.builder()
+            .mapCategoryId(mapCategory.getId())
+            .categoryName(mapCategory.getCategoryName())
+            .pin(mapCategory.getPin())
+            .icon(mapCategory.getIcon())
+            .displayOrder(mapCategory.getDisplayOrder())
+            .build();
   }
 }

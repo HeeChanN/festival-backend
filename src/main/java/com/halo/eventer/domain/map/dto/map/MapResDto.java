@@ -1,7 +1,8 @@
 package com.halo.eventer.domain.map.dto.map;
 
-import com.halo.eventer.domain.duration.dto.DurationGetDto;
-import com.halo.eventer.domain.duration_map.DurationMap;
+import com.halo.eventer.domain.duration.Duration;
+import com.halo.eventer.domain.duration.dto.DurationResDto;
+import com.halo.eventer.domain.duration.DurationMap;
 import com.halo.eventer.domain.map.Map;
 import com.halo.eventer.domain.map.Menu;
 import com.halo.eventer.domain.map.dto.menu.MenuResDto;
@@ -9,6 +10,8 @@ import com.halo.eventer.domain.map.enumtype.OperationTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,50 +19,69 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MapResDto {
 
+    private Long mapId;
     private String name;
-
     private String summary;
     private String content;
-
-    private String location;
-    private double latitude; // 위도
-    private double longitude; // 경도
-
-    private String operationHours;
-    private OperationTime operationTime;
-
     private String thumbnail;
-
-    private List<MenuResDto> menus;
-
-    private String type;
     private String icon;
 
-    private String buttonName;
-    private String url;
-    private String buttonImage;
+    private LocationInfoDto locationInfo;
+    private OperationInfoDto operationInfo;
+    private ButtonInfoDto buttonInfo;
 
-    private List<DurationGetDto> durations = new ArrayList<>();
+    private String categoryName;
+    private List<DurationResDto> durations;
 
-    public MapResDto(Map map) {
-        this.name = map.getName();
-        this.summary = map.getSummary();
-        this.content = map.getContent();
-        this.location = map.getLocation();
-        this.operationHours = map.getOperationHours();
-        this.thumbnail = map.getThumbnail();
-        this.latitude = map.getLatitude();
-        this.longitude = map.getLongitude();
-        this.type = map.getMapCategory().getCategoryName();
-        this.operationTime = map.getOperationType();
-        map.getDurationMaps().stream().map(DurationMap::getDuration).forEach(o->durations.add(new DurationGetDto(o)));
-        this.icon = map.getIcon();
-        this.buttonName = map.getButtonName();
-        this.buttonImage = map.getButtonImage();
-        this.url = map.getUrl();
+    @Builder
+    public MapResDto(Long mapId, String name, String summary, String content, String thumbnail, String icon,
+                     LocationInfoDto locationInfo, OperationInfoDto operationInfo,
+                     ButtonInfoDto buttonInfo, String categoryName, List<DurationResDto> durations) {
+        this.mapId = mapId;
+        this.name = name;
+        this.summary = summary;
+        this.content = content;
+        this.thumbnail = thumbnail;
+        this.icon = icon;
+        this.locationInfo = locationInfo;
+        this.operationInfo = operationInfo;
+        this.buttonInfo = buttonInfo;
+        this.categoryName = categoryName;
+        this.durations = durations;
     }
 
-    public void setMenus(List<Menu> menus){
-        this.menus = menus.stream().map(o->new MenuResDto(o)).collect(Collectors.toList());
+    public static MapResDto of(Map map, List<Duration> durations) {
+        return MapResDto.builder()
+                .mapId(map.getId())
+                .name(map.getName())
+                .summary(map.getSummary())
+                .content(map.getContent())
+                .thumbnail(map.getThumbnail())
+                .icon(map.getIcon())
+                .locationInfo(LocationInfoDto.from(map.getLocationInfo()))
+                .operationInfo(OperationInfoDto.from(map.getOperationInfo()))
+                .buttonInfo(ButtonInfoDto.from(map.getButtonInfo()))
+                .categoryName(map.getMapCategory().getCategoryName())
+                .durations(DurationResDto.fromDurations(durations))
+                .build();
+    }
+
+    public static MapResDto from(Map map) {
+        List<Duration> durations = map.getDurationMaps().stream()
+                .map(DurationMap::getDuration)
+                .collect(Collectors.toList());
+        return MapResDto.builder()
+                .mapId(map.getId())
+                .name(map.getName())
+                .summary(map.getSummary())
+                .content(map.getContent())
+                .thumbnail(map.getThumbnail())
+                .icon(map.getIcon())
+                .locationInfo(LocationInfoDto.from(map.getLocationInfo()))
+                .operationInfo(OperationInfoDto.from(map.getOperationInfo()))
+                .buttonInfo(ButtonInfoDto.from(map.getButtonInfo()))
+                .categoryName(map.getMapCategory().getCategoryName())
+                .durations(DurationResDto.fromDurations(durations))
+                .build();
     }
 }

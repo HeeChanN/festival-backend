@@ -2,40 +2,55 @@ package com.halo.eventer.domain.duration.service;
 
 
 import com.halo.eventer.domain.duration.Duration;
-import com.halo.eventer.domain.duration.dto.DurationCreateListDto;
-import com.halo.eventer.domain.duration.dto.DurationGetDto;
-import com.halo.eventer.domain.duration.dto.DurationGetListDto;
+import com.halo.eventer.domain.duration.dto.DurationCreateDto;
+import com.halo.eventer.domain.duration.dto.DurationResDto;
+import com.halo.eventer.domain.duration.exception.DurationDateAlreadyExistsException;
 import com.halo.eventer.domain.duration.repository.DurationRepository;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
-import com.halo.eventer.domain.festival.service.FestivalService;
+
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DurationService {
-    private final DurationRepository durationRepository;
-    private final FestivalRepository festivalRepository;
+  private final DurationRepository durationRepository;
+  private final FestivalRepository festivalRepository;
 
-    /** 축제 기간 등록 */
-    @Transactional
-    public String createDuration(Long festivalId, DurationCreateListDto durationCreateListDto) {
-        Festival festival = festivalRepository
-                .findById(festivalId).orElseThrow(() -> new FestivalNotFoundException(festivalId));
+  @Transactional
+  public void createDurations(Long festivalId, List<DurationCreateDto> durationCreateDtos) {
+    Festival festival = festivalRepository.findById(festivalId)
+            .orElseThrow(() -> new FestivalNotFoundException(festivalId));
 
-        durationCreateListDto.getDurationCreateDtos().stream().map(o->new Duration(o,festival)).forEach(durationRepository::save);
+    List<Duration> durations = durationRepository.findAllByFestivalId(festivalId);
+    checkDuplicatedDates(durationCreateDtos, durations);
 
-        return "기간 등록 완료";
+    durationCreateDtos.forEach(dto -> durationRepository.save(Duration.of(festival, dto)));
+  }
+
+  @Transactional(readOnly = true)
+  public List<DurationResDto> getDurations(Long festivalId) {
+    List<Duration> durations = durationRepository.findAllByFestivalId(festivalId);
+    return DurationResDto.fromDurations(durations);
+  }
+
+  private void checkDuplicatedDates(List<DurationCreateDto> dtos, List<Duration> existingDurations) {
+    Set<LocalDate> existingDates = existingDurations.stream().map(Duration::getDate).collect(Collectors.toSet());
+
+    boolean hasDuplicate = dtos.stream().anyMatch(newDto -> existingDates.contains(newDto.getDate()));
+
+    if (hasDuplicate) {
+      throw new DurationDateAlreadyExistsException("이미 동일한 날짜가 존재합니다.");
     }
-
-    /** 축제 기간 조회 */
-    public DurationGetListDto getDurations(Long festivalId) {
-        List<Duration> durationList = durationRepository.findAllByFestivalId(festivalId);
-        List<DurationGetDto> durationGetDtoList = DurationGetDto.fromDurationList(durationList);
-        return new DurationGetListDto(durationGetDtoList);
-    }
+  }
 }

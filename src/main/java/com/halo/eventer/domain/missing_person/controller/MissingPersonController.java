@@ -1,14 +1,9 @@
 package com.halo.eventer.domain.missing_person.controller;
 
-import com.halo.eventer.domain.manager.Manager;
-import com.halo.eventer.domain.manager.service.ManagerService;
 import com.halo.eventer.domain.missing_person.dto.MissingPersonListDto;
 import com.halo.eventer.domain.missing_person.dto.MissingPersonReqDto;
 import com.halo.eventer.domain.missing_person.dto.MissingPersonResDto;
 import com.halo.eventer.domain.missing_person.service.MissingPersonService;
-import com.halo.eventer.infra.naver.sms.service.SmsService;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -20,24 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class MissingPersonController {
 
   private final MissingPersonService missingPersonService;
-  private final SmsService smsService;
-  private final ManagerService managerService;
 
   // 실종자 등록
   @PostMapping()
-  public void uploadMissingPerson(
-      @RequestParam("festivalId") Long festivalId,
-      @RequestBody MissingPersonReqDto missingPersonReqDto)
-      throws Exception {
+  public void uploadMissingPerson(@RequestParam("festivalId") Long festivalId,
+                                  @RequestBody MissingPersonReqDto missingPersonReqDto) {
     missingPersonService.createMissingPerson(festivalId, missingPersonReqDto);
-
-    List<String> phoneList =
-        managerService.getManagerList(festivalId).stream()
-            .map(Manager::getPhoneNo)
-            .collect(Collectors.toList());
-    if (!phoneList.isEmpty()) {
-      smsService.sendSms(missingPersonReqDto, phoneList);
-    }
   }
 
   // 실종자 전체 조회

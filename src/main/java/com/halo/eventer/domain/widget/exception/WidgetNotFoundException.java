@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.widget.exception;
 
-import com.halo.eventer.global.common.WidgetType;
+import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.global.error.exception.EntityNotFoundException;
 
 public class WidgetNotFoundException extends EntityNotFoundException {

@@ -11,15 +11,15 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class InquiryNoOffsetPageDto {
-    private List<InquiryItemDto> inquiryList;
+    private List<InquiryItemDto> inquiries;
     private Boolean isLast;
 
     public InquiryNoOffsetPageDto(List<Inquiry> inquiryList, Boolean isLast) {
-        this.inquiryList = inquiryList.stream().map(InquiryItemDto::new).collect(Collectors.toList());
+        this.inquiries = inquiryList.stream().map(InquiryItemDto::new).collect(Collectors.toList());
         this.isLast = isLast;
     }
 
     public void updateInquiryItemDtoWithTitleVisibility() {
-        this.inquiryList.forEach(InquiryItemDto::changeTitleToSecretValue);
+        this.inquiries.forEach(InquiryItemDto::changeTitleToSecretValue);
     }
 }

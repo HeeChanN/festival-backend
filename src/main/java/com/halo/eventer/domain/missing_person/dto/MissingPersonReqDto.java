@@ -11,13 +11,12 @@ public class MissingPersonReqDto {
   private String age;
   private String gender;
   private String thumbnail;
-  private String base64Image;
   private String missingLocation;
   private String missingTime;
   private String content;
-
   private String parentName;
   private String parentNo;
+  private String domainUrlName;
 
   public MissingPersonReqDto(MissingPerson m) {
     this.name = m.getName();

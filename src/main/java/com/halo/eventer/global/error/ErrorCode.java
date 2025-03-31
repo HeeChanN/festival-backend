@@ -32,9 +32,14 @@ public enum ErrorCode {
 
   // Auth
   LOGIN_FAILED("A001", "Login Failed",401),
+  UN_AUTHENTICATED("A002", "Unauthenticated",401),
+  UN_AUTHORIZED("A003", "Unauthorized",403),
 
   // StampUser
   STAMP_USER_ALREADY_EXISTS("SU001", "StampUser Already Exists",400),
+
+  // Infra
+  SMS_SEND_FAILED("I001", "SMS Send Failed",500),
 
   ;
 

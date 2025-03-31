@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Builder
-@ToString
+@ToString(of = {"requestId", "statusCode", "statusName"})
 public class SmsResDto {
   String requestId;
   LocalDateTime requestTime;

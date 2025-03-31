@@ -1,6 +1,5 @@
 package com.halo.eventer.global.error;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = TestController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-@Disabled
 public class GlobalExceptionHandlerTest {
     @Autowired
     MockMvc mockMvc;

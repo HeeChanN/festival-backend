@@ -3,8 +3,8 @@ package com.halo.eventer.domain.widget.service;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
-import com.halo.eventer.global.common.PagedResponse;
-import com.halo.eventer.domain.widget.dto.WidgetOrderUpdateRequest;
+import com.halo.eventer.global.common.page.PagedResponse;
+import com.halo.eventer.global.common.dto.OrderUpdateRequest;
 import com.halo.eventer.domain.widget.dto.middle_widget.MiddleWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.middle_widget.MiddleWidgetResDto;
 import com.halo.eventer.domain.widget.entity.MiddleWidget;
@@ -14,10 +14,10 @@ import com.halo.eventer.domain.widget.repository.MiddleWidgetRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.halo.eventer.domain.widget.util.DisplayOrderUtils;
+import com.halo.eventer.global.util.DisplayOrderUtils;
 import com.halo.eventer.domain.widget.util.WidgetPageHelper;
-import com.halo.eventer.global.common.SortOption;
-import com.halo.eventer.global.common.WidgetType;
+import com.halo.eventer.global.common.sort.SortOption;
+import com.halo.eventer.domain.widget.WidgetType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -79,7 +79,7 @@ public class MiddleWidgetService {
   }
 
   @Transactional
-  public List<MiddleWidgetResDto> updateDisplayOrder(Long festivalId, List<WidgetOrderUpdateRequest> orderRequests){
+  public List<MiddleWidgetResDto> updateDisplayOrder(Long festivalId, List<OrderUpdateRequest> orderRequests){
     List<MiddleWidget> widgets = middleWidgetRepository.findAllByFestivalId(festivalId);
 
     DisplayOrderUtils.updateDisplayOrder(widgets, orderRequests);

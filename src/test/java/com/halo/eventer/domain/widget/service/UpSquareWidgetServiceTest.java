@@ -4,15 +4,15 @@ import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
 
-import com.halo.eventer.global.common.PagedResponse;
+import com.halo.eventer.global.common.page.PagedResponse;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetResDto;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
 import com.halo.eventer.domain.widget.repository.UpWidgetRepository;
 import com.halo.eventer.domain.widget.entity.UpWidget;
 import com.halo.eventer.domain.widget.util.WidgetPageHelper;
-import com.halo.eventer.global.common.PageInfo;
-import com.halo.eventer.global.common.SortOption;
+import com.halo.eventer.global.common.page.PageInfo;
+import com.halo.eventer.global.common.sort.SortOption;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

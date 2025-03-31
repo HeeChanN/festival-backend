@@ -1,9 +1,7 @@
 package com.halo.eventer.domain.notice.repository;
 
-import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.notice.Notice;
-import com.halo.eventer.domain.widget.BaseWidget;
-import com.halo.eventer.global.common.ArticleType;
+import com.halo.eventer.domain.notice.ArticleType;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -3,18 +3,18 @@ package com.halo.eventer.domain.widget.service;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
-import com.halo.eventer.global.common.PagedResponse;
-import com.halo.eventer.domain.widget.dto.WidgetOrderUpdateRequest;
+import com.halo.eventer.global.common.page.PagedResponse;
+import com.halo.eventer.global.common.dto.OrderUpdateRequest;
 import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetResDto;
 import com.halo.eventer.domain.widget.entity.SquareWidget;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
 import com.halo.eventer.domain.widget.repository.SquareWidgetRepository;
-import com.halo.eventer.domain.widget.util.DisplayOrderUtils;
+import com.halo.eventer.global.util.DisplayOrderUtils;
 import com.halo.eventer.domain.widget.util.WidgetPageHelper;
 
-import com.halo.eventer.global.common.SortOption;
-import com.halo.eventer.global.common.WidgetType;
+import com.halo.eventer.global.common.sort.SortOption;
+import com.halo.eventer.domain.widget.WidgetType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -76,7 +76,7 @@ public class SquareWidgetService {
   }
 
   @Transactional
-  public List<SquareWidgetResDto> updateDisplayOrder(Long festivalId, List<WidgetOrderUpdateRequest> orderRequests){
+  public List<SquareWidgetResDto> updateDisplayOrder(Long festivalId, List<OrderUpdateRequest> orderRequests){
       List<SquareWidget> widgets = squareWidgetRepository.findAllByFestivalId(festivalId);
 
       DisplayOrderUtils.updateDisplayOrder(widgets, orderRequests);

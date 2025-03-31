@@ -10,11 +10,8 @@ public class MenuResDto {
 
   private Long id;
   private String name;
-
   private Integer price;
-
   private String image;
-
   private String summary;
 
   public MenuResDto(Menu menu) {

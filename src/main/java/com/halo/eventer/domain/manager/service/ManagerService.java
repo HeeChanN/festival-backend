@@ -27,7 +27,7 @@ public class ManagerService {
     }
 
     public List<Manager> getManagerList(Long festivalId) {
-        return managerRepository.searchManagerByFestivalId(festivalId);
+        return managerRepository.findManagerByFestivalId(festivalId);
     }
 
     public void deleteManager(Long managerId) {

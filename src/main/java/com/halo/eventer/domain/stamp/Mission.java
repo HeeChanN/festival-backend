@@ -68,6 +68,11 @@ public class Mission {
         this.notClearedThumbnail = request.getNotClearedThumbnail();
     }
 
+    public void addStamp(Stamp stamp){
+        this.stamp = stamp;
+        stamp.getMissions().add(this);
+    }
+
     public static Mission from(MissionSetDto request) {
         return Mission.builder()
                 .boothId(request.getBoothId())

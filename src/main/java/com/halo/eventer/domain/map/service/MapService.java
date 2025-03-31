@@ -1,15 +1,16 @@
 package com.halo.eventer.domain.map.service;
 
-
+import com.halo.eventer.domain.duration.Duration;
+import com.halo.eventer.domain.duration.repository.DurationMapJdbcRepository;
 import com.halo.eventer.domain.duration.repository.DurationRepository;
-import com.halo.eventer.domain.duration_map.DurationMap;
-import com.halo.eventer.domain.duration_map.DurationMapRepository;
+import com.halo.eventer.domain.duration.DurationMap;
 import com.halo.eventer.domain.map.Map;
-import com.halo.eventer.domain.map.dto.map.GetAllStoreResDto;
+import com.halo.eventer.domain.map.MapCategory;
+import com.halo.eventer.domain.map.dto.map.MapItemDto;
 import com.halo.eventer.domain.map.dto.map.MapCreateDto;
-import com.halo.eventer.domain.map.dto.map.MapCreateResDto;
 import com.halo.eventer.domain.map.dto.map.MapResDto;
-import com.halo.eventer.domain.map.enumtype.OperationTime;
+import com.halo.eventer.domain.map.dto.map.MapUpdateDto;
+import com.halo.eventer.domain.map.exception.DurationIdsInvalidInputException;
 import com.halo.eventer.domain.map.exception.MapCategoryNotFoundException;
 import com.halo.eventer.domain.map.exception.MapNotFoundException;
 import com.halo.eventer.domain.map.repository.MapCategoryRepository;
@@ -28,58 +29,63 @@ public class MapService {
     private final MapRepository mapRepository;
     private final MapCategoryRepository mapCategoryRepository;
     private final DurationRepository durationRepository;
-    private final DurationMapRepository durationMapRepository;
+    private final DurationMapJdbcRepository mapJdbcRepository;
 
     @Transactional
-    public MapCreateResDto createMap(MapCreateDto mapCreateDto, Long mapCategoryId, OperationTime operationTime){
+    public MapResDto create(MapCreateDto mapCreateDto, Long mapCategoryId){
+        List<Duration> durations = getValidatedDurations(mapCreateDto.getDurationIdsToAdd());
+        MapCategory mapCategory = mapCategoryRepository.findById(mapCategoryId)
+                .orElseThrow(() -> new MapCategoryNotFoundException(mapCategoryId));
 
-        Map map = new Map(mapCreateDto,operationTime);
+        Map map = Map.of(mapCreateDto, mapCategory);
+        map = mapRepository.save(map);
 
+        mapJdbcRepository.batchInsertMapDurations(map.getId(), durations);
 
-        List<DurationMap>  durationMaps = durationRepository.findAllByIdIn(mapCreateDto.getDurationIds())
-                .stream().map(o->new DurationMap(o,map)).collect(Collectors.toList());
-        map.setDurationMaps(durationMaps);
-        map.setMapCategory(mapCategoryRepository.findById(mapCategoryId)
-                .orElseThrow(() -> new MapCategoryNotFoundException(mapCategoryId)));
-
-        mapRepository.save(map);
-        return new MapCreateResDto(map.getId());
+        return MapResDto.of(map,durations);
     }
 
-    public MapResDto getMap(Long mapId){
-    Map map = mapRepository.findById(mapId).orElseThrow(() -> new MapNotFoundException(mapId));
-        MapResDto response = new MapResDto(map);
-        response.setMenus(map.getMenus());
+  public MapResDto getMap(Long mapId) {
+    Map map = mapRepository.findByIdWithCategoryAndDuration(mapId)
+            .orElseThrow(() -> new MapNotFoundException(mapId));
+    List<Duration> durations = map.getDurationMaps().stream()
+            .map(DurationMap::getDuration)
+            .collect(Collectors.toList());
+    return MapResDto.of(map, durations);
+  }
 
-        return response;
-    }
-
-    public List<GetAllStoreResDto> getMaps(Long mapCategoryId){
-        
-        return mapRepository.findAllByMapCategoryId(mapCategoryId)
-                .stream().map(GetAllStoreResDto::new).collect(Collectors.toList());
-
+  public List<MapItemDto> getMaps(Long mapCategoryId) {
+        return mapRepository.findByCategoryIdWithCategoryAndDuration(mapCategoryId)
+                .stream().map(MapItemDto::new).collect(Collectors.toList());
     }
 
     @Transactional
-    public MapResDto updateStore(Long mapId, MapCreateDto mapCreateDto, Long mapCategoryId) throws Exception{
-        Map map = mapRepository.findById(mapId).orElseThrow(()->new MapNotFoundException(mapId));
-        map.setMap(mapCreateDto);
-        map.setMapCategory(mapCategoryRepository.findById(mapCategoryId).orElseThrow(()-> new MapCategoryNotFoundException(mapCategoryId)));
+    public MapResDto update(Long mapId, MapUpdateDto mapUpdateDto, Long mapCategoryId) {
+        MapCategory mapCategory = mapCategoryRepository.findById(mapCategoryId)
+                .orElseThrow(() -> new MapCategoryNotFoundException(mapCategoryId));
+        Map map = mapRepository.findByIdWithCategoryAndDuration(mapId)
+                .orElseThrow(() -> new MapNotFoundException(mapId));
+        List<Duration> durations = getValidatedDurations(mapUpdateDto.getDurationBinding().getIdsToAdd());
 
-        List<DurationMap> addDurationMaps = durationRepository.findAllByIdIn(mapCreateDto.getDurationIds()).stream().map(o->new DurationMap(o,map)).collect(Collectors.toList());
-        List<DurationMap> deleteDurationMaps =durationMapRepository.findAllByDuration_IdIn(mapCreateDto.getDeleteIds());
+        map.updateMap(mapUpdateDto, mapCategory);
+        map.updateDurations(mapUpdateDto.getDurationBinding().getIdsToAdd(),
+                mapUpdateDto.getDurationBinding().getIdsToRemove(), durations);
 
-        map.getDurationMaps().removeAll(deleteDurationMaps);
-        map.getDurationMaps().addAll(addDurationMaps);
-
-        return new MapResDto(map);
+        return MapResDto.from(map);
     }
 
     @Transactional
-    public String deleteStore(Long mapId) throws Exception{
-        Map map = mapRepository.findById(mapId).orElseThrow(()->new MapNotFoundException(mapId));
-        mapRepository.delete(map);
-        return "삭제완료";
+    public void delete(Long mapId){
+        mapRepository.deleteById(mapId);
+    }
+
+    private List<Duration> getValidatedDurations(List<Long> durationIds) {
+        List<Duration> durations = durationRepository.findAllByIdIn(durationIds);
+
+        if (durations.size() != durationIds.size()) {
+            throw new DurationIdsInvalidInputException();
+        }
+
+        return durations;
     }
 }

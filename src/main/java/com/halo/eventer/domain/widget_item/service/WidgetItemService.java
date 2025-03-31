@@ -1,10 +1,8 @@
 package com.halo.eventer.domain.widget_item.service;
 
-import com.halo.eventer.domain.image.Image;
 import com.halo.eventer.domain.image.dto.FileDto;
 import com.halo.eventer.domain.image.dto.ImageDto;
 import com.halo.eventer.domain.widget.BaseWidget;
-import com.halo.eventer.domain.widget.dto.WidgetOrderUpdateRequest;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
 import com.halo.eventer.domain.widget.repository.BaseWidgetRepository;
 import com.halo.eventer.domain.widget_item.WidgetItem;
@@ -16,11 +14,10 @@ import com.halo.eventer.domain.image.ImageRepository;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.halo.eventer.global.common.WidgetType;
+import com.halo.eventer.domain.widget.WidgetType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

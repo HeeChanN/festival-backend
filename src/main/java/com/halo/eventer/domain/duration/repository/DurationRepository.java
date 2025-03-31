@@ -1,15 +1,17 @@
 package com.halo.eventer.domain.duration.repository;
 
 import com.halo.eventer.domain.duration.Duration;
+
 import java.util.List;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
+
 
 public interface DurationRepository extends CrudRepository<Duration, Long> {
 
-    List<Duration> findAllByFestivalId(Long id);
-
-    List<Duration> findByIdIn(List<Long> ids);
+    @Query("SELECT d FROM Duration d where d.festival.id = :festivalId")
+    List<Duration> findAllByFestivalId(@Param("festivalId") Long festivalId);
 
     List<Duration> findAllByIdIn(List<Long> ids);
-
 }

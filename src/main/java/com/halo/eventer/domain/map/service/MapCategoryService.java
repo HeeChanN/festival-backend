@@ -1,83 +1,79 @@
 package com.halo.eventer.domain.map.service;
 
-
+import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
 import com.halo.eventer.domain.map.MapCategory;
-import com.halo.eventer.domain.map.dto.map.MapListDto;
-import com.halo.eventer.domain.map.dto.mapcategory.CategoryEditDto;
-import com.halo.eventer.domain.map.dto.mapcategory.CategoryEditListDto;
 import com.halo.eventer.domain.map.dto.mapcategory.MapCategoryImageDto;
 import com.halo.eventer.domain.map.dto.mapcategory.MapCategoryResDto;
 import com.halo.eventer.domain.map.exception.MapCategoryNotFoundException;
 import com.halo.eventer.domain.map.repository.MapCategoryRepository;
-import com.halo.eventer.domain.map.repository.MapRepository;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.halo.eventer.global.common.dto.OrderUpdateRequest;
+import com.halo.eventer.global.util.DisplayOrderUtils;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MapCategoryService {
 
-    private final MapCategoryRepository mapCategoryRepository;
-    private final MapRepository mapRepository;
-    private final FestivalRepository festivalRepository;
+  private final MapCategoryRepository mapCategoryRepository;
+  private final FestivalRepository festivalRepository;
 
-    @Transactional
-    public List<MapCategoryResDto> createMapCategory(Long festivalId, String categoryName) {
-    mapCategoryRepository.save(new MapCategory(festivalRepository
-                .findById(festivalId)
-                .orElseThrow(() -> new FestivalNotFoundException(festivalId)), categoryName));
-        return mapCategoryRepository.findAllByFestival_Id(festivalId).stream().map(MapCategoryResDto::new).collect(Collectors.toList());
-    }
+  @Transactional
+  public List<MapCategoryResDto> create(Long festivalId, String categoryName) {
+    Festival festival = festivalRepository.findByIdWithMapCategories(festivalId)
+            .orElseThrow(() -> new FestivalNotFoundException(festivalId));
+    mapCategoryRepository.save(MapCategory.of(festival, categoryName));
 
-    public List<MapCategoryResDto> getMapCategoryList(Long festivalId){
-        return mapCategoryRepository.findAllByFestival_Id(festivalId).stream().map(MapCategoryResDto::new).collect(Collectors.toList());
-    }
+    return festival.getMapCategories().stream()
+            .map(MapCategoryResDto::from)
+            .collect(Collectors.toList());
+  }
 
-    @Transactional
-    public String addIcon(Long mapCategoryId, MapCategoryImageDto mapCategoryImageDto) {
-    MapCategory mapCategory =
-        mapCategoryRepository
-            .findById(mapCategoryId)
-            .orElseThrow(() -> new MapCategoryNotFoundException(mapCategoryId));
-        mapCategory.setImage(mapCategoryImageDto);
-        return "아이콘, 핀 등록 완료";
-    }
+  @Transactional(readOnly = true)
+  public List<MapCategoryResDto> getMapCategories(Long festivalId) {
+    return findMapCategoriesByFestivalIdToDto(festivalId);
+  }
 
-    @Transactional
-    public List<MapCategoryResDto> deleteMapCategory(Long categoryId, Long festivalId) {
-        mapCategoryRepository.deleteById(categoryId);
-        return mapCategoryRepository.findAllByFestival_Id(festivalId).stream().map(MapCategoryResDto::new).collect(Collectors.toList());
-    }
+  @Transactional(readOnly = true)
+  public MapCategoryImageDto getIconAndPin(Long mapCategoryId) {
+      MapCategory mapCategory = loadMapCategoryOrThrow(mapCategoryId);
+      return MapCategoryImageDto.from(mapCategory);
+  }
 
-    public List<MapListDto> getLandMarks(Long mapCategoryId) {
-        return mapCategoryRepository.findById(mapCategoryId)
-                .orElseThrow().getMaps().stream().map(MapListDto::new).collect(Collectors.toList());
-    }
+  @Transactional
+  public void updateIconAndPin(Long mapCategoryId, MapCategoryImageDto mapCategoryImageDto) {
+    MapCategory mapCategory = loadMapCategoryOrThrow(mapCategoryId);
+    mapCategory.updateIconAndPin(mapCategoryImageDto);
+  }
 
-    public MapCategoryImageDto getMapCategoryImages(Long mapCategoryId) {
-        return new MapCategoryImageDto(mapCategoryRepository.findById(mapCategoryId).orElseThrow(()->new MapCategoryNotFoundException(mapCategoryId)));
-    }
+  @Transactional
+  public List<MapCategoryResDto> delete(Long categoryId, Long festivalId) {
+    mapCategoryRepository.deleteById(categoryId);
+    return findMapCategoriesByFestivalIdToDto(festivalId);
+  }
 
-    /** 배너 순서 등록 */
-    @Transactional
-    public String editCategoryRank(CategoryEditListDto categoryEditListDto) {
-        List<MapCategory> categories = mapCategoryRepository.findAllById(categoryEditListDto.getCategoryEditDtos().stream()
-                .map(CategoryEditDto::getCategoryId).collect(Collectors.toList()));
+  @Transactional
+  public List<MapCategoryResDto> updateDisplayOrder(Long festivalId, List<OrderUpdateRequest> orderRequests) {
+    List<MapCategory> mapCategories = mapCategoryRepository.findAllByFestivalId(festivalId);
 
-        for(MapCategory mapCategory : categories){
-            for(CategoryEditDto c : categoryEditListDto.getCategoryEditDtos()) {
-                if (c.getCategoryId() == mapCategory.getId()) {
-                    mapCategory.setRank(c.getRank());
-                    break;
-                }
-            }
-        }
-        return "수정완료";
-    }
+    DisplayOrderUtils.updateDisplayOrder(mapCategories, orderRequests);
 
+    return mapCategories.stream().map(MapCategoryResDto::from).collect(Collectors.toList());
+  }
+
+  private List<MapCategoryResDto> findMapCategoriesByFestivalIdToDto(Long festivalId) {
+      return mapCategoryRepository.findAllByFestivalId(festivalId).stream()
+              .map(MapCategoryResDto::from)
+              .collect(Collectors.toList());
+  }
+
+  private MapCategory loadMapCategoryOrThrow(Long id) {
+    return mapCategoryRepository.findById(id).orElseThrow(() -> new MapCategoryNotFoundException(id));
+  }
 }

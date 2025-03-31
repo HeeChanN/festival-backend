@@ -1,11 +1,11 @@
 package com.halo.eventer.domain.widget.util;
 
 import com.halo.eventer.domain.widget.BaseWidget;
-import com.halo.eventer.global.common.PagedResponse;
+import com.halo.eventer.global.common.page.PagedResponse;
 import com.halo.eventer.domain.widget.exception.SortOptionNotFoundException;
 import com.halo.eventer.domain.widget.repository.BaseWidgetRepository;
-import com.halo.eventer.global.common.PageInfo;
-import com.halo.eventer.global.common.SortOption;
+import com.halo.eventer.global.common.page.PageInfo;
+import com.halo.eventer.global.common.sort.SortOption;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

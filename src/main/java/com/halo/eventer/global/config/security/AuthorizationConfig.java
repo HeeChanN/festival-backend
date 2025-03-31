@@ -15,6 +15,6 @@ public class AuthorizationConfig {
                 .antMatchers(HttpMethod.POST, SecurityConstants.PUBLIC_POST_URLS).permitAll()
                 .antMatchers(HttpMethod.PATCH, SecurityConstants.PUBLIC_PATCH_URLS).permitAll()
                 .antMatchers(HttpMethod.GET, SecurityConstants.ACTUATOR_URL).permitAll() // 내부 모니터링 + 포트번호로 제어
-                .anyRequest().authenticated();
+                .anyRequest().hasRole("ADMIN");
     }
 }

@@ -1,11 +1,11 @@
 package com.halo.eventer.domain.widget.controller;
 
-import com.halo.eventer.global.common.PagedResponse;
-import com.halo.eventer.domain.widget.dto.WidgetOrderUpdateRequest;
+import com.halo.eventer.global.common.page.PagedResponse;
+import com.halo.eventer.global.common.dto.OrderUpdateRequest;
 import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetResDto;
 import com.halo.eventer.domain.widget.service.SquareWidgetService;
-import com.halo.eventer.global.common.SortOption;
+import com.halo.eventer.global.common.sort.SortOption;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -57,7 +57,7 @@ public class SquareWidgetController {
 
   @PatchMapping("/displayOrder")
   public List<SquareWidgetResDto> updateDisplayOrder(@RequestParam long festivalId,
-                                                     @RequestBody List<WidgetOrderUpdateRequest> orderRequests){
+                                                     @RequestBody List<OrderUpdateRequest> orderRequests){
     return squareWidgetService.updateDisplayOrder(festivalId, orderRequests);
   }
 }

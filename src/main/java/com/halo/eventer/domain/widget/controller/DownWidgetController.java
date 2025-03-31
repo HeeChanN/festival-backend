@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.widget.controller;
 
-import com.halo.eventer.domain.widget.dto.WidgetOrderUpdateRequest;
+import com.halo.eventer.global.common.dto.OrderUpdateRequest;
 import com.halo.eventer.domain.widget.dto.down_widget.DownWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.down_widget.DownWidgetResDto;
 import com.halo.eventer.domain.widget.service.DownWidgetService;
@@ -42,7 +42,7 @@ public class DownWidgetController {
 
   @PatchMapping("/displayOrder")
   public List<DownWidgetResDto> updateDisplayOrder(@RequestParam long festivalId,
-                                                   @RequestBody List<WidgetOrderUpdateRequest> orderRequests){
+                                                   @RequestBody List<OrderUpdateRequest> orderRequests){
     return downWidgetService.updateDisplayOrder(festivalId, orderRequests);
   }
 }

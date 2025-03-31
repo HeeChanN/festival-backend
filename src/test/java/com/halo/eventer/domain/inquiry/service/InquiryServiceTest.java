@@ -95,8 +95,8 @@ public class InquiryServiceTest {
         InquiryNoOffsetPageDto results = inquiryService.getAllInquiryForAdmin(festivalId,0L);
 
         //then
-        assertThat(results.getInquiryList()).hasSize(20);
-        assertThat(results.getInquiryList().get(0))
+        assertThat(results.getInquiries()).hasSize(20);
+        assertThat(results.getInquiries().get(0))
                 .usingRecursiveComparison()
                 .comparingOnlyFields("title","isSecret","isAnswered","userId","content")
                 .isEqualTo(secretInquiry);
@@ -111,7 +111,7 @@ public class InquiryServiceTest {
         InquiryNoOffsetPageDto results = inquiryService.getAllInquiryForAdmin(festivalId,0L);
 
         //then
-        assertThat(results.getInquiryList()).isEmpty();
+        assertThat(results.getInquiries()).isEmpty();
     }
 
     @Test
@@ -120,10 +120,10 @@ public class InquiryServiceTest {
         given(inquiryRepository.findById(inquiryId)).willReturn(Optional.of(secretInquiry));
 
         //when
-        Inquiry result = inquiryService.findInquiryForAdmin(inquiryId);
+        InquiryResDto result = inquiryService.findInquiryForAdmin(inquiryId);
 
         //then
-        assertThat(result).isEqualTo(secretInquiry);
+        assertThat(result.getTitle()).isEqualTo(secretInquiry.getTitle());
     }
 
     @Test
@@ -141,7 +141,7 @@ public class InquiryServiceTest {
         InquiryAnswerReqDto dto = new InquiryAnswerReqDto("답변");
 
         //when
-        Inquiry result = inquiryService.updateInquiryAnswer(inquiryId,dto);
+        InquiryResDto result = inquiryService.updateInquiryAnswer(inquiryId,dto);
 
         //then
         assertThat(result.getAnswer()).isEqualTo(dto.getAnswer());
@@ -166,9 +166,9 @@ public class InquiryServiceTest {
         InquiryNoOffsetPageDto results = inquiryService.getAllInquiryForUser(festivalId,0L);
 
         //then
-        assertThat(results.getInquiryList()).hasSize(2);
-        assertThat(results.getInquiryList().get(0).getTitle()).isEqualTo("HIDDEN");
-        assertThat(results.getInquiryList().get(1).getTitle()).isEqualTo("제목");
+        assertThat(results.getInquiries()).hasSize(2);
+        assertThat(results.getInquiries().get(0).getTitle()).isEqualTo("HIDDEN");
+        assertThat(results.getInquiries().get(1).getTitle()).isEqualTo("제목");
     }
 
     @Test
@@ -209,7 +209,7 @@ public class InquiryServiceTest {
 
         //then
         assertThat(dto).isNotNull();
-        assertThat(dto.getInquiryList().size()).isEqualTo(20);
+        assertThat(dto.getInquiries().size()).isEqualTo(20);
         assertThat(dto.getIsLast()).isTrue();
     }
 
@@ -223,7 +223,7 @@ public class InquiryServiceTest {
 
         //then
         assertThat(dto).isNotNull();
-        assertThat(dto.getInquiryList().size()).isEqualTo(20);
+        assertThat(dto.getInquiries().size()).isEqualTo(20);
         assertThat(dto.getIsLast()).isFalse();
     }
 

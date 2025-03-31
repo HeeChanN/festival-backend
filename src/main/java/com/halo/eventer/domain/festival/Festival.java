@@ -108,4 +108,8 @@ public class Festival {
     this.longitude = festivalLocationDto.getLongitude();
     this.latitude = festivalLocationDto.getLatitude();
   }
+
+  public void applyMapCategory(MapCategory mapCategory) {
+    this.mapCategories.add(mapCategory);
+  }
 }

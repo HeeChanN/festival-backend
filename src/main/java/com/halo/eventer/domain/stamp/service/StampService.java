@@ -3,19 +3,17 @@ package com.halo.eventer.domain.stamp.service;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
-import com.halo.eventer.domain.festival.service.FestivalService;
 import com.halo.eventer.domain.stamp.Mission;
 import com.halo.eventer.domain.stamp.Stamp;
-import com.halo.eventer.domain.stamp.StampUser;
 import com.halo.eventer.domain.stamp.dto.stamp.*;
-import com.halo.eventer.domain.stamp.dto.stampUser.FinishedStampUserDto;
 import com.halo.eventer.domain.stamp.exception.StampClosedException;
 import com.halo.eventer.domain.stamp.exception.StampNotFoundException;
+import com.halo.eventer.domain.stamp.repository.MissionRepository;
 import com.halo.eventer.domain.stamp.repository.StampRepository;
-import com.halo.eventer.global.error.ErrorCode;
-import com.halo.eventer.global.error.exception.BaseException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.halo.eventer.global.utils.EncryptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,98 +21,58 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class StampService {
+
     private final StampRepository stampRepository;
     private final FestivalRepository festivalRepository;
     private final EncryptService encryptService;
+    private final MissionRepository missionRepository;
 
-    /** 축제 id로 스탬프 조회 */
-    public Stamp getStamp(Long stampId) {
-        return stampRepository.findById(stampId).orElseThrow(() -> new StampNotFoundException(stampId));
-    }
-
-    /** 축제 id로 스탬프 생성 */
     @Transactional
-    public StampGetListDto registerStamp(Long festivalId) {
-        Festival festival = festivalRepository
-                .findById(festivalId).orElseThrow(() -> new FestivalNotFoundException(festivalId));
-        stampRepository.save(new Stamp(festival));
-
+    public List<StampGetDto> registerStamp(Long festivalId) {
+        Festival festival = loadFestivalOrThrow(festivalId);
+        stampRepository.save(Stamp.create(festival));
         List<Stamp> stamps = stampRepository.findByFestival(festival);
-        List<StampGetDto> stampGetDtos = StampGetDto.fromStampList(stamps);
-        return new StampGetListDto(stampGetDtos);
+        return StampGetDto.fromEntities(stamps);
     }
 
-    /** 축제 id로 스탬프 조회 */
-    public StampGetListDto getStampByFestivalId(Long festivalId) {
-        Festival festival = festivalRepository
-                .findById(festivalId).orElseThrow(() -> new FestivalNotFoundException(festivalId));
+    @Transactional(readOnly = true)
+    public List<StampGetDto> getStampByFestivalId(Long festivalId) {
+        Festival festival = loadFestivalOrThrow(festivalId);
         List<Stamp> stamps = stampRepository.findByFestival(festival);
-        List<StampGetDto> stampGetDtos = StampGetDto.fromStampList(stamps);
-        return new StampGetListDto(stampGetDtos);
+        return StampGetDto.fromEntities(stamps);
     }
 
-    /** 스탬프 상태 변경 */
     @Transactional
-    public String updateStampOn(Long stampId) {
-        Stamp stamp = stampRepository.findById(stampId).orElseThrow(() -> new StampNotFoundException(stampId));
-        if (stamp.isStampOn()) stamp.setStampOn(false);
-        else stamp.setStampOn(true);
-
-        stampRepository.save(stamp);
-
-        return "스탬프 상태 변경 성공";
+    public void updateStampOn(Long stampId) {
+        Stamp stamp = loadStampOrThrow(stampId);
+        stamp.switchStampOn();
     }
 
-    /** 스탬프 삭제 */
     @Transactional
-    public String deleteStamp(Long stampId) {
-        stampRepository.deleteById(stampId);
-        return "삭제 완료";
+    public void deleteStamp(Long stampId) {
+        Stamp stamp = loadStampOrThrow(stampId);
+        stampRepository.delete(stamp);
     }
 
-    /** 미션 생성 */
     @Transactional
-    public String setMission(Long stampId, MissionSetListDto dto) {
-        Stamp stamp = getStamp(stampId);
-        if (!stamp.isStampOn()) throw new StampClosedException(stampId);
-
-        List<Mission> missions = dto.getMissionSets().stream()
-                .map(m -> new Mission(
-                        m.getBoothId(),
-                        m.getTitle(),
-                        m.getContent(),
-                        m.getPlace(),
-                        m.getTime(),
-                        m.getClearedThumbnail(),
-                        m.getNotClearedThumbnail(),
-                        stamp))
-                .collect(Collectors.toList());
-        stamp.setMissions(missions);
-
-        stampRepository.save(stamp);
-
-        return "미션 생성 성공";
+    public void createMission(Long stampId, MissionSetListDto dto) {
+        Stamp stamp = loadStampOrThrow(stampId);
+        validateStampIsOpen(stamp);
+        List<Mission> missions = createMissionsFromDto(dto, stamp);
+        missionRepository.saveAll(missions);
     }
 
-    /** 미션 리스트 조회 */
-    public MissionSummaryGetListDto getMissions(Long stampId) {
-        Stamp stamp = getStamp(stampId);
-        List<MissionSummaryGetDto> missionSummaryGetDtos = stamp.getMissions().stream()
-                .map(m -> new MissionSummaryGetDto(
-                            m.getId(),
-                            m.getTitle(),
-                            m.getClearedThumbnail(),
-                            m.getNotClearedThumbnail()
-                        ))
-                .collect(Collectors.toList());
-
-        return new MissionSummaryGetListDto(missionSummaryGetDtos);
+    @Transactional(readOnly = true)
+    public List<MissionSummaryGetDto> getMissions(Long stampId) {
+        Stamp stamp = loadStampOrThrow(stampId);
+        return MissionSummaryGetDto.fromEntities(stamp.getMissions());
     }
 
-    /** 해당 스탬프 유저들 조회 */
-    public StampUsersGetListDto getStampUsers(Long stampId) {
-        Stamp stamp = getStamp(stampId);
-        List<StampUsersGetDto> users = stamp.getStampUsers().stream()
+    @Transactional(readOnly = true)
+    public List<StampUsersGetDto> getStampUsers(Long stampId) {
+        Stamp stamp = loadStampOrThrow(stampId);
+        return stamp.getStampUsers()
+                .stream()
                 .map(user -> new StampUsersGetDto(
                         user.getUuid(),
                         encryptService.decryptInfo(user.getName()),
@@ -123,26 +81,38 @@ public class StampService {
                         user.getParticipantCount()
                 ))
                 .collect(Collectors.toList());
-
-        return new StampUsersGetListDto(users);
     }
 
-    /** 모든 미션 완료한 사용자 조회 */
-    public List<FinishedStampUserDto> getFinishedStampUsers(Long stampId) {
-        Stamp stamp = getStamp(stampId);
-        List<FinishedStampUserDto> finishedUser = stamp.getStampUsers().stream()
-                .filter(StampUser::isFinished)
-                .map(user -> new FinishedStampUserDto(user.getCustom() != null ? user.getCustom().getSchoolNo() : "X", encryptService.decryptInfo(user.getName()), encryptService.decryptInfo(user.getPhone())))
-                .collect(Collectors.toList());
-
-        return finishedUser;
-    }
-
-    /** 미션 성공 기준 정하기 */
     @Transactional
-    public String setFinishCnt(Long stampId, Integer cnt) {
-        Stamp stamp = getStamp(stampId);
+    public void setFinishCnt(Long stampId, Integer cnt) {
+        Stamp stamp = loadStampOrThrow(stampId);
         stamp.setStampFinishCnt(cnt);
-        return "변경 완료";
+    }
+
+    private Festival loadFestivalOrThrow(Long id) {
+        return festivalRepository.findById(id)
+                .orElseThrow(() -> new FestivalNotFoundException(id));
+    }
+
+    private Stamp loadStampOrThrow(Long stampId) {
+        return stampRepository.findById(stampId)
+                .orElseThrow(() -> new StampNotFoundException(stampId));
+    }
+
+
+    private void validateStampIsOpen(Stamp stamp) {
+        if (!stamp.isStampOn()) {
+            throw new StampClosedException(stamp.getId());
+        }
+    }
+
+    private List<Mission> createMissionsFromDto(MissionSetListDto dto, Stamp stamp) {
+        return dto.getMissionSets().stream()
+                .map(missionDto -> {
+                    Mission mission = Mission.from(missionDto);
+                    mission.addStamp(stamp);
+                    return mission;
+                })
+                .collect(Collectors.toList());
     }
 }

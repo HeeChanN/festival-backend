@@ -8,14 +8,14 @@ import com.halo.eventer.domain.notice.Notice;
 import com.halo.eventer.domain.notice.dto.*;
 import com.halo.eventer.domain.notice.exception.NoticeNotFoundException;
 import com.halo.eventer.domain.notice.repository.NoticeRepository;
-import com.halo.eventer.global.common.PagedResponse;
-import com.halo.eventer.global.common.ArticleType;
+import com.halo.eventer.global.common.page.PagedResponse;
+import com.halo.eventer.domain.notice.ArticleType;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.halo.eventer.global.common.PageInfo;
+import com.halo.eventer.global.common.page.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

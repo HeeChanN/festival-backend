@@ -8,5 +8,5 @@ import org.springframework.data.repository.query.Param;
 
 public interface ManagerRepository extends JpaRepository<Manager, Long> {
     @Query("select m from Manager m where m.festival.id = :id ")
-    List<Manager> searchManagerByFestivalId(@Param("id") Long id);
+    List<Manager> findManagerByFestivalId(@Param("id") Long id);
 }

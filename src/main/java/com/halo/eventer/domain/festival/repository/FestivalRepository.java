@@ -19,4 +19,9 @@ public interface FestivalRepository extends JpaRepository<Festival, Long> {
           "WHERE f.id = :id " +
           "  AND TYPE(w) <> UpWidget ")
   Optional<Festival>  findByIdWithWidgetsWithinPeriod(@Param("id") Long id);
+
+  @Query("SELECT f FROM Festival f " +
+          "JOIN FETCH f.mapCategories m " +
+          "WHERE f.id = :id ")
+  Optional<Festival> findByIdWithMapCategories(@Param("id") Long id);
 }

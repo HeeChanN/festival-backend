@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.halo.eventer.domain.festival.dto.*;
 import com.halo.eventer.domain.festival.service.FestivalService;
 import com.halo.eventer.domain.member.Member;
-import com.halo.eventer.global.config.TestSecurityBeans;
+import com.halo.eventer.global.config.ControllerTestSecurityBeans;
 import com.halo.eventer.global.config.security.SecurityConfig;
 import com.halo.eventer.global.security.CustomUserDetails;
 import com.halo.eventer.global.security.provider.JwtProvider;
@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SuppressWarnings("NonAsciiCharacters")
 @ActiveProfiles("test")
-@Import({TestSecurityBeans.class, SecurityConfig.class})
+@Import({ControllerTestSecurityBeans.class, SecurityConfig.class})
 public class FestivalControllerTest {
 
     @Autowired
@@ -95,8 +95,6 @@ public class FestivalControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(festivalCreateDto)))
                     .andExpect(status().isOk());
-
-
         }
 
         @Test

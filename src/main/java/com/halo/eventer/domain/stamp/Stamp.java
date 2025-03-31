@@ -15,7 +15,7 @@ public class Stamp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean stampOn;
+    private boolean stampOn = true;
 
     @Column(nullable = false)
     private Integer stampFinishCnt = 0;
@@ -28,16 +28,20 @@ public class Stamp {
     private List<StampUser> stampUsers = new ArrayList<>();
 
     @OneToMany(mappedBy = "stamp", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Mission> missions;
+    private List<Mission> missions = new ArrayList<>();
 
-    public Stamp(Festival festival) {
+    private Stamp(Festival festival){
         this.festival = festival;
-        this.stampOn = true;
-        missions = new ArrayList<>();
+        festival.getStamps().add(this);
     }
 
-    public void setStampOn(boolean status) { this.stampOn = status; }
-    public void setMissions(List<Mission> missions) { this.missions = missions; }
-    public void setStampUsers(StampUser stampUser) { this.stampUsers.add(stampUser); }
+    public void switchStampOn(){
+        stampOn = !stampOn;
+    }
+
     public void setStampFinishCnt(Integer cnt) { this.stampFinishCnt = cnt; }
+
+    public static Stamp create(Festival festival){
+        return new Stamp(festival);
+    }
 }

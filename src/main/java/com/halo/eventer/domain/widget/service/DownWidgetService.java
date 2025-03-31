@@ -3,7 +3,7 @@ package com.halo.eventer.domain.widget.service;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
-import com.halo.eventer.domain.widget.dto.WidgetOrderUpdateRequest;
+import com.halo.eventer.global.common.dto.OrderUpdateRequest;
 import com.halo.eventer.domain.widget.dto.down_widget.DownWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.down_widget.DownWidgetResDto;
 import com.halo.eventer.domain.widget.entity.DownWidget;
@@ -12,8 +12,8 @@ import com.halo.eventer.domain.widget.repository.DownWidgetRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.halo.eventer.domain.widget.util.DisplayOrderUtils;
-import com.halo.eventer.global.common.WidgetType;
+import com.halo.eventer.global.util.DisplayOrderUtils;
+import com.halo.eventer.domain.widget.WidgetType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +57,7 @@ public class DownWidgetService {
   }
 
   @Transactional
-  public List<DownWidgetResDto> updateDisplayOrder(Long festivalId, List<WidgetOrderUpdateRequest> orderRequests){
+  public List<DownWidgetResDto> updateDisplayOrder(Long festivalId, List<OrderUpdateRequest> orderRequests){
     List<DownWidget> widgets = downWidgetRepository.findAllByFestivalId(festivalId);
 
     DisplayOrderUtils.updateDisplayOrder(widgets, orderRequests);

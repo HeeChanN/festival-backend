@@ -4,11 +4,9 @@ import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.image.Image;
 import com.halo.eventer.domain.notice.dto.NoticeCreateDto;
 import com.halo.eventer.domain.notice.dto.NoticeUpdateDto;
-import com.halo.eventer.global.common.ArticleType;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.*;
 
 import com.halo.eventer.global.common.BaseTime;
@@ -16,8 +14,6 @@ import com.halo.eventer.global.constants.DisplayOrderConstants;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @NoArgsConstructor

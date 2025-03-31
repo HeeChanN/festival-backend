@@ -1,10 +1,10 @@
 package com.halo.eventer.domain.widget.controller;
 
-import com.halo.eventer.global.common.PagedResponse;
+import com.halo.eventer.global.common.page.PagedResponse;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetResDto;
 import com.halo.eventer.domain.widget.service.UpWidgetService;
-import com.halo.eventer.global.common.SortOption;
+import com.halo.eventer.global.common.sort.SortOption;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

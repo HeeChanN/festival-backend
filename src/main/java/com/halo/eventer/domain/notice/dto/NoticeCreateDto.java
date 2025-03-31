@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.notice.dto;
 
-import com.halo.eventer.global.common.ArticleType;
+import com.halo.eventer.domain.notice.ArticleType;
 import java.util.List;
 import lombok.*;
 

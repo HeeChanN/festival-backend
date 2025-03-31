@@ -36,15 +36,16 @@ public class InquiryService {
     return getInquiriesWithNoOffsetPaging(festivalId,lastId);
   }
 
-  public Inquiry findInquiryForAdmin(Long id) {
-    return inquiryRepository.findById(id).orElseThrow(() -> new InquiryNotFoundException(id));
+  public InquiryResDto findInquiryForAdmin(Long id) {
+    Inquiry inquiry = inquiryRepository.findById(id).orElseThrow(() -> new InquiryNotFoundException(id));
+    return new InquiryResDto(inquiry);
   }
 
   @Transactional
-  public Inquiry updateInquiryAnswer(Long id, InquiryAnswerReqDto dto) {
+  public InquiryResDto updateInquiryAnswer(Long id, InquiryAnswerReqDto dto) {
     Inquiry inquiry = inquiryRepository.findById(id).orElseThrow(() -> new InquiryNotFoundException(id));
     inquiry.registerAnswer(dto.getAnswer());
-    return inquiry;
+    return new InquiryResDto(inquiry);
   }
 
   public void delete(Long id) {

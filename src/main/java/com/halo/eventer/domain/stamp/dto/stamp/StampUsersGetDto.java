@@ -1,10 +1,17 @@
 package com.halo.eventer.domain.stamp.dto.stamp;
 
+import com.halo.eventer.domain.stamp.StampUser;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+import java.util.List;
+import java.util.stream.Collectors;
+
+
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class StampUsersGetDto {
   private String uuid;
   private String name;
@@ -12,12 +19,19 @@ public class StampUsersGetDto {
   private boolean finished;
   private int participantCount;
 
-  public StampUsersGetDto(
-      String uuid, String name, String phone, boolean finished, int participantCount) {
-    this.uuid = uuid;
-    this.name = name;
-    this.phone = phone;
-    this.finished = finished;
-    this.participantCount = participantCount;
+  public static List<StampUsersGetDto> fromEntities(List<StampUser> stampUsers){
+    return stampUsers.stream()
+            .map(StampUsersGetDto::from)
+            .collect(Collectors.toList());
+  }
+
+  public static StampUsersGetDto from(StampUser stampUser){
+    return new StampUsersGetDto(
+            stampUser.getUuid(),
+            stampUser.getName(),
+            stampUser.getPhone(),
+            stampUser.isFinished(),
+            stampUser.getParticipantCount()
+    );
   }
 }
