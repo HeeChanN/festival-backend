@@ -1,11 +1,12 @@
 package com.halo.eventer.domain.widget.entity;
 
-import com.halo.eventer.domain.festival.Festival;
-import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetCreateDto;
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import com.halo.eventer.domain.festival.Festival;
+import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetCreateDto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,17 +20,12 @@ public class UpWidgetTest {
     void setUp() {
         // Mock 데이터 초기화
         festival = new Festival();
-        upWidgetCreateDto = UpWidgetCreateDto.of(
-                "이름",
-                "url",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        upWidgetCreateDto = UpWidgetCreateDto.of("이름", "url", LocalDateTime.now(), LocalDateTime.now());
     }
 
     @Test
     void of_생성_테스트() {
-        //given
+        // given
         LocalDateTime now = LocalDateTime.now();
 
         // When

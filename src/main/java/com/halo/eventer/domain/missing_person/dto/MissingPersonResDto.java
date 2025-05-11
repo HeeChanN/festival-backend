@@ -7,28 +7,28 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MissingPersonResDto {
-  private String name;
-  private String age;
-  private String gender;
-  private String thumbnail;
-  private String missingLocation;
-  private String missingTime;
-  private String content;
+    private String name;
+    private String age;
+    private String gender;
+    private String thumbnail;
+    private String missingLocation;
+    private String missingTime;
+    private String content;
 
-  private String parentName;
-  private String parentNo;
-  private Boolean popup;
+    private String parentName;
+    private String parentNo;
+    private Boolean popup;
 
-  public MissingPersonResDto(MissingPerson m) {
-    this.name = m.getName();
-    this.age = m.getAge();
-    this.gender = m.getGender();
-    this.thumbnail = m.getThumbnail();
-    this.missingLocation = m.getMissingLocation();
-    this.missingTime = m.getMissingTime();
-    this.content = m.getContent();
-    this.parentName = m.getParentName();
-    this.parentNo = m.getParentNo();
-    this.popup = m.getPopup();
-  }
+    public MissingPersonResDto(MissingPerson m) {
+        this.name = m.getName();
+        this.age = m.getAge();
+        this.gender = m.getGender();
+        this.thumbnail = m.getThumbnail();
+        this.missingLocation = m.getMissingLocation();
+        this.missingTime = m.getMissingTime();
+        this.content = m.getContent();
+        this.parentName = m.getParentName();
+        this.parentNo = m.getParentNo();
+        this.popup = m.getPopup();
+    }
 }

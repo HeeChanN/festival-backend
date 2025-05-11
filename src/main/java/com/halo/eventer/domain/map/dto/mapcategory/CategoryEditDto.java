@@ -6,6 +6,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class CategoryEditDto {
-  private Long categoryId;
-  private int rank;
+    private Long categoryId;
+    private int rank;
 }

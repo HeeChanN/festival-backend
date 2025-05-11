@@ -1,7 +1,8 @@
 package com.halo.eventer.domain.duration.dto;
 
-import com.halo.eventer.domain.duration.Duration;
 import java.time.LocalDate;
+
+import com.halo.eventer.domain.duration.Duration;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

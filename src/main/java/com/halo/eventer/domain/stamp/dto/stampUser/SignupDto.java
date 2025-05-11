@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public abstract class SignupDto {
-  private String name;
-  private String phone;
-  private int participantCount;
+    private String name;
+    private String phone;
+    private int participantCount;
 }

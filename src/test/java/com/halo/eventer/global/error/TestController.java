@@ -14,22 +14,22 @@ public class TestController {
     }
 
     @PostMapping("/api/test/requestBody")
-    public ResponseEntity<String> postTest(@RequestBody TestDto testDto){
+    public ResponseEntity<String> postTest(@RequestBody TestDto testDto) {
         return ResponseEntity.ok("POST success");
     }
 
     @GetMapping("/api/test/requestParam")
-    public ResponseEntity<String> postTestParam(@RequestParam int param){
+    public ResponseEntity<String> postTestParam(@RequestParam int param) {
         return ResponseEntity.ok("POST success");
     }
 
     @PostMapping("/festival")
-    public String securityExceptionHandlingTest(@RequestBody TestDto testDto){
+    public String securityExceptionHandlingTest(@RequestBody TestDto testDto) {
         return testDto.getName();
     }
 
     @GetMapping("/festival")
-    public String securityGetTest(){
+    public String securityGetTest() {
         return "festival";
     }
 }

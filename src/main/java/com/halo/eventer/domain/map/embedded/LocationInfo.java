@@ -1,11 +1,11 @@
 package com.halo.eventer.domain.map.embedded;
 
+import javax.persistence.Embeddable;
+
 import com.halo.eventer.domain.map.dto.map.LocationInfoDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Embeddable;
 
 @Embeddable
 @Getter
@@ -22,7 +22,7 @@ public class LocationInfo {
         this.longitude = longitude;
     }
 
-    public static LocationInfo from(LocationInfoDto locationInfoDto){
+    public static LocationInfo from(LocationInfoDto locationInfoDto) {
         return LocationInfo.builder()
                 .address(locationInfoDto.getAddress())
                 .latitude(locationInfoDto.getLatitude())

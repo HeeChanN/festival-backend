@@ -1,13 +1,13 @@
 package com.halo.eventer.global.config.security;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 public class CorsConfig {
@@ -24,8 +24,7 @@ public class CorsConfig {
             "https://adelante.wabauniv.com",
             "http://m.localhost:3000",
             "https://firefestivaljeju.com",
-            "https://m.firefestivaljeju.com"
-    );
+            "https://m.firefestivaljeju.com");
 
     @Bean
     public CorsConfigurationSource customCorsConfigurationSource() {

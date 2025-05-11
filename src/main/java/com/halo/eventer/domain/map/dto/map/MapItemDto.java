@@ -1,11 +1,10 @@
 package com.halo.eventer.domain.map.dto.map;
 
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.halo.eventer.domain.duration.dto.DurationResDto;
 import com.halo.eventer.domain.map.Map;
-import com.halo.eventer.domain.map.enumtype.OperationTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,6 +27,7 @@ public class MapItemDto {
         this.locationInfo = LocationInfoDto.from(map.getLocationInfo());
         this.categoryName = map.getMapCategory().getCategoryName();
         this.durationResDto = map.getDurationMaps().stream()
-                .map(o->new DurationResDto(o.getDuration())).collect(Collectors.toList());
+                .map(o -> new DurationResDto(o.getDuration()))
+                .collect(Collectors.toList());
     }
 }

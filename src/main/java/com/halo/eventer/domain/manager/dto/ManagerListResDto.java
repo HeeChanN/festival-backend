@@ -1,8 +1,9 @@
 package com.halo.eventer.domain.manager.dto;
 
-import com.halo.eventer.domain.manager.Manager;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.halo.eventer.domain.manager.Manager;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ public class ManagerListResDto {
 
     public ManagerListResDto(List<Manager> managerResDtoList) {
         this.managerResDtoList = managerResDtoList.stream()
-                .map(o->new ManagerResDto(o.getId(),o.getPhoneNo())).collect(Collectors.toList());
+                .map(o -> new ManagerResDto(o.getId(), o.getPhoneNo()))
+                .collect(Collectors.toList());
     }
 }

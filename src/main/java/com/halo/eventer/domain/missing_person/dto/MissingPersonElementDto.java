@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MissingPersonElementDto {
-  private Long id;
-  private String name;
-  private Boolean popup;
+    private Long id;
+    private String name;
+    private Boolean popup;
 
-  public MissingPersonElementDto(MissingPerson missingPerson) {
-    this.id = missingPerson.getId();
-    this.name = missingPerson.getName();
-    this.popup = missingPerson.getPopup();
-  }
+    public MissingPersonElementDto(MissingPerson missingPerson) {
+        this.id = missingPerson.getId();
+        this.name = missingPerson.getName();
+        this.popup = missingPerson.getPopup();
+    }
 }

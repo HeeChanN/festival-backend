@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class TokenDto {
-  private String token;
+    private String token;
 
-  public TokenDto(String token) {
-    this.token = token;
-  }
+    public TokenDto(String token) {
+        this.token = token;
+    }
 }

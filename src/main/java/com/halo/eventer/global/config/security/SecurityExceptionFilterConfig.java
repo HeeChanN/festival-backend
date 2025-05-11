@@ -1,12 +1,12 @@
 package com.halo.eventer.global.config.security;
 
-import com.halo.eventer.global.security.filter.JwtAuthenticationFilter;
-import com.halo.eventer.global.security.filter.SecurityExceptionFilter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import com.halo.eventer.global.security.filter.JwtAuthenticationFilter;
+import com.halo.eventer.global.security.filter.SecurityExceptionFilter;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor

@@ -1,9 +1,11 @@
 package com.halo.eventer.domain.stamp;
 
-import com.halo.eventer.domain.festival.Festival;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+
+import com.halo.eventer.domain.festival.Festival;
+import com.halo.eventer.domain.stamp.exception.StampClosedException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,18 +32,26 @@ public class Stamp {
     @OneToMany(mappedBy = "stamp", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Mission> missions = new ArrayList<>();
 
-    private Stamp(Festival festival){
+    private Stamp(Festival festival) {
         this.festival = festival;
         festival.getStamps().add(this);
     }
 
-    public void switchStampOn(){
+    public void switchStampOn() {
         stampOn = !stampOn;
     }
 
-    public void setStampFinishCnt(Integer cnt) { this.stampFinishCnt = cnt; }
+    public void setStampFinishCnt(Integer cnt) {
+        this.stampFinishCnt = cnt;
+    }
 
-    public static Stamp create(Festival festival){
+    public void validateStampOn() {
+        if (!this.isStampOn()) {
+            throw new StampClosedException(id);
+        }
+    }
+
+    public static Stamp create(Festival festival) {
         return new Stamp(festival);
     }
 }

@@ -1,14 +1,15 @@
 package com.halo.eventer.global.security.filter;
 
-import com.halo.eventer.global.error.exception.BaseException;
-import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.HandlerExceptionResolver;
-
+import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+
+import com.halo.eventer.global.error.exception.BaseException;
 
 public class SecurityExceptionFilter extends OncePerRequestFilter {
 
@@ -23,7 +24,7 @@ public class SecurityExceptionFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (BaseException e){
+        } catch (BaseException e) {
             handlerExceptionResolver.resolveException(request, response, null, e);
         }
     }

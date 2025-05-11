@@ -1,10 +1,7 @@
 package com.halo.eventer.domain.stamp.service;
 
-import com.halo.eventer.domain.stamp.dto.mission.MissionDetailGetDto;
-import com.halo.eventer.domain.stamp.exception.MissionNotFoundException;
-import com.halo.eventer.domain.stamp.Mission;
-import com.halo.eventer.domain.stamp.dto.mission.MissionUpdateDto;
-import com.halo.eventer.domain.stamp.repository.MissionRepository;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,17 +10,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Optional;
+import com.halo.eventer.domain.stamp.Mission;
+import com.halo.eventer.domain.stamp.dto.mission.MissionDetailGetDto;
+import com.halo.eventer.domain.stamp.dto.mission.MissionUpdateDto;
+import com.halo.eventer.domain.stamp.exception.MissionNotFoundException;
+import com.halo.eventer.domain.stamp.repository.MissionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
-
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
@@ -46,46 +42,43 @@ public class MissionServiceTest {
     }
 
     @Test
-    void 미션조회_성공(){
-        //given
+    void 미션조회_성공() {
+        // given
         given(missionRepository.findById(1L)).willReturn(Optional.of(mission));
 
-        //when
+        // when
         MissionDetailGetDto result = missionService.getMission(1L);
 
-        //then
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(mission);
+        // then
+        assertThat(result).usingRecursiveComparison().isEqualTo(mission);
     }
 
     @Test
-    void 미션조회_실패(){
-        //given
+    void 미션조회_실패() {
+        // given
         given(missionRepository.findById(1L)).willReturn(Optional.empty());
 
-        //when & then
-        assertThatThrownBy(() -> missionService.getMission(1L))
-                .isInstanceOf(MissionNotFoundException.class);
+        // when & then
+        assertThatThrownBy(() -> missionService.getMission(1L)).isInstanceOf(MissionNotFoundException.class);
     }
 
     @Test
-    void 미션수정_성공(){
-        //given
+    void 미션수정_성공() {
+        // given
         given(missionRepository.findById(1L)).willReturn(Optional.of(mission));
 
-        //when
+        // when
         missionService.updateMission(mission.getId(), missionUpdateDto);
         MissionDetailGetDto result = missionService.getMission(1L);
 
-        //then
+        // then
         assertThat(result)
                 .usingRecursiveComparison()
                 .comparingOnlyFields("boothId")
                 .isEqualTo(mission);
     }
 
-    private Mission setUpMission(){
+    private Mission setUpMission() {
         Mission mission = new Mission();
         setField(mission, "id", 1L);
         setField(mission, "boothId", 1L);

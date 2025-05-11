@@ -1,18 +1,15 @@
 package com.halo.eventer.domain.widget.entity;
 
+import javax.persistence.*;
+
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.widget.BaseWidget;
 import com.halo.eventer.domain.widget.dto.main_widget.MainWidgetCreateDto;
-import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetCreateDto;
 import com.halo.eventer.domain.widget.feature.DescriptionFeature;
-import com.halo.eventer.domain.widget.feature.DisplayOrderFeature;
 import com.halo.eventer.domain.widget.feature.ImageFeature;
-import com.halo.eventer.global.constants.DisplayOrderConstants;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Entity
 @DiscriminatorValue("MAIN")
@@ -31,10 +28,11 @@ public class MainWidget extends BaseWidget {
     private MainWidget(Festival festival, String name, String url, String image, String description) {
         super(festival, name, url);
         this.imageFeature = ImageFeature.of(image);
-        this.descriptionFeature = DescriptionFeature.of(description);;
+        this.descriptionFeature = DescriptionFeature.of(description);
+        ;
     }
 
-    public static MainWidget from(Festival festival, MainWidgetCreateDto mainWidgetCreateDto){
+    public static MainWidget from(Festival festival, MainWidgetCreateDto mainWidgetCreateDto) {
         return MainWidget.builder()
                 .festival(festival)
                 .name(mainWidgetCreateDto.getName())

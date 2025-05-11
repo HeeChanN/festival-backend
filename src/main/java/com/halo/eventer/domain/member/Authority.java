@@ -1,7 +1,8 @@
 package com.halo.eventer.domain.member;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ public class Authority {
     private String roleName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="member_id")
+    @JoinColumn(name = "member_id")
     @Setter
     @JsonIgnore
     private Member member;
@@ -28,5 +29,4 @@ public class Authority {
     public Authority(String roleName) {
         this.roleName = roleName;
     }
-
 }

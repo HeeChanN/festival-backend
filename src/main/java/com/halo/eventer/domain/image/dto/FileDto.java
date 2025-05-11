@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class FileDto {
-  private String url;
+    private String url;
 
-  public FileDto(String url) {
-    this.url = url;
-  }
+    public FileDto(String url) {
+        this.url = url;
+    }
 }

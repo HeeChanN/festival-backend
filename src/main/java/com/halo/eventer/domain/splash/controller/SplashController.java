@@ -1,5 +1,7 @@
 package com.halo.eventer.domain.splash.controller;
 
+import org.springframework.web.bind.annotation.*;
+
 import com.halo.eventer.domain.splash.Splash;
 import com.halo.eventer.domain.splash.dto.DeleteImageDto;
 import com.halo.eventer.domain.splash.dto.SplashGetDto;
@@ -9,14 +11,13 @@ import com.halo.eventer.domain.splash.swagger.SplashGetApi;
 import com.halo.eventer.domain.splash.swagger.SplashImageDeleteApi;
 import com.halo.eventer.domain.splash.swagger.SplashImageUploadApi;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/splash")
 public class SplashController {
     private final SplashService splashService;
-    
+
     /** 이미지 업로드 + 수정 */
     @SplashImageUploadApi
     @PostMapping
@@ -36,6 +37,10 @@ public class SplashController {
     @GetMapping
     public SplashGetDto getSplash(@RequestParam Long festivalId) {
         Splash splash = splashService.getSplash(festivalId);
-        return new SplashGetDto(splash.getBackgroundImage(), splash.getTopLayerImage(), splash.getCenterLayerImage(), splash.getBottomLayerImage());
+        return new SplashGetDto(
+                splash.getBackgroundImage(),
+                splash.getTopLayerImage(),
+                splash.getCenterLayerImage(),
+                splash.getBottomLayerImage());
     }
 }

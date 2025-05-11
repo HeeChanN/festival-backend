@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class FestivalLocationDto {
-  private double longitude;
-  private double latitude;
+    private double longitude;
+    private double latitude;
 
-  public FestivalLocationDto(double longitude, double latitude) {}
+    public FestivalLocationDto(double longitude, double latitude) {}
 }

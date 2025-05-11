@@ -3,13 +3,14 @@ plugins {
     id 'org.springframework.boot' version '2.7.16'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'jacoco'
+    id 'com.diffplug.spotless' version '7.0.3'
 }
 
 group = 'com.halo'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '11'
+    sourceCompatibility = JavaVersion.VERSION_11
 }
 
 jacoco {
@@ -30,11 +31,23 @@ jacocoTestReport {
     }
 }
 
+spotless {
+    java {
+        palantirJavaFormat()
+        target 'src/**/*.java'
+
+        importOrder 'java|javax', 'org', ' com.halo.eventer', '', '\\#'
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
 
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+
 }
 
 repositories {
@@ -65,9 +78,6 @@ dependencies {
     //Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
-
-    //httpClient
-    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
 
     //aws-s3
     implementation(platform("software.amazon.awssdk:bom:2.27.21"))

@@ -1,6 +1,8 @@
 package com.halo.eventer.global.security;
 
-import com.halo.eventer.domain.member.Member;
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.mockito.Mockito;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -8,8 +10,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
-import java.util.Arrays;
-import java.util.Collections;
+import com.halo.eventer.domain.member.Member;
 
 public class WithMockPrincipalDetailsSecurityContextFactory
         implements WithSecurityContextFactory<WithMockCustomUserDetails> {
@@ -26,8 +27,7 @@ public class WithMockPrincipalDetailsSecurityContextFactory
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 customUserDetails,
                 null,
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + Arrays.toString(annotation.roles())))
-        );
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + Arrays.toString(annotation.roles()))));
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(auth);

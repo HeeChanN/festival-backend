@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class SignupWithCustomDto extends SignupDto {
-  private String schoolNo;
+    private String schoolNo;
 }

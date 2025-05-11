@@ -1,10 +1,10 @@
 package com.halo.eventer.domain.duration.dto;
 
-
-import com.halo.eventer.domain.duration.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.halo.eventer.domain.duration.Duration;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -25,9 +25,6 @@ public class DurationResDto {
     }
 
     public static List<DurationResDto> fromDurations(List<Duration> durations) {
-        return durations.stream()
-                .map(DurationResDto::new)
-                .collect(Collectors.toList());
+        return durations.stream().map(DurationResDto::new).collect(Collectors.toList());
     }
 }
-

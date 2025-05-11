@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MiddleWidgetCreateDto {
-  private String name;
-  private String url;
-  private String image;
+    private String name;
+    private String url;
+    private String image;
 }

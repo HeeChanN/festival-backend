@@ -6,6 +6,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class PickedNoticeUpdateDto {
-  private Long id;
-  private Integer displayOrder;
+    private Long id;
+    private Integer displayOrder;
 }

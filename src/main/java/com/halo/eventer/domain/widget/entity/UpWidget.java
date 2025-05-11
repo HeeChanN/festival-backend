@@ -1,5 +1,8 @@
 package com.halo.eventer.domain.widget.entity;
 
+import java.time.LocalDateTime;
+import javax.persistence.*;
+
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.widget.BaseWidget;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetCreateDto;
@@ -7,9 +10,6 @@ import com.halo.eventer.domain.widget.feature.PeriodFeature;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @DiscriminatorValue("UP")
@@ -19,20 +19,19 @@ public class UpWidget extends BaseWidget {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "periodStart", column = @Column(name = "period_start")),
-            @AttributeOverride(name = "periodEnd", column = @Column(name = "period_end"))
+        @AttributeOverride(name = "periodStart", column = @Column(name = "period_start")),
+        @AttributeOverride(name = "periodEnd", column = @Column(name = "period_end"))
     })
     private PeriodFeature periodFeature;
 
     @Builder
-    private UpWidget(Festival festival, String name, String url,
-                    LocalDateTime periodStart, LocalDateTime periodEnd) {
+    private UpWidget(Festival festival, String name, String url, LocalDateTime periodStart, LocalDateTime periodEnd) {
         super(festival, name, url);
         this.periodFeature = PeriodFeature.of(periodStart, periodEnd);
     }
 
-    public static UpWidget of(Festival festival, String name, String url,
-                              LocalDateTime periodStart, LocalDateTime periodEnd){
+    public static UpWidget of(
+            Festival festival, String name, String url, LocalDateTime periodStart, LocalDateTime periodEnd) {
         return UpWidget.builder()
                 .festival(festival)
                 .name(name)
@@ -42,7 +41,7 @@ public class UpWidget extends BaseWidget {
                 .build();
     }
 
-    public static UpWidget from(Festival festival, UpWidgetCreateDto upWidgetCreateDto){
+    public static UpWidget from(Festival festival, UpWidgetCreateDto upWidgetCreateDto) {
         return UpWidget.builder()
                 .festival(festival)
                 .name(upWidgetCreateDto.getName())
@@ -52,7 +51,7 @@ public class UpWidget extends BaseWidget {
                 .build();
     }
 
-    public void updateUpWidget(UpWidgetCreateDto upWidgetCreateDto){
+    public void updateUpWidget(UpWidgetCreateDto upWidgetCreateDto) {
         updateBaseField(upWidgetCreateDto.getName(), upWidgetCreateDto.getUrl());
 
         this.periodFeature = PeriodFeature.of(upWidgetCreateDto.getPeriodStart(), upWidgetCreateDto.getPeriodEnd());

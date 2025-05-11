@@ -8,26 +8,23 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MapCategoryImageDto {
-  private String pin;
-  private String icon;
+    private String pin;
+    private String icon;
 
-  @Builder
-  private MapCategoryImageDto(String pin, String icon) {
-    this.pin = pin;
-    this.icon = icon;
-  }
+    @Builder
+    private MapCategoryImageDto(String pin, String icon) {
+        this.pin = pin;
+        this.icon = icon;
+    }
 
-  public static MapCategoryImageDto from(MapCategory mapCategory) {
-    return MapCategoryImageDto.builder()
-            .pin(mapCategory.getPin())
-            .icon(mapCategory.getIcon())
-            .build();
-  }
+    public static MapCategoryImageDto from(MapCategory mapCategory) {
+        return MapCategoryImageDto.builder()
+                .pin(mapCategory.getPin())
+                .icon(mapCategory.getIcon())
+                .build();
+    }
 
-  public static MapCategoryImageDto of(String pin, String icon){
-    return MapCategoryImageDto.builder()
-            .pin(pin)
-            .icon(icon)
-            .build();
-  }
+    public static MapCategoryImageDto of(String pin, String icon) {
+        return MapCategoryImageDto.builder().pin(pin).icon(icon).build();
+    }
 }

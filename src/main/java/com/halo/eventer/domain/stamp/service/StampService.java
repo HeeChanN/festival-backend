@@ -1,5 +1,11 @@
 package com.halo.eventer.domain.stamp.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
@@ -10,13 +16,8 @@ import com.halo.eventer.domain.stamp.exception.StampClosedException;
 import com.halo.eventer.domain.stamp.exception.StampNotFoundException;
 import com.halo.eventer.domain.stamp.repository.MissionRepository;
 import com.halo.eventer.domain.stamp.repository.StampRepository;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.halo.eventer.global.utils.EncryptService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -71,15 +72,13 @@ public class StampService {
     @Transactional(readOnly = true)
     public List<StampUsersGetDto> getStampUsers(Long stampId) {
         Stamp stamp = loadStampOrThrow(stampId);
-        return stamp.getStampUsers()
-                .stream()
+        return stamp.getStampUsers().stream()
                 .map(user -> new StampUsersGetDto(
                         user.getUuid(),
                         encryptService.decryptInfo(user.getName()),
                         encryptService.decryptInfo(user.getPhone()),
                         user.isFinished(),
-                        user.getParticipantCount()
-                ))
+                        user.getParticipantCount()))
                 .collect(Collectors.toList());
     }
 
@@ -90,15 +89,12 @@ public class StampService {
     }
 
     private Festival loadFestivalOrThrow(Long id) {
-        return festivalRepository.findById(id)
-                .orElseThrow(() -> new FestivalNotFoundException(id));
+        return festivalRepository.findById(id).orElseThrow(() -> new FestivalNotFoundException(id));
     }
 
     private Stamp loadStampOrThrow(Long stampId) {
-        return stampRepository.findById(stampId)
-                .orElseThrow(() -> new StampNotFoundException(stampId));
+        return stampRepository.findById(stampId).orElseThrow(() -> new StampNotFoundException(stampId));
     }
-
 
     private void validateStampIsOpen(Stamp stamp) {
         if (!stamp.isStampOn()) {

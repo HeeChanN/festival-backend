@@ -1,11 +1,11 @@
 package com.halo.eventer.domain.widget.feature;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.time.LocalDateTime;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Embeddable
 @Getter

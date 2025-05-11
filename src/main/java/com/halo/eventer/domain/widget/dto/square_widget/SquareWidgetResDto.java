@@ -1,15 +1,16 @@
 package com.halo.eventer.domain.widget.dto.square_widget;
 
+import java.time.LocalDateTime;
+
 import com.halo.eventer.domain.widget.entity.SquareWidget;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Getter
 @NoArgsConstructor
 public class SquareWidgetResDto {
+    private Long id;
     private String name;
     private String description;
     private String icon;
@@ -18,10 +19,17 @@ public class SquareWidgetResDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-
     @Builder
-    private SquareWidgetResDto(String name, String description, String icon,
-                               String url, Integer displayOrder, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private SquareWidgetResDto(
+            Long id,
+            String name,
+            String description,
+            String icon,
+            String url,
+            Integer displayOrder,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.icon = icon;
@@ -33,6 +41,7 @@ public class SquareWidgetResDto {
 
     public static SquareWidgetResDto from(SquareWidget squareWidget) {
         return SquareWidgetResDto.builder()
+                .id(squareWidget.getId())
                 .name(squareWidget.getName())
                 .url(squareWidget.getUrl())
                 .description(squareWidget.getDescriptionFeature().getDescription())

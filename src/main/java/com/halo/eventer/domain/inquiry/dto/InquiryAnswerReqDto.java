@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class InquiryAnswerReqDto {
-  private String answer;
+    private String answer;
 
-  public InquiryAnswerReqDto(String answer) {
-    this.answer = answer;
-  }
+    public InquiryAnswerReqDto(String answer) {
+        this.answer = answer;
+    }
 }

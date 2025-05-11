@@ -8,17 +8,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MenuResDto {
 
-  private Long id;
-  private String name;
-  private Integer price;
-  private String image;
-  private String summary;
+    private Long id;
+    private String name;
+    private Integer price;
+    private String image;
+    private String summary;
 
-  public MenuResDto(Menu menu) {
-    this.id = menu.getId();
-    this.name = menu.getName();
-    this.price = menu.getPrice();
-    this.summary = menu.getSummary();
-    this.image = menu.getImage();
-  }
+    public MenuResDto(Menu menu) {
+        this.id = menu.getId();
+        this.name = menu.getName();
+        this.price = menu.getPrice();
+        this.summary = menu.getSummary();
+        this.image = menu.getImage();
+    }
 }

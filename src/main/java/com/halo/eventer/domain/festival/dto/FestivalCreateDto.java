@@ -1,7 +1,6 @@
 package com.halo.eventer.domain.festival.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Getter
 public class FestivalCreateDto {
 
-  private String name;
-  private String subAddress;
+    private String name;
+    private String subAddress;
 }

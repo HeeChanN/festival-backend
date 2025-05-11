@@ -1,12 +1,8 @@
 package com.halo.eventer.domain.duration.repository;
 
-import com.halo.eventer.domain.duration.Duration;
-import com.halo.eventer.domain.duration.DurationMap;
-import com.halo.eventer.domain.festival.Festival;
-import com.halo.eventer.domain.festival.dto.FestivalCreateDto;
-import com.halo.eventer.domain.festival.repository.FestivalRepository;
-import com.halo.eventer.domain.map.Map;
-import com.halo.eventer.domain.map.repository.MapRepository;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -18,8 +14,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.LocalDate;
-import java.util.List;
+import com.halo.eventer.domain.duration.Duration;
+import com.halo.eventer.domain.festival.Festival;
+import com.halo.eventer.domain.festival.dto.FestivalCreateDto;
+import com.halo.eventer.domain.festival.repository.FestivalRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -43,38 +41,39 @@ public class DurationRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        festival = Festival.from(new FestivalCreateDto("이름","주소"));
+        festival = Festival.from(new FestivalCreateDto("이름", "주소"));
         festival = festivalRepository.save(festival);
-        duration = new Duration(LocalDate.of(2025, 3, 3),3,festival);
+        duration = new Duration(LocalDate.of(2025, 3, 3), 3, festival);
         duration = durationRepository.save(duration);
     }
 
     @Test
-    void duration_저장시_unique_제약조건으로_중복_방지(){
+    void duration_저장시_unique_제약조건으로_중복_방지() {
         // given
-        Duration duplicateDuration =  new Duration(LocalDate.of(2025, 3, 3),3,festival);
+        Duration duplicateDuration = new Duration(LocalDate.of(2025, 3, 3), 3, festival);
 
         // when & then
         assertThatThrownBy(() -> {
-            durationRepository.save(duplicateDuration);
-        }).isInstanceOf(DataIntegrityViolationException.class);
+                    durationRepository.save(duplicateDuration);
+                })
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
-    void 축제id로_duration_전체조회(){
-        //when
+    void 축제id로_duration_전체조회() {
+        // when
         List<Duration> durations = durationRepository.findAllByFestivalId(festival.getId());
 
-        //then
+        // then
         assertThat(durations.size()).isEqualTo(1);
     }
 
     @Test
-    void durationId_리스트로_duration_전체조회(){
-        //when
+    void durationId_리스트로_duration_전체조회() {
+        // when
         List<Duration> durations = durationRepository.findAllByIdIn(List.of(duration.getId()));
 
-        //then
+        // then
         assertThat(durations.size()).isEqualTo(1);
     }
 }

@@ -1,6 +1,7 @@
 package com.halo.eventer.domain.inquiry.dto;
 
 import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

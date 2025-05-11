@@ -11,9 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(indexes = {
-        @Index(name = "idx_stamp_id", columnList = "stamp_id")
-})
+@Table(indexes = {@Index(name = "idx_stamp_id", columnList = "stamp_id")})
 public class Mission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,8 +44,7 @@ public class Mission {
             String time,
             String clearedThumbnail,
             String notClearedThumbnail,
-            Stamp stamp
-    ) {
+            Stamp stamp) {
         this.boothId = boothId;
         this.title = title;
         this.content = content;
@@ -68,7 +65,7 @@ public class Mission {
         this.notClearedThumbnail = request.getNotClearedThumbnail();
     }
 
-    public void addStamp(Stamp stamp){
+    public void addStamp(Stamp stamp) {
         this.stamp = stamp;
         stamp.getMissions().add(this);
     }

@@ -1,9 +1,9 @@
 package com.halo.eventer.domain.map;
 
+import javax.persistence.*;
 
 import com.halo.eventer.domain.map.dto.menu.MenuCreateDto;
-import com.halo.eventer.domain.map.dto.menu.MenuResDto;
-import javax.persistence.*;
+import com.halo.eventer.domain.map.dto.menu.MenuUpdateDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -35,14 +35,10 @@ public class Menu {
         this.image = menuCreateDto.getImage();
     }
 
-    public void setMenu(MenuResDto menuCreateDto) {
-        this.name = menuCreateDto.getName();
-        this.price = menuCreateDto.getPrice();
-        this.summary = menuCreateDto.getSummary();
-        this.image = menuCreateDto.getImage();
-    }
-
-    public void setMap(Map map) {
-        this.map = map;
+    public void updateMenu(MenuUpdateDto menuUpdateDto) {
+        this.name = menuUpdateDto.getName();
+        this.price = menuUpdateDto.getPrice();
+        this.summary = menuUpdateDto.getSummary();
+        this.image = menuUpdateDto.getImage();
     }
 }

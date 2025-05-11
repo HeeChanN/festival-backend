@@ -6,5 +6,5 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ManagerCreateReqDto {
-  private String phoneNo;
+    private String phoneNo;
 }

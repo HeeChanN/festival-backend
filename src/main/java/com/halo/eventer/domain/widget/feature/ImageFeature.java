@@ -1,10 +1,10 @@
 package com.halo.eventer.domain.widget.feature;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Embeddable
 @NoArgsConstructor

@@ -1,6 +1,7 @@
 package com.halo.eventer.domain.stamp.dto.stamp;
 
 import java.util.List;
+
 import lombok.Getter;
 
 @Getter

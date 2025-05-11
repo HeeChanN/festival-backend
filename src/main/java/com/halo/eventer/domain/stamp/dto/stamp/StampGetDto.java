@@ -1,11 +1,10 @@
 package com.halo.eventer.domain.stamp.dto.stamp;
 
-import com.halo.eventer.domain.stamp.Stamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.halo.eventer.domain.stamp.Stamp;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,16 +17,10 @@ public class StampGetDto {
     private Integer stampFinishCnt;
 
     public static List<StampGetDto> fromEntities(List<Stamp> stampList) {
-        return stampList.stream()
-                .map(StampGetDto::from)
-                .collect(Collectors.toList());
+        return stampList.stream().map(StampGetDto::from).collect(Collectors.toList());
     }
 
     public static StampGetDto from(Stamp stamp) {
-        return new StampGetDto(
-                stamp.getId(),
-                stamp.isStampOn(),
-                stamp.getStampFinishCnt()
-        );
+        return new StampGetDto(stamp.getId(), stamp.isStampOn(), stamp.getStampFinishCnt());
     }
 }

@@ -6,11 +6,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ManagerResDto {
-  private Long id;
-  private String phoneNo;
+    private Long id;
+    private String phoneNo;
 
-  public ManagerResDto(Long id, String phoneNo) {
-    this.id = id;
-    this.phoneNo = phoneNo;
-  }
+    public ManagerResDto(Long id, String phoneNo) {
+        this.id = id;
+        this.phoneNo = phoneNo;
+    }
 }

@@ -1,10 +1,9 @@
 package com.halo.eventer.domain.inquiry.dto;
 
-
-import com.halo.eventer.domain.inquiry.Inquiry;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.halo.eventer.domain.inquiry.Inquiry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

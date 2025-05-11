@@ -1,14 +1,14 @@
 package com.halo.eventer.domain.duration.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
 
 import com.halo.eventer.domain.duration.dto.DurationCreateDto;
 import com.halo.eventer.domain.duration.dto.DurationResDto;
 import com.halo.eventer.domain.duration.service.DurationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,8 +18,8 @@ public class DurationController {
     private final DurationService durationService;
 
     @PostMapping()
-    public void createDurations(@RequestParam("festivalId") Long festivalId,
-                                @RequestBody List<DurationCreateDto> durationCreateDtos) {
+    public void createDurations(
+            @RequestParam("festivalId") Long festivalId, @RequestBody List<DurationCreateDto> durationCreateDtos) {
         durationService.createDurations(festivalId, durationCreateDtos);
     }
 

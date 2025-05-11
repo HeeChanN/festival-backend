@@ -1,9 +1,10 @@
 package com.halo.eventer.domain.widget.entity;
 
+import javax.persistence.*;
+
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.widget.BaseWidget;
 import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetCreateDto;
-import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetCreateDto;
 import com.halo.eventer.domain.widget.feature.DescriptionFeature;
 import com.halo.eventer.domain.widget.feature.DisplayOrderFeature;
 import com.halo.eventer.domain.widget.feature.ImageFeature;
@@ -12,13 +13,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-
 @Entity
 @DiscriminatorValue("SQUARE")
 @NoArgsConstructor
 @Getter
-public class SquareWidget extends BaseWidget implements DisplayOrderUpdatable{
+public class SquareWidget extends BaseWidget implements DisplayOrderUpdatable {
 
     @Embedded
     @AttributeOverride(name = "image", column = @Column(name = "image"))
@@ -33,15 +32,15 @@ public class SquareWidget extends BaseWidget implements DisplayOrderUpdatable{
     private DisplayOrderFeature displayOrderFeature;
 
     @Builder
-    private SquareWidget(Festival festival, String name, String url, String image,
-                         String description,Integer displayOrder) {
+    private SquareWidget(
+            Festival festival, String name, String url, String image, String description, Integer displayOrder) {
         super(festival, name, url);
         this.imageFeature = ImageFeature.of(image);
         this.descriptionFeature = DescriptionFeature.of(description);
         this.displayOrderFeature = DisplayOrderFeature.of(displayOrder);
     }
 
-    public static SquareWidget from(Festival festival, SquareWidgetCreateDto squareWidgetCreateDto){
+    public static SquareWidget from(Festival festival, SquareWidgetCreateDto squareWidgetCreateDto) {
         return SquareWidget.builder()
                 .festival(festival)
                 .name(squareWidgetCreateDto.getName())

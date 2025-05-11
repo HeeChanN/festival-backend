@@ -1,9 +1,8 @@
 package com.halo.eventer.domain.inquiry.dto;
 
-
-import com.halo.eventer.domain.inquiry.Inquiry;
 import java.time.LocalDateTime;
 
+import com.halo.eventer.domain.inquiry.Inquiry;
 import com.halo.eventer.domain.inquiry.InquiryConstants;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +36,7 @@ public class InquiryItemDto {
     }
 
     public void changeTitleToSecretValue() {
-        if(this.isSecret){
+        if (this.isSecret) {
             title = InquiryConstants.PRIVATE_INQUIRY_TITLE;
         }
     }

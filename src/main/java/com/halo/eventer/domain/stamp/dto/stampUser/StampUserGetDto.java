@@ -1,22 +1,28 @@
 package com.halo.eventer.domain.stamp.dto.stampUser;
 
+import java.util.List;
+
 import com.halo.eventer.domain.stamp.StampUser;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class StampUserGetDto {
-  private String uuid;
 
-  private boolean finished;
+    private String uuid;
+    private boolean finished;
+    private int participantCount;
+    private List<UserMissionInfoGetDto> userMissionInfoGetDtos;
 
-  private int participantCount;
-
-  private UserMissionInfoGetListDto userMissionInfoGetListDto;
-
-  public StampUserGetDto(StampUser stampUser, UserMissionInfoGetListDto userMissionInfoGetListDto) {
-    this.uuid = stampUser.getUuid();
-    this.finished = stampUser.isFinished();
-    this.participantCount = stampUser.getParticipantCount();
-    this.userMissionInfoGetListDto = userMissionInfoGetListDto;
-  }
+    public static StampUserGetDto from(StampUser stampUser, List<UserMissionInfoGetDto> userMissionInfoGetDtos) {
+        return StampUserGetDto.builder()
+                .uuid(stampUser.getUuid())
+                .participantCount(stampUser.getParticipantCount())
+                .finished(stampUser.isFinished())
+                .userMissionInfoGetDtos(userMissionInfoGetDtos)
+                .build();
+    }
 }

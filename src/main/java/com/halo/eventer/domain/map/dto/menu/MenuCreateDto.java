@@ -6,10 +6,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MenuCreateDto {
-  private String name;
-
-  private Integer price;
-
-  private String summary;
-  private String image;
+    private String name;
+    private Integer price;
+    private String summary;
+    private String image;
 }

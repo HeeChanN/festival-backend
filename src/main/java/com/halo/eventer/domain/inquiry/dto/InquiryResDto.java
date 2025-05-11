@@ -1,8 +1,8 @@
 package com.halo.eventer.domain.inquiry.dto;
 
+import java.time.LocalDateTime;
 
 import com.halo.eventer.domain.inquiry.Inquiry;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

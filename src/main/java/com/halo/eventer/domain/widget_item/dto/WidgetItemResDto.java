@@ -8,25 +8,25 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class WidgetItemResDto {
-  private Long widgetItemId;
-  private String name;
-  private String description;
-  private String icon;
+    private Long widgetItemId;
+    private String name;
+    private String description;
+    private String icon;
 
-  @Builder
-  private WidgetItemResDto(Long widgetItemId, String name, String description, String icon) {
-    this.widgetItemId = widgetItemId;
-    this.name = name;
-    this.description = description;
-    this.icon = icon;
-  }
+    @Builder
+    private WidgetItemResDto(Long widgetItemId, String name, String description, String icon) {
+        this.widgetItemId = widgetItemId;
+        this.name = name;
+        this.description = description;
+        this.icon = icon;
+    }
 
-  public static WidgetItemResDto from(WidgetItem widgetItem) {
-    return WidgetItemResDto.builder()
-            .widgetItemId(widgetItem.getId())
-            .name(widgetItem.getName())
-            .description(widgetItem.getDescription())
-            .icon(widgetItem.getIcon())
-            .build();
-  }
+    public static WidgetItemResDto from(WidgetItem widgetItem) {
+        return WidgetItemResDto.builder()
+                .widgetItemId(widgetItem.getId())
+                .name(widgetItem.getName())
+                .description(widgetItem.getDescription())
+                .icon(widgetItem.getIcon())
+                .build();
+    }
 }

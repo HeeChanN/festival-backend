@@ -1,11 +1,11 @@
 package com.halo.eventer.domain.map;
 
-import com.halo.eventer.domain.festival.Festival;
-import com.halo.eventer.domain.map.dto.mapcategory.MapCategoryImageDto;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 
+import com.halo.eventer.domain.festival.Festival;
+import com.halo.eventer.domain.map.dto.mapcategory.MapCategoryImageDto;
 import com.halo.eventer.domain.map.enumtype.MapCategoryType;
 import com.halo.eventer.domain.widget.entity.DisplayOrderUpdatable;
 import com.halo.eventer.global.constants.DisplayOrderConstants;
@@ -38,7 +38,7 @@ public class MapCategory implements DisplayOrderUpdatable {
     @JoinColumn(name = "festival_id")
     private Festival festival;
 
-    @OneToMany(mappedBy = "mapCategory", fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "mapCategory", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Map> maps = new ArrayList<>();
 
     private MapCategory(Festival festival, String categoryName) {
@@ -65,7 +65,7 @@ public class MapCategory implements DisplayOrderUpdatable {
     }
 
     public void assignFestival(Festival festival) {
-        this.festival=festival;
+        this.festival = festival;
     }
 
     public void updateDisplayOrder(Integer displayOrder) {
