@@ -217,6 +217,11 @@ Nat 인스턴스 도입 : $52 -> $4.68 (t3.nano 기준)
 
 ![image](https://github.com/user-attachments/assets/a271b95b-1832-4926-bcf1-fbca8c50a23e)
 
+<br>
+
+### CI / CD 파이프라인
+
+![image](https://github.com/user-attachments/assets/9f7da8f6-daee-44f9-b854-ebc05df12cf9)
 
 
 <br>
