@@ -1,0 +1,7 @@
+version: 0.0
+os: linux
+
+hooks:
+  ValidateService:
+    - location: scripts/validate.sh
+      timeout: 30

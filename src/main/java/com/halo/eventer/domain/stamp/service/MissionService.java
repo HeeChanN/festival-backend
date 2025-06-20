@@ -15,14 +15,12 @@ import lombok.RequiredArgsConstructor;
 public class MissionService {
     private final MissionRepository missionRepository;
 
-    /** 미션 단일 조회 */
+    @Transactional(readOnly = true)
     public MissionDetailGetDto getMission(Long missionId) {
-        Mission mission =
-                missionRepository.findById(missionId).orElseThrow(() -> new MissionNotFoundException(missionId));
+        Mission mission = loadMissionOrThrow(missionId);
         return MissionDetailGetDto.from(mission);
     }
 
-    /** 미션 단일 수정 */
     @Transactional
     public void updateMission(Long missionId, MissionUpdateDto missionUpdateDto) {
         Mission mission = loadMissionOrThrow(missionId);

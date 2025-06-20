@@ -3,7 +3,6 @@ package com.halo.eventer.domain.stamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.persistence.*;
 
 import com.halo.eventer.domain.stamp.exception.UserMissionNotFoundException;
@@ -33,9 +32,12 @@ public class StampUser {
     @Column(nullable = false)
     private String name;
 
-    private boolean finished = false;
+    private boolean isFinished = false;
 
     private int participantCount;
+
+    @Column(nullable = true)
+    private String schoolNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stamp_id")
@@ -44,6 +46,7 @@ public class StampUser {
     @OneToMany(mappedBy = "stampUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserMission> userMissions = new ArrayList<>();
 
+    // TODO : Custom 엔티티를 없애고 schoolNo라는 필드를 StampUser에 정의하고 null을 하용하는 방식의 설계 고려 가능
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     private Custom custom;
 
@@ -52,25 +55,33 @@ public class StampUser {
         this.uuid = UUID.randomUUID().toString();
         this.phone = encryptedPhone;
         this.name = encryptedName;
-        this.finished = false;
+        this.isFinished = false;
         this.participantCount = participantCount;
     }
 
-    public void finished() {
-        this.finished = true;
+    public StampUser(Stamp stamp, String encryptedPhone, String encryptedName, int participantCount, String schoolNo) {
+        this.stamp = stamp;
+        this.uuid = UUID.randomUUID().toString();
+        this.phone = encryptedPhone;
+        this.name = encryptedName;
+        this.isFinished = false;
+        this.participantCount = participantCount;
+        this.schoolNo = schoolNo;
+    }
+
+    public void markAsFinished() {
+        this.isFinished = true;
     }
 
     public void setCustom(Custom custom) {
         this.custom = custom;
     }
 
-    public void assignMissionsFrom(Stamp stamp) {
-        List<UserMission> missions =
-                stamp.getMissions().stream().map(m -> UserMission.from(m, this)).collect(Collectors.toList());
-        this.userMissions = missions;
+    public void assignUserMissions(List<UserMission> userMissions) {
+        this.userMissions = userMissions;
     }
 
-    public boolean isAllMissionsCompleted() {
+    public boolean isMissionsAllCompleted() {
         return userMissions.stream().allMatch(UserMission::isComplete);
     }
 
@@ -79,11 +90,11 @@ public class StampUser {
                 .filter(m -> m.getId().equals(missionId))
                 .findFirst()
                 .orElseThrow(() -> new UserMissionNotFoundException(missionId))
-                .updateComplete(true);
+                .markAsComplete();
     }
 
     public boolean canFinishTour() {
         long completed = userMissions.stream().filter(UserMission::isComplete).count();
-        return completed >= stamp.getStampFinishCnt();
+        return completed >= stamp.getFinishCount();
     }
 }

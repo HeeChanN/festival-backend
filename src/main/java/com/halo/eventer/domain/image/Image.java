@@ -39,8 +39,4 @@ public class Image {
     public static Image ofWidgetItem(String imageUrl, WidgetItem widgetItem) {
         return new Image(imageUrl, null, widgetItem);
     }
-
-    public void setImage(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 }

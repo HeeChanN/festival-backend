@@ -1,0 +1,74 @@
+name: Build And Deploy
+
+on:
+  push:
+    branches: ["develop"]
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  JDK_VERSION: 11
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy with AWS CodeDeploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Create application.yml
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.APP_DEVELOP_YML }}" > src/main/resources/application.yml
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JDK_VERSION }}
+          distribution: temurin
+
+      - name: Build (Gradle)
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build
+          ls -alh build/libs
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Upload jar to S3
+        run: |
+          aws s3 cp \
+            build/libs/eventer-0.0.1-SNAPSHOT.jar \
+            s3://${{ secrets.BUCKET_NAME }}/backend/develop/eventer-0.0.1-SNAPSHOT.jar
+
+      - name: Package for CodeDeploy
+        run: |
+          mkdir -p deploy/scripts
+          cp appspec.yml             deploy/
+          cp scripts/validate.sh      deploy/scripts/
+          cd deploy && zip -r ../deploy.zip .
+
+
+      - name: Upload zip to S3
+        run: aws s3 cp deploy.zip s3://${{ secrets.BUCKET_NAME }}/deploy.zip
+
+      - name: Create Blue/Green deployment
+        id: cd
+        run: |
+          aws deploy create-deployment \
+            --application-name       ${{ secrets.CODEDEPLOY_APP }} \
+            --deployment-group-name  ${{ secrets.CODEDEPLOY_DG }} \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --s3-location bucket=${{ secrets.BUCKET_NAME }},key=deploy.zip,bundleType=zip \
+            --file-exists-behavior OVERWRITE \
+            --auto-rollback-configuration enabled=true,events=DEPLOYMENT_FAILURE > result.json
+          cat result.json

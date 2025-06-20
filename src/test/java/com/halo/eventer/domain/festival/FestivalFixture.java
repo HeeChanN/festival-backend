@@ -8,7 +8,9 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 public class FestivalFixture {
 
     public static Festival 축제_엔티티() {
-        return Festival.from(축제_생성용_DTO());
+        Festival festival = Festival.from(축제_생성용_DTO());
+        setField(festival, "id", 1L);
+        return festival;
     }
 
     public static FestivalCreateDto 축제_생성용_DTO() {

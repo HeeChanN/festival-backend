@@ -1,9 +1,10 @@
 package com.halo.eventer.domain.lost_item;
 
+import java.time.LocalDate;
 import javax.persistence.*;
 
 import com.halo.eventer.domain.festival.Festival;
-import com.halo.eventer.domain.lost_item.dto.LostItemDto;
+import com.halo.eventer.domain.lost_item.dto.LostItemReqDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,27 +17,38 @@ public class LostItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
+
+    @Column(name = "description", nullable = true)
+    private String description;
+
+    @Column(name = "thumbnail", nullable = false, length = 1000)
     private String thumbnail;
-    private String findDate;
-    private String type;
+
+    @Column(name = "find_date", nullable = false)
+    private LocalDate findDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "festival_id")
     private Festival festival;
 
-    public LostItem(LostItemDto lostDto, Festival festival) {
-        this.name = lostDto.getName();
-        this.thumbnail = lostDto.getThumbnail();
-        this.findDate = lostDto.getFindDate();
-        this.type = lostDto.getType();
+    private LostItem(LostItemReqDto lostItemReqDto, Festival festival) {
+        this.name = lostItemReqDto.getName();
+        this.thumbnail = lostItemReqDto.getThumbnail();
+        this.findDate = lostItemReqDto.getFindDate();
+        this.description = lostItemReqDto.getDescription();
         this.festival = festival;
     }
 
-    public void updateItem(LostItemDto lostDto) {
-        this.name = lostDto.getName();
-        this.thumbnail = lostDto.getThumbnail();
-        this.findDate = lostDto.getFindDate();
-        this.type = lostDto.getType();
+    public static LostItem of(LostItemReqDto lostDto, Festival festival) {
+        return new LostItem(lostDto, festival);
+    }
+
+    public void update(LostItemReqDto lostItemReqDto) {
+        this.name = lostItemReqDto.getName();
+        this.thumbnail = lostItemReqDto.getThumbnail();
+        this.findDate = lostItemReqDto.getFindDate();
+        this.description = lostItemReqDto.getDescription();
     }
 }

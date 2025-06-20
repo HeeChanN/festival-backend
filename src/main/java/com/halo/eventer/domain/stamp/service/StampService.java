@@ -12,7 +12,6 @@ import com.halo.eventer.domain.festival.repository.FestivalRepository;
 import com.halo.eventer.domain.stamp.Mission;
 import com.halo.eventer.domain.stamp.Stamp;
 import com.halo.eventer.domain.stamp.dto.stamp.*;
-import com.halo.eventer.domain.stamp.exception.StampClosedException;
 import com.halo.eventer.domain.stamp.exception.StampNotFoundException;
 import com.halo.eventer.domain.stamp.repository.MissionRepository;
 import com.halo.eventer.domain.stamp.repository.StampRepository;
@@ -46,7 +45,7 @@ public class StampService {
     @Transactional
     public void updateStampOn(Long stampId) {
         Stamp stamp = loadStampOrThrow(stampId);
-        stamp.switchStampOn();
+        stamp.switchActivation();
     }
 
     @Transactional
@@ -58,7 +57,7 @@ public class StampService {
     @Transactional
     public void createMission(Long stampId, MissionSetListDto dto) {
         Stamp stamp = loadStampOrThrow(stampId);
-        validateStampIsOpen(stamp);
+        stamp.validateActivation();
         List<Mission> missions = createMissionsFromDto(dto, stamp);
         missionRepository.saveAll(missions);
     }
@@ -83,9 +82,9 @@ public class StampService {
     }
 
     @Transactional
-    public void setFinishCnt(Long stampId, Integer cnt) {
+    public void setFinishCnt(Long stampId, int cnt) {
         Stamp stamp = loadStampOrThrow(stampId);
-        stamp.setStampFinishCnt(cnt);
+        stamp.defineFinishCnt(cnt);
     }
 
     private Festival loadFestivalOrThrow(Long id) {
@@ -94,12 +93,6 @@ public class StampService {
 
     private Stamp loadStampOrThrow(Long stampId) {
         return stampRepository.findById(stampId).orElseThrow(() -> new StampNotFoundException(stampId));
-    }
-
-    private void validateStampIsOpen(Stamp stamp) {
-        if (!stamp.isStampOn()) {
-            throw new StampClosedException(stamp.getId());
-        }
     }
 
     private List<Mission> createMissionsFromDto(MissionSetListDto dto, Stamp stamp) {

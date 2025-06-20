@@ -121,14 +121,14 @@ public class StampServiceTest {
     @Test
     void 스탬프_상태_변경_성공() {
         // given
-        stamp.switchStampOn();
+        stamp.switchActivation();
         given(stampRepository.findById(anyLong())).willReturn(Optional.ofNullable(stamp));
 
         // when
         stampService.updateStampOn(1L);
 
         // then
-        assertThat(stamp.isStampOn()).isTrue();
+        assertThat(stamp.isActive()).isTrue();
     }
 
     @Test
@@ -167,7 +167,7 @@ public class StampServiceTest {
     @Test
     void 미션_생성_실패() {
         // given
-        stamp.switchStampOn();
+        stamp.switchActivation();
         given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp));
 
         // when & then
@@ -227,7 +227,7 @@ public class StampServiceTest {
         stampService.setFinishCnt(1L, finishCnt);
 
         // then
-        assertThat(stamp.getStampFinishCnt()).isEqualTo(finishCnt);
+        assertThat(stamp.getFinishCount()).isEqualTo(finishCnt);
     }
 
     @Test

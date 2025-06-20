@@ -31,6 +31,12 @@ public class StampUserController {
         return stampUserService.signup(stampId, signupWithCustomDto);
     }
 
+    @SignupApi
+    @PostMapping("/signup")
+    public StampUserGetDto signup(@RequestParam("stampId") Long stampId, @RequestBody SignupDto signupDto) {
+        return stampUserService.signupV2(stampId, signupDto);
+    }
+
     /** 로그인 */
     @LoginApi
     @PostMapping("/login")

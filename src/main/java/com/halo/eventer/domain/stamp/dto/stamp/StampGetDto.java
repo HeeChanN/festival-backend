@@ -21,6 +21,6 @@ public class StampGetDto {
     }
 
     public static StampGetDto from(Stamp stamp) {
-        return new StampGetDto(stamp.getId(), stamp.isStampOn(), stamp.getStampFinishCnt());
+        return new StampGetDto(stamp.getId(), stamp.isActive(), stamp.getFinishCount());
     }
 }

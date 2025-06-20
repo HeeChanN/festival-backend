@@ -17,7 +17,7 @@ public class UserMission {
     private Long id;
 
     @Column(nullable = false)
-    private boolean isComplete;
+    private boolean isComplete = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stamp_user_id")
@@ -27,20 +27,20 @@ public class UserMission {
     @JoinColumn(name = "mission_id")
     private Mission mission;
 
-    public void updateComplete(boolean state) {
-        this.isComplete = state;
+    public void markAsComplete() {
+        this.isComplete = true;
     }
 
-    public void setStampUser(StampUser stampUser) {
+    private void setStampUser(StampUser stampUser) {
         this.stampUser = stampUser;
         stampUser.getUserMissions().add(this);
     }
 
-    public void setMission(Mission mission) {
+    private void setMission(Mission mission) {
         this.mission = mission;
     }
 
-    public static UserMission from(Mission mission, StampUser stampUser) {
+    public static UserMission create(Mission mission, StampUser stampUser) {
         UserMission userMission = new UserMission();
         userMission.setStampUser(stampUser);
         userMission.setMission(mission);

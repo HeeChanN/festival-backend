@@ -17,12 +17,12 @@ public class StampUserGetDto {
     private int participantCount;
     private List<UserMissionInfoGetDto> userMissionInfoGetDtos;
 
-    public static StampUserGetDto from(StampUser stampUser, List<UserMissionInfoGetDto> userMissionInfoGetDtos) {
+    public static StampUserGetDto from(StampUser stampUser) {
         return StampUserGetDto.builder()
                 .uuid(stampUser.getUuid())
                 .participantCount(stampUser.getParticipantCount())
                 .finished(stampUser.isFinished())
-                .userMissionInfoGetDtos(userMissionInfoGetDtos)
+                .userMissionInfoGetDtos(UserMissionInfoGetDto.fromEntities(stampUser.getUserMissions()))
                 .build();
     }
 }

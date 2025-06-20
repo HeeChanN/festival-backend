@@ -1,8 +1,10 @@
 package com.halo.eventer.domain.stamp.dto.stamp;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class MissionSetDto {
     private Long boothId;
     private String title;
@@ -11,8 +13,6 @@ public class MissionSetDto {
     private String time;
     private String clearedThumbnail;
     private String notClearedThumbnail;
-
-    public MissionSetDto() {}
 
     public MissionSetDto(
             Long boothId,

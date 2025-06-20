@@ -80,6 +80,12 @@ public class MapFixture {
         return MapResDto.from(map);
     }
 
+    public static Map 기본_지도_엔티티() {
+        MapCreateDto mapCreateDto = 지도_생성_DTO();
+        MapCategory mapCategory = MapCategoryFixture.지도카테고리_엔티티();
+        return Map.of(mapCreateDto, mapCategory);
+    }
+
     // TODO: Duration 관련 Fixture 생성후 적용하기
     public static Map 지도_엔티티(MapCreateDto mapCreateDto, MapCategory mapCategory, long count) {
         Map map = Map.of(mapCreateDto, mapCategory);

@@ -16,6 +16,11 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
+cloud:
+  aws:
+    s3:
+      bucket: test
+
 #logging:
 #  level:
 #    root: info

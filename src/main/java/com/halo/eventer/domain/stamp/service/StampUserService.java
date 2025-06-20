@@ -1,7 +1,5 @@
 package com.halo.eventer.domain.stamp.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,27 +24,43 @@ public class StampUserService {
     @Transactional
     public StampUserGetDto signup(Long stampId, SignupDto signupDto) {
         Stamp stamp = loadStampOrThrow(stampId);
-        stamp.validateStampOn();
-        StampUser stampUser = createStampUser(stamp, signupDto);
-        stampUser.assignMissionsFrom(stamp);
+        stamp.validateActivation();
+        StampUser stampUser = createStampUserFromSignUpDto(stamp, signupDto);
+        stamp.assignAllMissionsTo(stampUser);
         stampUserRepository.save(stampUser);
-        return toStampUserGetDto(stampUser);
+        return StampUserGetDto.from(stampUser);
+    }
+
+    @Transactional
+    public StampUserGetDto signupV2(Long stampId, SignupDto signupDto) {
+        Stamp stamp = loadStampOrThrow(stampId);
+        stamp.validateActivation();
+        StampUser stampUser = createStampUserFromSignUpDtoV2(stamp, signupDto);
+        stamp.assignAllMissionsTo(stampUser);
+        stampUserRepository.save(stampUser);
+        return StampUserGetDto.from(stampUser);
+    }
+
+    private StampUser createStampUserFromSignUpDtoV2(Stamp stamp, SignupDto signupDto) {
+        String encryptedPhone = encryptService.encryptInfo(signupDto.getPhone());
+        String encryptedName = encryptService.encryptInfo(signupDto.getName());
+
+        validateExistStamp(stamp.getId(), encryptedPhone);
+
+        return new StampUser(
+                stamp, encryptedPhone, encryptedName, signupDto.getParticipantCount(), signupDto.getSchoolNo());
     }
 
     @Transactional
     public StampUserGetDto login(Long stampId, LoginDto loginDto) {
         StampUser stampUser = loadStampUserWithStampIdAndLoginInfo(stampId, loginDto);
-        List<UserMissionInfoGetDto> userMissionInfoGetDtos =
-                UserMissionInfoGetDto.fromEntities(stampUser.getUserMissions());
-        return StampUserGetDto.from(stampUser, userMissionInfoGetDtos);
+        return StampUserGetDto.from(stampUser);
     }
 
     @Transactional(readOnly = true)
     public UserMissionInfoWithFinishedGetListDto getUserMissionWithFinished(String uuid) {
         StampUser stampUser = loadStampUserFromUuid(uuid);
-        List<UserMissionInfoGetDto> userMissionInfoGetDtos =
-                UserMissionInfoGetDto.fromEntities(stampUser.getUserMissions());
-        return new UserMissionInfoWithFinishedGetListDto(stampUser.isFinished(), userMissionInfoGetDtos);
+        return UserMissionInfoWithFinishedGetListDto.from(stampUser);
     }
 
     @Transactional
@@ -58,8 +72,8 @@ public class StampUserService {
     @Transactional
     public String checkFinish(String uuid) {
         StampUser stampUser = loadStampUserFromUuid(uuid);
-        if (stampUser.isAllMissionsCompleted()) {
-            stampUser.finished();
+        if (stampUser.isMissionsAllCompleted()) {
+            stampUser.markAsFinished();
             return "스탬프 투어 완료";
         }
         return "미완료";
@@ -71,7 +85,7 @@ public class StampUserService {
         if (!stampUser.canFinishTour()) {
             return "미완료";
         }
-        stampUser.finished();
+        stampUser.markAsFinished();
         return "스탬프 투어 완료";
     }
 
@@ -104,7 +118,7 @@ public class StampUserService {
         }
     }
 
-    private StampUser createStampUser(Stamp stamp, SignupDto signupDto) {
+    private StampUser createStampUserFromSignUpDto(Stamp stamp, SignupDto signupDto) {
         String encryptedPhone = encryptService.encryptInfo(signupDto.getPhone());
         String encryptedName = encryptService.encryptInfo(signupDto.getName());
 
@@ -120,10 +134,5 @@ public class StampUserService {
         }
 
         return stampUser;
-    }
-
-    private StampUserGetDto toStampUserGetDto(StampUser user) {
-        List<UserMissionInfoGetDto> userMissionInfoGetDtos = UserMissionInfoGetDto.fromEntities(user.getUserMissions());
-        return StampUserGetDto.from(user, userMissionInfoGetDtos);
     }
 }

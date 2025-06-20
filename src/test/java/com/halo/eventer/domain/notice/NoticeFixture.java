@@ -2,6 +2,8 @@ package com.halo.eventer.domain.notice;
 
 import java.util.List;
 
+import com.halo.eventer.domain.festival.Festival;
+import com.halo.eventer.domain.festival.FestivalFixture;
 import com.halo.eventer.domain.notice.dto.NoticeCreateReqDto;
 import com.halo.eventer.domain.notice.dto.NoticeUpdateReqDto;
 
@@ -32,5 +34,10 @@ public class NoticeFixture {
         setField(noticeUpdateReqDto, "type", ArticleType.EVENT);
         setField(noticeUpdateReqDto, "images", List.of("image4", "image5", "image6"));
         return noticeUpdateReqDto;
+    }
+
+    public static Notice 공지사항_엔티티() {
+        Festival festival = FestivalFixture.축제_엔티티();
+        return Notice.from(festival, 공지사항_생성_DTO());
     }
 }

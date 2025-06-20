@@ -2,6 +2,7 @@ package com.halo.eventer.domain.stamp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.*;
 
 import com.halo.eventer.domain.festival.Festival;
@@ -17,10 +18,10 @@ public class Stamp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private boolean stampOn = true;
+    private boolean isActive = true;
 
     @Column(nullable = false)
-    private Integer stampFinishCnt = 0;
+    private int finishCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "festival_id")
@@ -37,16 +38,22 @@ public class Stamp {
         festival.getStamps().add(this);
     }
 
-    public void switchStampOn() {
-        stampOn = !stampOn;
+    public void assignAllMissionsTo(StampUser stampUser) {
+        List<UserMission> userMissions =
+                missions.stream().map(m -> UserMission.create(m, stampUser)).collect(Collectors.toList());
+        stampUser.assignUserMissions(userMissions);
     }
 
-    public void setStampFinishCnt(Integer cnt) {
-        this.stampFinishCnt = cnt;
+    public void switchActivation() {
+        isActive = !isActive;
     }
 
-    public void validateStampOn() {
-        if (!this.isStampOn()) {
+    public void defineFinishCnt(int cnt) {
+        this.finishCount = cnt;
+    }
+
+    public void validateActivation() {
+        if (!this.isActive()) {
             throw new StampClosedException(id);
         }
     }

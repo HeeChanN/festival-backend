@@ -6,18 +6,14 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class LostItemElementDto {
+public class LostItemSummaryDto {
     private Long id;
     private String name;
-    private String type;
-    private String thumbnail;
-    private String findDate;
+    private String description;
 
-    public LostItemElementDto(LostItem lostItem) {
+    public LostItemSummaryDto(LostItem lostItem) {
         this.id = lostItem.getId();
         this.name = lostItem.getName();
-        this.type = lostItem.getType();
-        this.thumbnail = lostItem.getThumbnail();
-        this.findDate = lostItem.getFindDate();
+        this.description = lostItem.getDescription();
     }
 }

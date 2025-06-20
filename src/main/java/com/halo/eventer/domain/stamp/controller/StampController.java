@@ -62,7 +62,7 @@ public class StampController {
 
     /** 스탬프 완료 기준 설정 */
     @PostMapping("/finishCnt")
-    public void setFinishCnt(@RequestParam("stampId") Long stampId, @RequestParam("cnt") Integer cnt) {
+    public void setFinishCnt(@RequestParam("stampId") Long stampId, @RequestParam("cnt") int cnt) {
         stampService.setFinishCnt(stampId, cnt);
     }
 }
