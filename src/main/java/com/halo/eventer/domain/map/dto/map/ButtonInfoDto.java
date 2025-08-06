@@ -26,4 +26,8 @@ public class ButtonInfoDto {
                 .image(buttonInfo.getImage())
                 .build();
     }
+
+    public static ButtonInfoDto of(String name, String url, String image) {
+        return ButtonInfoDto.builder().name(name).url(url).image(image).build();
+    }
 }

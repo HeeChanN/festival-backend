@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.duration;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.map.Map;
 import lombok.Builder;

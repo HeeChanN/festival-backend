@@ -2,7 +2,7 @@ package com.halo.eventer.domain.festival;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.duration.Duration;
 import com.halo.eventer.domain.festival.dto.*;
@@ -114,5 +114,13 @@ public class Festival {
 
     public void applyMapCategory(MapCategory mapCategory) {
         this.mapCategories.add(mapCategory);
+    }
+
+    public void applyMissingPerson(MissingPerson missingPerson) {
+        this.missingPersons.add(missingPerson);
+    }
+
+    public void applyBaseWidget(BaseWidget baseWidget) {
+        this.baseWidgets.add(baseWidget);
     }
 }

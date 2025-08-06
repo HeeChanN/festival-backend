@@ -36,8 +36,10 @@ public class FestivalService {
         return FestivalResDto.from(festival);
     }
 
-    public List<FestivalListDto> findAll() {
-        return festivalRepository.findAll().stream().map(FestivalListDto::new).collect(Collectors.toList());
+    public List<FestivalSummaryDto> findAll() {
+        return festivalRepository.findAll().stream()
+                .map(FestivalSummaryDto::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -65,8 +67,8 @@ public class FestivalService {
         festival.updateLogo(fileDto);
     }
 
-    public FestivalListDto findBySubAddress(String subAddress) {
-        return new FestivalListDto(festivalRepository
+    public FestivalSummaryDto findBySubAddress(String subAddress) {
+        return new FestivalSummaryDto(festivalRepository
                 .findBySubAddress(subAddress)
                 .orElseThrow(() -> new FestivalNotFoundException(subAddress)));
     }

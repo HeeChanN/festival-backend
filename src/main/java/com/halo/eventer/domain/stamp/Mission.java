@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.stamp;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.stamp.dto.mission.MissionUpdateDto;
 import com.halo.eventer.domain.stamp.dto.stamp.MissionSetDto;
@@ -36,15 +36,14 @@ public class Mission {
     private Stamp stamp;
 
     @Builder
-    public Mission(
+    private Mission(
             Long boothId,
             String title,
             String content,
             String place,
             String time,
             String clearedThumbnail,
-            String notClearedThumbnail,
-            Stamp stamp) {
+            String notClearedThumbnail) {
         this.boothId = boothId;
         this.title = title;
         this.content = content;
@@ -52,17 +51,16 @@ public class Mission {
         this.time = time;
         this.clearedThumbnail = clearedThumbnail;
         this.notClearedThumbnail = notClearedThumbnail;
-        this.stamp = stamp;
     }
 
     public void updateMission(MissionUpdateDto request) {
-        this.boothId = request.getBoothId();
-        this.title = request.getTitle();
-        this.content = request.getContent();
-        this.place = request.getPlace();
-        this.time = request.getTime();
-        this.clearedThumbnail = request.getClearedThumbnail();
-        this.notClearedThumbnail = request.getNotClearedThumbnail();
+        if (request.getBoothId() != null) this.boothId = request.getBoothId();
+        if (request.getTitle() != null) this.title = request.getTitle();
+        if (request.getContent() != null) this.content = request.getContent();
+        if (request.getPlace() != null) this.place = request.getPlace();
+        if (request.getTime() != null) this.time = request.getTime();
+        if (request.getClearedThumbnail() != null) this.clearedThumbnail = request.getClearedThumbnail();
+        if (request.getNotClearedThumbnail() != null) this.notClearedThumbnail = request.getNotClearedThumbnail();
     }
 
     public void addStamp(Stamp stamp) {

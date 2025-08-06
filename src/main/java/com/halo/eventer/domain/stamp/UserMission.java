@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.stamp;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

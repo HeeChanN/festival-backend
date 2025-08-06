@@ -3,7 +3,7 @@ package com.halo.eventer.domain.stamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.stamp.exception.StampClosedException;

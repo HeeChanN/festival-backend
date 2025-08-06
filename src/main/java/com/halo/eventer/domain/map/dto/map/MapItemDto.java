@@ -30,4 +30,21 @@ public class MapItemDto {
                 .map(o -> new DurationResDto(o.getDuration()))
                 .collect(Collectors.toList());
     }
+
+    public MapItemDto(
+            Long id,
+            String name,
+            String icon,
+            String operationTime,
+            LocationInfoDto locationInfo,
+            String categoryName,
+            List<DurationResDto> durationResDto) {
+        this.id = id;
+        this.name = name;
+        this.icon = icon;
+        this.operationTime = operationTime;
+        this.locationInfo = locationInfo;
+        this.categoryName = categoryName;
+        this.durationResDto = durationResDto;
+    }
 }

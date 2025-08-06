@@ -23,12 +23,12 @@ public class TestController {
         return ResponseEntity.ok("POST success");
     }
 
-    @PostMapping("/festival")
+    @PostMapping("/test/festival")
     public String securityExceptionHandlingTest(@RequestBody TestDto testDto) {
         return testDto.getName();
     }
 
-    @GetMapping("/festival")
+    @GetMapping("/test/festival")
     public String securityGetTest() {
         return "festival";
     }

@@ -1,7 +1,7 @@
 package com.halo.eventer.domain.lost_item;
 
 import java.time.LocalDate;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.lost_item.dto.LostItemReqDto;

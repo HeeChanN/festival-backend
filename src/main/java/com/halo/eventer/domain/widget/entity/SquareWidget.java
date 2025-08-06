@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.widget.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.widget.BaseWidget;
@@ -38,6 +38,19 @@ public class SquareWidget extends BaseWidget implements DisplayOrderUpdatable {
         this.imageFeature = ImageFeature.of(image);
         this.descriptionFeature = DescriptionFeature.of(description);
         this.displayOrderFeature = DisplayOrderFeature.of(displayOrder);
+        festival.applyBaseWidget(this);
+    }
+
+    public static SquareWidget of(
+            Festival festival, String name, String url, String image, String description, Integer displayOrder) {
+        return SquareWidget.builder()
+                .festival(festival)
+                .name(name)
+                .url(url)
+                .image(image)
+                .description(description)
+                .displayOrder(displayOrder)
+                .build();
     }
 
     public static SquareWidget from(Festival festival, SquareWidgetCreateDto squareWidgetCreateDto) {

@@ -1,16 +1,17 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.7.16'
-    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'org.springframework.boot' version '3.5.3'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco'
-    id 'com.diffplug.spotless' version '7.0.3'
+    id 'com.diffplug.spotless' version '7.0.4'
+    id 'com.epages.restdocs-api-spec' version '0.19.4'
 }
 
 group = 'com.halo'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
 jacoco {
@@ -36,18 +37,21 @@ spotless {
         palantirJavaFormat()
         target 'src/**/*.java'
 
-        importOrder 'java|javax', 'org', ' com.halo.eventer', '', '\\#'
+        importOrder 'java|jakarta', 'org', ' com.halo.eventer', '', '\\#'
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
     }
 }
 
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-
 }
 
 repositories {
@@ -59,8 +63,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+    //validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     //Swagger
-    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
+
 
     //lombok
     compileOnly 'org.projectlombok:lombok'
@@ -94,6 +102,13 @@ dependencies {
 
     //prometheus-micrometer
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    //rest docs
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
+    //restdocs-api-spec
+    testImplementation("com.epages:restdocs-api-spec:0.19.4")
+    testImplementation("com.epages:restdocs-api-spec-mockmvc:0.19.4")
 }
 
 tasks.named('bootBuildImage') {
@@ -102,4 +117,55 @@ tasks.named('bootBuildImage') {
 
 tasks.named('test') {
     useJUnitPlatform()
+    outputs.dir snippetsDir
+}
+
+bootJar {
+    dependsOn 'openapi3'
+
+    from("build/api-spec/openapi3.yaml") {
+        into 'static/docs'
+    }
+    from("src/docs/index.html") {
+        into 'static/docs'
+    }
+}
+
+openapi3 {
+    server = 'https://localhost:8080'
+    title = 'Festimap API'
+    description = 'Api docs with redoc - v1'
+    version = '0.1.0'
+    format = 'yaml'
+}
+
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+
+def yamlMapper = new YAMLMapper()
+def jsonMapper = new ObjectMapper()
+
+tasks.register('fixOpenApiExamples') {
+    dependsOn tasks.openapi3
+    doLast {
+        def file = file("build/api-spec/openapi3.yaml")
+        def root = yamlMapper.readTree(file)
+
+        root.findParents('value')
+                .each { JsonNode parent ->
+                    JsonNode v = parent.get('value')
+                    if (v?.isTextual()) {
+                        String txt = v.asText().trim()
+                        if (txt.startsWith('{') || txt.startsWith('[')) {
+                            try {
+                                ((ObjectNode) parent)
+                                        .set('value', jsonMapper.readTree(txt))
+                            } catch (ignored) {}
+                        }
+                    }
+                }
+        yamlMapper.writeValue(file, root)
+    }
 }

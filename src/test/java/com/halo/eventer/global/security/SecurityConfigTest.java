@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -43,7 +43,7 @@ public class SecurityConfigTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     JwtProvider jwtProvider;
 
     private TestDto testDto;
@@ -53,7 +53,7 @@ public class SecurityConfigTest {
 
         @Test
         void CORS_거부_테스트() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.get("/festival")
+            mockMvc.perform(MockMvcRequestBuilders.get("/test/festival")
                             .header("Origin", "http://not-allowed.com")
                             .header("Access-Control-Request-Method", "GET"))
                     .andExpect(status().isForbidden())
@@ -62,7 +62,7 @@ public class SecurityConfigTest {
 
         @Test
         void CORS_허용_테스트() throws Exception {
-            mockMvc.perform(MockMvcRequestBuilders.get("/festival")
+            mockMvc.perform(MockMvcRequestBuilders.get("/test/festival")
                             .header("Origin", "http://localhost:3000")
                             .header("Access-Control-Request-Method", "GET"))
                     .andExpect(status().isOk())
@@ -83,7 +83,7 @@ public class SecurityConfigTest {
         void AuthenticationException_인증_예외처리_테스트() throws Exception {
             given(jwtProvider.resolveToken(any())).willReturn(null);
 
-            mockMvc.perform(post("/festival")
+            mockMvc.perform(post("/test/festival")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(testDto)))
                     .andExpect(status().is(401))
@@ -103,7 +103,7 @@ public class SecurityConfigTest {
                     customUserDetails, null, Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
             given(jwtProvider.getAuthentication("valid.token.here")).willReturn(auth);
 
-            mockMvc.perform(post("/festival")
+            mockMvc.perform(post("/test/festival")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(testDto)))
                     .andExpect(status().is(403))

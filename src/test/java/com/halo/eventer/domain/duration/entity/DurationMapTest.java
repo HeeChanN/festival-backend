@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class DurationMapTest {
-    private Duration duration = DurationFixture.Duration_엔티티();
+    private Duration duration = DurationFixture.축제_첫째_날();
     private Map map = MapFixture.기본_지도_엔티티();
 
     @Test

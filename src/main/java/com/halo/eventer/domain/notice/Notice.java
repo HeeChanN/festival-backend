@@ -1,7 +1,7 @@
 package com.halo.eventer.domain.notice;
 
 import java.util.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.image.Image;

@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.FestivalFixture;
@@ -37,7 +36,6 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @SuppressWarnings("NonAsciiCharacters")
-@Transactional
 public class NoticeRepositoryTest {
 
     @Autowired

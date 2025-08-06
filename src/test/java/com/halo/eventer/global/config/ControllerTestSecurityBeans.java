@@ -1,8 +1,7 @@
 package com.halo.eventer.global.config;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -15,9 +14,10 @@ import com.halo.eventer.global.security.provider.JwtProvider;
 @TestConfiguration
 public class ControllerTestSecurityBeans {
 
-    @MockBean
-    @Qualifier("customCorsConfigurationSource")
-    private CorsConfigurationSource corsConfigurationSource;
+    @Bean(name = "customCorsConfigurationSource")
+    CorsConfigurationSource corsConfigurationSource() {
+        return Mockito.mock(CorsConfigurationSource.class);
+    }
 
     @Bean
     public JwtAuthenticationFilterConfig jwtAuthenticationFilterConfig(JwtProvider jwtProvider) {

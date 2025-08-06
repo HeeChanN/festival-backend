@@ -111,7 +111,7 @@ public class FestivalServiceTest {
         given(festivalRepository.findAll()).willReturn(List.of(festival));
 
         // when
-        List<FestivalListDto> result = festivalService.findAll();
+        List<FestivalSummaryDto> result = festivalService.findAll();
 
         // then
         assertThat(result.size()).isEqualTo(1);
@@ -125,7 +125,7 @@ public class FestivalServiceTest {
         given(festivalRepository.findAll()).willReturn(Collections.emptyList());
 
         // when
-        List<FestivalListDto> result = festivalService.findAll();
+        List<FestivalSummaryDto> result = festivalService.findAll();
 
         // then
         assertThat(result).isEmpty();
@@ -206,12 +206,12 @@ public class FestivalServiceTest {
         given(festivalRepository.findBySubAddress("univ")).willReturn(Optional.of(festival));
 
         // when
-        FestivalListDto festivalListDto = festivalService.findBySubAddress("univ");
+        FestivalSummaryDto festivalSummaryDto = festivalService.findBySubAddress("univ");
 
         // then
-        assertThat(festivalListDto).isNotNull();
-        assertThat(festivalListDto.getFestivalName()).isEqualTo("축제");
-        assertThat(festivalListDto.getSubAddress()).isEqualTo("univ");
+        assertThat(festivalSummaryDto).isNotNull();
+        assertThat(festivalSummaryDto.getFestivalName()).isEqualTo("축제");
+        assertThat(festivalSummaryDto.getSubAddress()).isEqualTo("univ");
     }
 
     @Test

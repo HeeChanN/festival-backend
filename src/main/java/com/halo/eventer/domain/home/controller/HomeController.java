@@ -1,14 +1,14 @@
 package com.halo.eventer.domain.home.controller;
 
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.halo.eventer.domain.festival.dto.FestivalListDto;
+import com.halo.eventer.domain.festival.dto.FestivalSummaryDto;
 import com.halo.eventer.domain.festival.service.FestivalService;
 import com.halo.eventer.domain.home.dto.HomeDto;
 import com.halo.eventer.domain.home.service.HomeService;
@@ -22,14 +22,12 @@ public class HomeController {
     private final FestivalService festivalService;
 
     @GetMapping("/home/{festivalId}")
-    public HomeDto getHomeInfo(
-            @PathVariable Long festivalId,
-            @RequestParam("dateTime") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime dateTime) {
-        return homeService.getMainPage(festivalId, dateTime);
+    public HomeDto getHomeInfo(@Min(1) @PathVariable Long festivalId) {
+        return homeService.getMainPage(festivalId);
     }
 
-    @GetMapping("/univ")
-    public FestivalListDto getFestivalSubAddress(@RequestParam("subAddress") String name) {
+    @GetMapping("/home")
+    public FestivalSummaryDto getFestivalBySubAddress(@NotNull @RequestParam("subAddress") String name) {
         return festivalService.findBySubAddress(name);
     }
 

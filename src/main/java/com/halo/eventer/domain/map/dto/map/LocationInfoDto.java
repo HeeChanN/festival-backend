@@ -26,4 +26,12 @@ public class LocationInfoDto {
                 .longitude(locationInfo.getLongitude())
                 .build();
     }
+
+    public static LocationInfoDto of(String address, double latitude, double longitude) {
+        return LocationInfoDto.builder()
+                .address(address)
+                .latitude(latitude)
+                .longitude(longitude)
+                .build();
+    }
 }

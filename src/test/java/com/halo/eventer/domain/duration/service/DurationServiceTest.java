@@ -106,6 +106,6 @@ public class DurationServiceTest {
         // then
         assertThat(targets.size()).isEqualTo(1);
         assertThat(targets.get(0).getDate()).isEqualTo("2025-03-02");
-        assertThat(targets.get(0).getDay()).isEqualTo(3);
+        assertThat(targets.get(0).getDayNumber()).isEqualTo(3);
     }
 }

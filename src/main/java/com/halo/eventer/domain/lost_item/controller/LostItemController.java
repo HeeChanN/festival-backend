@@ -1,6 +1,8 @@
 package com.halo.eventer.domain.lost_item.controller;
 
 import java.util.List;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -11,37 +13,35 @@ import com.halo.eventer.domain.lost_item.service.LostItemService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/lostItems")
 @RequiredArgsConstructor
 public class LostItemController {
 
     private final LostItemService lostItemService;
 
-    @PostMapping()
-    public List<LostItemSummaryDto> createAndGetLostItems(
-            @RequestParam("festivalId") Long festivalId, @RequestBody LostItemReqDto lostItemReqDto) {
+    @PostMapping("/lost-items")
+    public void create(
+            @Min(1) @RequestParam("festivalId") Long festivalId, @Valid @RequestBody LostItemReqDto lostItemReqDto) {
         lostItemService.create(festivalId, lostItemReqDto);
-        return lostItemService.getLostItemsByFestivalId(festivalId);
     }
 
-    @PatchMapping("/{id}")
-    public LostItemResDto update(@PathVariable(name = "id") Long id, @RequestBody LostItemReqDto lostItemReqDto) {
+    @PutMapping("/lost-items")
+    public LostItemResDto update(
+            @Min(1) @RequestParam(name = "id") Long id, @Valid @RequestBody LostItemReqDto lostItemReqDto) {
         return lostItemService.update(id, lostItemReqDto);
     }
 
-    @DeleteMapping("/{id}")
-    public List<LostItemSummaryDto> deleteAndGetLostItems(@PathVariable(name = "id") Long id) {
-        Long festivalId = lostItemService.delete(id);
-        return lostItemService.getLostItemsByFestivalId(festivalId);
+    @DeleteMapping("/lost-items")
+    public void delete(@Min(1) @RequestParam(name = "id") Long id) {
+        lostItemService.delete(id);
     }
 
-    @GetMapping("/{id}")
-    public LostItemResDto getLostItem(@PathVariable(name = "id") Long id) {
+    @GetMapping("/lost-items/{id}")
+    public LostItemResDto getLostItem(@Min(1) @PathVariable(name = "id") Long id) {
         return lostItemService.getLostItem(id);
     }
 
-    @GetMapping()
-    public List<LostItemSummaryDto> getLostItems(@RequestParam("festivalId") Long festivalId) {
+    @GetMapping("/{festivalId}/lost-items")
+    public List<LostItemSummaryDto> getLostItems(@Min(1) @PathVariable("festivalId") Long festivalId) {
         return lostItemService.getLostItemsByFestivalId(festivalId);
     }
 }

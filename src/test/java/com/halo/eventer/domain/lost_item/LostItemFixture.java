@@ -4,11 +4,16 @@ import java.time.LocalDate;
 
 import com.halo.eventer.domain.festival.FestivalFixture;
 import com.halo.eventer.domain.lost_item.dto.LostItemReqDto;
+import com.halo.eventer.domain.lost_item.dto.LostItemResDto;
+import com.halo.eventer.domain.lost_item.dto.LostItemSummaryDto;
 
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class LostItemFixture {
+
+    public static final Long 분실물_1번_id = 1L;
+    public static final Long 분실물_2번_id = 2L;
 
     static final String 기본_설명 = "description";
     static final String 기본_이름 = "name";
@@ -37,5 +42,17 @@ public class LostItemFixture {
                 .thumbnail("updated_thumbnail")
                 .findDate(LocalDate.of(2025, 1, 2))
                 .build();
+    }
+
+    public static LostItemResDto 분실물_1번_응답_DTO() {
+        return LostItemResDto.of(분실물_1번_id, 기본_이름, 기본_설명, 기본_썸네일, 기본_날짜);
+    }
+
+    public static LostItemSummaryDto 분실물_1번_요약_DTO() {
+        return new LostItemSummaryDto(분실물_1번_id, 기본_이름, 기본_설명);
+    }
+
+    public static LostItemSummaryDto 분실물_2번_요약_DTO() {
+        return new LostItemSummaryDto(분실물_2번_id, 기본_이름, 기본_설명);
     }
 }

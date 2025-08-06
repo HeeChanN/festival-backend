@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MapCategoryImageDto {
+
     private String pin;
     private String icon;
 

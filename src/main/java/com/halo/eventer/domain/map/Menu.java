@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.map;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.map.dto.menu.MenuCreateDto;
 import com.halo.eventer.domain.map.dto.menu.MenuUpdateDto;

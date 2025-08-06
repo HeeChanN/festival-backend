@@ -1,17 +1,36 @@
 package com.halo.eventer.domain.stamp.fixture;
 
+import java.util.List;
+
 import com.halo.eventer.domain.festival.Festival;
-import com.halo.eventer.domain.festival.dto.FestivalCreateDto;
 import com.halo.eventer.domain.stamp.Stamp;
 
-import static org.springframework.test.util.ReflectionTestUtils.setField;
+import static com.halo.eventer.domain.festival.FestivalFixture.축제_엔티티;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class StampFixture {
 
-    public static Stamp 스탬프_엔티티_생성() {
-        Stamp stamp = Stamp.create(Festival.from(new FestivalCreateDto("test festival", "test address")));
-        setField(stamp, "id", 1L);
-        return stamp;
+    public static Long 존재하지_않는_스탬프 = 999L;
+
+    public static Long 스탬프1 = 1L;
+    public static Long 스탬프2 = 2L;
+    public static Long 스탬프3 = 3L;
+
+    public static Festival festival = 축제_엔티티();
+
+    public static Stamp 스탬프1_생성() {
+        return Stamp.create(festival);
+    }
+
+    public static Stamp 스탬프2_생성() {
+        return Stamp.create(festival);
+    }
+
+    public static Stamp 스탬프3_생성() {
+        return Stamp.create(festival);
+    }
+
+    public static List<Stamp> 모든_스탬프() {
+        return List.of(스탬프1_생성(), 스탬프2_생성(), 스탬프3_생성());
     }
 }

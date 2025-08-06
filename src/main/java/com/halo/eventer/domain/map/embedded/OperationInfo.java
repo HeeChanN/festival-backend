@@ -1,8 +1,8 @@
 package com.halo.eventer.domain.map.embedded;
 
-import javax.persistence.Embeddable;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import com.halo.eventer.domain.map.dto.map.OperationInfoDto;
 import com.halo.eventer.domain.map.enumtype.OperationTime;

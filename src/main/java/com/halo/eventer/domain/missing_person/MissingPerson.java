@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.missing_person;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.missing_person.dto.MissingPersonReqDto;
@@ -32,6 +32,30 @@ public class MissingPerson {
     @JoinColumn(name = "festival_id")
     private Festival festival;
 
+    private MissingPerson(
+            String name,
+            String age,
+            String gender,
+            String thumbnail,
+            String missingLocation,
+            String missingTime,
+            String content,
+            String parentName,
+            String parentNo,
+            Festival festival) {
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.thumbnail = thumbnail;
+        this.missingLocation = missingLocation;
+        this.missingTime = missingTime;
+        this.content = content;
+        this.parentName = parentName;
+        this.parentNo = parentNo;
+        this.festival = festival;
+        festival.applyMissingPerson(this);
+    }
+
     public MissingPerson(MissingPersonReqDto m, Festival festival) {
         this.name = m.getName();
         this.age = m.getAge();
@@ -44,6 +68,21 @@ public class MissingPerson {
         this.parentNo = m.getParentNo();
         this.popup = false;
         this.festival = festival;
+    }
+
+    public static MissingPerson of(
+            String name,
+            String age,
+            String gender,
+            String thumbnail,
+            String missingLocation,
+            String missingTime,
+            String content,
+            String parentName,
+            String parentNo,
+            Festival festival) {
+        return new MissingPerson(
+                name, age, gender, thumbnail, missingLocation, missingTime, content, parentName, parentNo, festival);
     }
 
     public void update(MissingPersonReqDto m) {

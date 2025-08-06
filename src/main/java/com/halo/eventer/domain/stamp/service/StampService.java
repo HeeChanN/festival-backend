@@ -55,7 +55,7 @@ public class StampService {
     }
 
     @Transactional
-    public void createMission(Long stampId, MissionSetListDto dto) {
+    public void createMission(Long stampId, List<MissionSetDto> dto) {
         Stamp stamp = loadStampOrThrow(stampId);
         stamp.validateActivation();
         List<Mission> missions = createMissionsFromDto(dto, stamp);
@@ -95,8 +95,8 @@ public class StampService {
         return stampRepository.findById(stampId).orElseThrow(() -> new StampNotFoundException(stampId));
     }
 
-    private List<Mission> createMissionsFromDto(MissionSetListDto dto, Stamp stamp) {
-        return dto.getMissionSets().stream()
+    private List<Mission> createMissionsFromDto(List<MissionSetDto> dto, Stamp stamp) {
+        return dto.stream()
                 .map(missionDto -> {
                     Mission mission = Mission.from(missionDto);
                     mission.addStamp(stamp);

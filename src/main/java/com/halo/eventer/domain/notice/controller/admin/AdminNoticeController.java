@@ -1,8 +1,8 @@
 package com.halo.eventer.domain.notice.controller.admin;
 
 import java.util.List;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +10,8 @@ import com.halo.eventer.domain.notice.ArticleType;
 import com.halo.eventer.domain.notice.dto.*;
 import com.halo.eventer.domain.notice.service.NoticeService;
 import com.halo.eventer.global.common.page.PagedResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "공지사항 ADMIN 용", description = "백오피스용 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/notices")

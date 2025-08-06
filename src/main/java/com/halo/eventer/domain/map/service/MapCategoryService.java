@@ -26,13 +26,11 @@ public class MapCategoryService {
     private final FestivalRepository festivalRepository;
 
     @Transactional
-    public List<MapCategoryResDto> create(Long festivalId, String categoryName) {
+    public void create(Long festivalId, String categoryName) {
         Festival festival = festivalRepository
                 .findByIdWithMapCategories(festivalId)
                 .orElseThrow(() -> new FestivalNotFoundException(festivalId));
         mapCategoryRepository.save(MapCategory.of(festival, categoryName));
-
-        return festival.getMapCategories().stream().map(MapCategoryResDto::from).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -53,9 +51,8 @@ public class MapCategoryService {
     }
 
     @Transactional
-    public List<MapCategoryResDto> delete(Long categoryId, Long festivalId) {
+    public void delete(Long categoryId) {
         mapCategoryRepository.deleteById(categoryId);
-        return findMapCategoriesByFestivalIdToDto(festivalId);
     }
 
     @Transactional

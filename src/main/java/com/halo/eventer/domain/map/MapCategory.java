@@ -2,7 +2,7 @@ package com.halo.eventer.domain.map;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.map.dto.mapcategory.MapCategoryImageDto;

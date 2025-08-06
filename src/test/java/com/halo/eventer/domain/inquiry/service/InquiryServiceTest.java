@@ -101,7 +101,7 @@ public class InquiryServiceTest {
         assertThat(results.getInquiries()).hasSize(20);
         assertThat(results.getInquiries().get(0))
                 .usingRecursiveComparison()
-                .comparingOnlyFields("title", "isSecret", "isAnswered", "userId", "content")
+                .comparingOnlyFields("title", "isSecret", "isAnswered", "userId")
                 .isEqualTo(secretInquiry);
     }
 

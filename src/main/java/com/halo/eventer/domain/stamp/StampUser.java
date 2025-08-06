@@ -3,7 +3,7 @@ package com.halo.eventer.domain.stamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.stamp.exception.UserMissionNotFoundException;
 import lombok.Getter;
@@ -50,23 +50,24 @@ public class StampUser {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     private Custom custom;
 
-    public StampUser(Stamp stamp, String encryptedPhone, String encryptedName, int participantCount) {
-        this.stamp = stamp;
-        this.uuid = UUID.randomUUID().toString();
+    public StampUser(String encryptedPhone, String encryptedName, int participantCount) {
         this.phone = encryptedPhone;
         this.name = encryptedName;
         this.isFinished = false;
         this.participantCount = participantCount;
     }
 
-    public StampUser(Stamp stamp, String encryptedPhone, String encryptedName, int participantCount, String schoolNo) {
-        this.stamp = stamp;
-        this.uuid = UUID.randomUUID().toString();
+    public StampUser(String encryptedPhone, String encryptedName, int participantCount, String schoolNo) {
         this.phone = encryptedPhone;
         this.name = encryptedName;
         this.isFinished = false;
         this.participantCount = participantCount;
         this.schoolNo = schoolNo;
+    }
+
+    public void addStamp(Stamp stamp) {
+        this.stamp = stamp;
+        stamp.getStampUsers().add(this);
     }
 
     public void markAsFinished() {
@@ -85,11 +86,11 @@ public class StampUser {
         return userMissions.stream().allMatch(UserMission::isComplete);
     }
 
-    public void userMissionComplete(Long missionId) {
+    public void completeUserMission(Long userMissionId) {
         this.userMissions.stream()
-                .filter(m -> m.getId().equals(missionId))
+                .filter(userMission -> userMission.getId().equals(userMissionId))
                 .findFirst()
-                .orElseThrow(() -> new UserMissionNotFoundException(missionId))
+                .orElseThrow(() -> new UserMissionNotFoundException(userMissionId))
                 .markAsComplete();
     }
 

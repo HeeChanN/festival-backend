@@ -10,8 +10,10 @@ import com.halo.eventer.domain.stamp.Stamp;
 import com.halo.eventer.domain.stamp.StampUser;
 import com.halo.eventer.domain.stamp.UserMission;
 import com.halo.eventer.domain.stamp.exception.StampClosedException;
-import com.halo.eventer.domain.stamp.fixture.MissionFixture;
 
+import static com.halo.eventer.domain.stamp.fixture.MissionFixture.미션1_생성;
+import static com.halo.eventer.domain.stamp.fixture.MissionFixture.미션2_생성;
+import static com.halo.eventer.domain.stamp.fixture.StampUserFixture.스탬프유저1_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -29,53 +31,82 @@ public class StampTest {
 
     @Test
     void 스탬프_생성() {
+        // given & when & then
         assertThat(stamp.getFestival()).isEqualTo(festival);
         assertThat(stamp.isActive()).isTrue();
         assertThat(stamp.getFinishCount()).isZero();
     }
 
     @Test
-    void 스탬프_활성_확인() {
+    void 스탬프_활성_토글_성공() {
+        // given & when
         stamp.switchActivation();
-        assertThat(stamp.isActive()).isFalse();
 
+        // then
+        assertThat(stamp.isActive()).isFalse();
+    }
+
+    @Test
+    void 스탬프_비활성_토글_성공() {
+        // when
         stamp.switchActivation();
+        stamp.switchActivation();
+
+        // then
         assertThat(stamp.isActive()).isTrue();
     }
 
     @Test
-    void 스탬프_완료() {
+    void 스탬프_완료횟수_정의_성공() {
+        // given & when
         stamp.defineFinishCnt(5);
+
+        // then
         assertThat(stamp.getFinishCount()).isEqualTo(5);
     }
 
     @Test
-    void validateActivationThrowsException() {
-        stamp.switchActivation(); // 비활성화
+    void 스탬프_비활성_상태_검증시_예외발생() {
+        // given
+        stamp.switchActivation();
 
+        // when & then
         assertThatThrownBy(() -> stamp.validateActivation())
                 .isInstanceOf(StampClosedException.class)
                 .hasMessageContaining(String.valueOf(stamp.getId()));
     }
 
     @Test
-    void assignAllMissionsTo() {
+    void 스탬프에_미션_추가_성공() {
         // given
-        Mission mission1 = MissionFixture.미션_엔티티_생성();
-        Mission mission2 = MissionFixture.미션_엔티티_생성();
+        Mission mission1 = 미션1_생성();
+        Mission mission2 = 미션2_생성();
 
-        stamp.getMissions().add(mission1);
-        stamp.getMissions().add(mission2);
+        // when
+        mission1.addStamp(stamp);
+        mission2.addStamp(stamp);
 
-        StampUser stampUser = new StampUser(stamp, "encryptedPhone", "encryptedName", 1);
+        // then
+        assertThat(stamp.getMissions()).hasSize(2).contains(mission1, mission2);
+    }
+
+    @Test
+    void 유저에게_미션할당_성공() {
+        // given
+        Mission mission1 = 미션1_생성();
+        Mission mission2 = 미션2_생성();
+        StampUser stampUser = 스탬프유저1_생성();
+        mission1.addStamp(stamp);
+        mission2.addStamp(stamp);
+        stampUser.addStamp(stamp);
 
         // when
         stamp.assignAllMissionsTo(stampUser);
 
         // then
-        assertThat(stampUser.getUserMissions()).hasSize(2);
         assertThat(stampUser.getUserMissions())
+                .hasSize(2)
                 .extracting(UserMission::getMission)
-                .contains(mission1, mission2);
+                .containsExactlyInAnyOrder(mission1, mission2);
     }
 }

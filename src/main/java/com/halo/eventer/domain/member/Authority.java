@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.member;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;

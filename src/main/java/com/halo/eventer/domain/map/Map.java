@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.duration.Duration;
 import com.halo.eventer.domain.duration.DurationMap;

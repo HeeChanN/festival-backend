@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ManagerResDto {
+
     private Long id;
     private String phoneNo;
 

@@ -2,6 +2,7 @@ package com.halo.eventer.domain.inquiry.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.halo.eventer.domain.inquiry.Inquiry;
 import com.halo.eventer.domain.inquiry.InquiryConstants;
 import lombok.Getter;
@@ -15,6 +16,8 @@ public class InquiryItemDto {
     private Boolean isAnswered;
     private Boolean isSecret;
     private String userId;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS")
     private LocalDateTime createdAt;
 
     public InquiryItemDto(Inquiry inquiry, String title, String userId) {

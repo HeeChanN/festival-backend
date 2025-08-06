@@ -65,12 +65,11 @@ public class MapCategoryServiceTest {
         given(mapCategoryRepository.save(any())).willReturn(any());
 
         // when
-        List<MapCategoryResDto> targets = mapCategoryService.create(festivalId, "카테고리");
+        mapCategoryService.create(festivalId, "카테고리");
 
         // then
-        assertThat(targets).isNotEmpty();
-        assertThat(targets.size()).isEqualTo(2);
-        assertThat(targets.get(1).getCategoryName()).isEqualTo("카테고리");
+        verify(festivalRepository, times(1)).findByIdWithMapCategories(festivalId);
+        verify(mapCategoryRepository, times(1)).save(any());
     }
 
     @Test
@@ -136,15 +135,13 @@ public class MapCategoryServiceTest {
 
     @Test
     void 지도_카테고리_삭제() {
-        when(mapCategoryRepository.findAllByFestivalId(festivalId)).thenReturn(List.of(mapCategory));
+        doNothing().when(mapCategoryRepository).deleteById(anyLong());
 
         // when
-        List<MapCategoryResDto> targets = mapCategoryService.delete(mapCategoryId, festivalId);
+        mapCategoryService.delete(mapCategoryId);
 
         // then
         verify(mapCategoryRepository, times(1)).deleteById(mapCategoryId);
-        verify(mapCategoryRepository, times(1)).findAllByFestivalId(festivalId);
-        assertThat(targets).hasSize(1);
     }
 
     @Test

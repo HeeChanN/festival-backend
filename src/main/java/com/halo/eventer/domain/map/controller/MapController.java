@@ -1,6 +1,8 @@
 package com.halo.eventer.domain.map.controller;
 
 import java.util.List;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -9,43 +11,40 @@ import com.halo.eventer.domain.map.dto.map.MapItemDto;
 import com.halo.eventer.domain.map.dto.map.MapResDto;
 import com.halo.eventer.domain.map.dto.map.MapUpdateDto;
 import com.halo.eventer.domain.map.service.MapService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "지도")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/map")
 public class MapController {
 
     private final MapService mapService;
 
-    @PostMapping()
+    @PostMapping("/map-categories/{mapCategoryId}/maps")
     public MapResDto createMap(
-            @RequestBody MapCreateDto mapCreateDto, @RequestParam("mapCategoryId") Long mapCategoryId) {
+            @Min(1) @PathVariable("mapCategoryId") Long mapCategoryId, @Valid @RequestBody MapCreateDto mapCreateDto) {
         return mapService.create(mapCreateDto, mapCategoryId);
     }
 
-    @GetMapping("/{mapId}")
-    public MapResDto getMap(@PathVariable("mapId") Long mapId) {
+    @GetMapping("/maps/{mapId}")
+    public MapResDto getMap(@Min(1) @PathVariable("mapId") Long mapId) {
         return mapService.getMap(mapId);
     }
 
-    @GetMapping()
-    public List<MapItemDto> getMaps(@RequestParam("mapCategoryId") Long mapCategoryId) {
+    @GetMapping("/map-categories/{mapCategoryId}/maps")
+    public List<MapItemDto> getMaps(@Min(1) @PathVariable("mapCategoryId") Long mapCategoryId) {
         return mapService.getMaps(mapCategoryId);
     }
 
-    @PutMapping("/{mapId}")
+    @PutMapping("/map-categories/{mapCategoryId}/maps/{mapId}")
     public MapResDto update(
-            @PathVariable("mapId") Long mapId,
-            @RequestBody MapUpdateDto mapUpdateDto,
-            @RequestParam("mapCategoryId") Long mapCategoryId) {
+            @Min(1) @PathVariable("mapCategoryId") Long mapCategoryId,
+            @Min(1) @PathVariable("mapId") Long mapId,
+            @Valid @RequestBody MapUpdateDto mapUpdateDto) {
         return mapService.update(mapId, mapUpdateDto, mapCategoryId);
     }
 
-    @DeleteMapping("/{mapId}")
-    public void delete(@PathVariable("mapId") Long id) {
+    @DeleteMapping("/maps/{mapId}")
+    public void delete(@Min(1) @PathVariable("mapId") Long id) {
         mapService.delete(id);
     }
 }

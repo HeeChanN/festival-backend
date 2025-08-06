@@ -28,13 +28,26 @@ public class HomeService {
     private final UpWidgetService upWidgetService;
 
     @Transactional(readOnly = true)
-    public HomeDto getMainPage(Long festivalId, LocalDateTime dateTime) {
-        List<PickedNoticeResDto> banner = noticeService.getPickedNotice(festivalId);
-        List<UpWidgetResDto> upWidgets = upWidgetService.getUpWidgetsByNow(festivalId, dateTime);
-        Festival festival = festivalRepository
+    public HomeDto getMainPage(Long festivalId) {
+        Festival festival = getFestival(festivalId);
+        return new HomeDto(getBanner(festivalId), festival, getUpWidgets(festivalId), getMissingPersons(festivalId));
+    }
+
+    private List<PickedNoticeResDto> getBanner(Long festivalId) {
+        return noticeService.getPickedNotice(festivalId);
+    }
+
+    private List<UpWidgetResDto> getUpWidgets(Long festivalId) {
+        return upWidgetService.getUpWidgetsByNow(festivalId, LocalDateTime.now());
+    }
+
+    private Festival getFestival(Long festivalId) {
+        return festivalRepository
                 .findByIdWithWidgetsWithinPeriod(festivalId)
                 .orElseThrow(() -> new FestivalNotFoundException(festivalId));
-        List<MissingPerson> missingPersonList = missingPersonService.getPopupList(festivalId);
-        return new HomeDto(banner, festival, upWidgets, missingPersonList);
+    }
+
+    private List<MissingPerson> getMissingPersons(Long festivalId) {
+        return missingPersonService.getPopupList(festivalId);
     }
 }

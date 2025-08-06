@@ -48,4 +48,15 @@ public class UpWidgetResDto {
                 .updatedAt(upWidget.getUpdatedAt())
                 .build();
     }
+
+    public static UpWidgetResDto of(
+            Long id,
+            String name,
+            String url,
+            LocalDateTime periodStart,
+            LocalDateTime periodEnd,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
+        return new UpWidgetResDto(id, name, url, periodStart, periodEnd, createdAt, updatedAt);
+    }
 }

@@ -34,4 +34,14 @@ public class LostItemResDto {
                 .findDate(lostItem.getFindDate())
                 .build();
     }
+
+    public static LostItemResDto of(Long id, String name, String description, String thumbnail, LocalDate findDate) {
+        return LostItemResDto.builder()
+                .id(id)
+                .name(name)
+                .description(description)
+                .thumbnail(thumbnail)
+                .findDate(findDate)
+                .build();
+    }
 }

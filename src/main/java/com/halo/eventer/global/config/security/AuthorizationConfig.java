@@ -10,18 +10,17 @@ import com.halo.eventer.global.constants.SecurityConstants;
 public class AuthorizationConfig {
 
     public void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers(SecurityConstants.SWAGGER_URLS)
+        http.authorizeHttpRequests(auth -> auth.requestMatchers(SecurityConstants.SWAGGER_URLS)
                 .permitAll()
-                .antMatchers(HttpMethod.GET, SecurityConstants.PUBLIC_GET_URLS)
+                .requestMatchers(HttpMethod.GET, SecurityConstants.PUBLIC_GET_URLS)
                 .permitAll()
-                .antMatchers(HttpMethod.POST, SecurityConstants.PUBLIC_POST_URLS)
+                .requestMatchers(HttpMethod.POST, SecurityConstants.PUBLIC_POST_URLS)
                 .permitAll()
-                .antMatchers(HttpMethod.PATCH, SecurityConstants.PUBLIC_PATCH_URLS)
+                .requestMatchers(HttpMethod.PATCH, SecurityConstants.PUBLIC_PATCH_URLS)
                 .permitAll()
-                .antMatchers(HttpMethod.GET, SecurityConstants.ACTUATOR_URL)
+                .requestMatchers(HttpMethod.GET, SecurityConstants.ACTUATOR_URL)
                 .permitAll() // 내부 모니터링 + 포트번호로 제어
                 .anyRequest()
-                .hasRole("ADMIN");
+                .hasRole("ADMIN"));
     }
 }

@@ -1,6 +1,5 @@
 package com.halo.eventer.domain.stamp.fixture;
 
-import com.halo.eventer.domain.stamp.Stamp;
 import com.halo.eventer.domain.stamp.StampUser;
 import com.halo.eventer.domain.stamp.dto.stampUser.LoginDto;
 import com.halo.eventer.domain.stamp.dto.stampUser.SignupDto;
@@ -12,7 +11,20 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 @SuppressWarnings("NonAsciiCharacters")
 public class StampUserFixture {
 
-    private static final String ENCRYPTED_STRING = "encrypted string";
+    public static final String 암호화된_번호 = "encrypted phone";
+    public static final String 암호화된_이름 = "encrypted name";
+
+    public static final Long 스탬프유저1 = 1L;
+    public static final Long 스탬프유저2 = 2L;
+    public static final Long 스탬프유저3 = 3L;
+    public static final Long 스탬프유저4 = 4L;
+    public static final Long 스탬프유저5 = 5L;
+    public static final Long 스탬프유저6 = 6L;
+    public static final Long 스탬프유저7 = 7L;
+
+    public static StampUser 스탬프유저1_생성() {
+        return new StampUser(암호화된_번호, 암호화된_이름, 1);
+    }
 
     public static SignupDto 회원가입_DTO_생성() {
         SignupDto signupDto = new SignupDto();
@@ -44,9 +56,5 @@ public class StampUserFixture {
         setField(loginDto, "name", "test");
         setField(loginDto, "phone", "01012341234");
         return loginDto;
-    }
-
-    public static StampUser 스탬프유저_엔티티_생성(Stamp stamp) {
-        return new StampUser(stamp, ENCRYPTED_STRING, ENCRYPTED_STRING, 10);
     }
 }

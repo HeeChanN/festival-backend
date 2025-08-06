@@ -24,7 +24,7 @@ public class HomeDto {
     private List<UpWidgetResDto> upWidgets;
     private List<PickedNoticeResDto> banner;
     private List<MainWidgetResDto> mainWidgets;
-    private List<MiddleWidgetResDto> middleBannerDtos;
+    private List<MiddleWidgetResDto> middleBanners;
     private List<SquareWidgetResDto> squareWidgets;
     private List<DownWidgetResDto> downWidgets;
     private List<MissingPersonPopupDto> missingPersonDtos;
@@ -37,7 +37,7 @@ public class HomeDto {
         this.upWidgets = upWidgets;
         this.banner = banner;
         this.mainWidgets = filterWidgets(festival.getBaseWidgets(), MainWidget.class, MainWidgetResDto::from);
-        this.middleBannerDtos = filterWidgets(festival.getBaseWidgets(), MiddleWidget.class, MiddleWidgetResDto::from);
+        this.middleBanners = filterWidgets(festival.getBaseWidgets(), MiddleWidget.class, MiddleWidgetResDto::from);
         this.squareWidgets = filterWidgets(festival.getBaseWidgets(), SquareWidget.class, SquareWidgetResDto::from);
         this.downWidgets = filterWidgets(festival.getBaseWidgets(), DownWidget.class, DownWidgetResDto::from);
         this.missingPersonDtos =

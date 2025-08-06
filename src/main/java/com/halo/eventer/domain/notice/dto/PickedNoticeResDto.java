@@ -23,6 +23,13 @@ public class PickedNoticeResDto {
         this.type = n.getType();
     }
 
+    public PickedNoticeResDto(Long id, Integer displayOrder, String thumbnail, ArticleType type) {
+        this.id = id;
+        this.displayOrder = displayOrder;
+        this.thumbnail = thumbnail;
+        this.type = type;
+    }
+
     public static List<PickedNoticeResDto> noticesToPikedNoticeResDtos(List<Notice> noticeList) {
         return noticeList.stream().map(PickedNoticeResDto::new).collect(Collectors.toList());
     }

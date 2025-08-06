@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.splash;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.festival.Festival;
 import lombok.Getter;

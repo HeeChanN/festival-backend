@@ -32,4 +32,15 @@ public class MapCategoryResDto {
                 .displayOrder(mapCategory.getDisplayOrder())
                 .build();
     }
+
+    public static MapCategoryResDto of(
+            Long mapCategoryId, String categoryName, String pin, String icon, int displayOrder) {
+        return MapCategoryResDto.builder()
+                .mapCategoryId(mapCategoryId)
+                .categoryName(categoryName)
+                .pin(pin)
+                .icon(icon)
+                .displayOrder(displayOrder)
+                .build();
+    }
 }

@@ -16,4 +16,10 @@ public class LostItemSummaryDto {
         this.name = lostItem.getName();
         this.description = lostItem.getDescription();
     }
+
+    public LostItemSummaryDto(Long id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
 }

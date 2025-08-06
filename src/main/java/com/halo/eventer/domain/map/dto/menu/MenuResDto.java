@@ -21,4 +21,12 @@ public class MenuResDto {
         this.summary = menu.getSummary();
         this.image = menu.getImage();
     }
+
+    public MenuResDto(Long id, String name, Integer price, String image, String summary) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.image = image;
+        this.summary = summary;
+    }
 }

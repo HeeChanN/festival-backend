@@ -6,14 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.dto.FestivalCreateDto;
 import com.halo.eventer.domain.stamp.Stamp;
@@ -30,18 +28,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SuppressWarnings("NonAsciiCharacters")
-@ActiveProfiles("test")
 @WebMvcTest(controllers = StampController.class)
 @Import({ControllerTestSecurityBeans.class, SecurityConfig.class})
+@ActiveProfiles("test")
 public class StampControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private StampService stampService;
 
-    @MockBean
+    @MockitoBean
     private JwtProvider jwtProvider;
 
     private Stamp stamp;
@@ -82,19 +80,6 @@ public class StampControllerTest {
         mockMvc.perform(delete("/stamp").header("Authorization", ADMIN_TOKEN).param("stampId", "1"))
                 .andExpect(status().isOk());
         then(stampService).should().deleteStamp(1L);
-    }
-
-    @Test
-    @WithMockUser(username = "admin", roles = "ADMIN")
-    void 미션_생성_성공() throws Exception {
-        MissionSetListDto dto = new MissionSetListDto();
-        mockMvc.perform(post("/stamp/mission")
-                        .header("Authorization", ADMIN_TOKEN)
-                        .param("stampId", "1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(dto)))
-                .andExpect(status().isOk());
-        then(stampService).should().createMission(anyLong(), any());
     }
 
     @Test

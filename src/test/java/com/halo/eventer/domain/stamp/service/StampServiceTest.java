@@ -9,10 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
 
 import com.halo.eventer.domain.festival.Festival;
-import com.halo.eventer.domain.festival.dto.FestivalCreateDto;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
 import com.halo.eventer.domain.stamp.Mission;
@@ -25,16 +23,16 @@ import com.halo.eventer.domain.stamp.repository.MissionRepository;
 import com.halo.eventer.domain.stamp.repository.StampRepository;
 import com.halo.eventer.global.utils.EncryptService;
 
+import static com.halo.eventer.domain.stamp.fixture.MissionFixture.*;
+import static com.halo.eventer.domain.stamp.fixture.StampFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
 @SuppressWarnings("NonAsciiCharacters")
 public class StampServiceTest {
 
@@ -54,41 +52,58 @@ public class StampServiceTest {
     private StampService stampService;
 
     private Festival festival;
-    private FestivalCreateDto festivalCreateDto;
-    private Stamp stamp;
-    private MissionSetListDto missionSetListDto;
+    private Stamp stamp1;
+    private List<Stamp> stamps;
     private List<MissionSetDto> missionSetDtos;
 
     @BeforeEach
     void setUp() {
-        festivalCreateDto = new FestivalCreateDto("test festival", "test");
-        festival = Festival.from(festivalCreateDto);
-        stamp = Stamp.create(festival);
-        missionSetListDto = new MissionSetListDto();
-        missionSetDtos = setupMissionSetDtos();
-        setField(missionSetListDto, "missionSets", missionSetDtos);
+        stamp1 = 스탬프1_생성();
+        stamps = 모든_스탬프();
+        festival = stamp1.getFestival();
+        missionSetDtos = 미션_셋업_리스트();
     }
 
     @Test
     void 축제id로_스탬프_생성_성공() {
         // given
         given(festivalRepository.findById(anyLong())).willReturn(Optional.ofNullable(festival));
-        given(stampRepository.save(any(Stamp.class))).willReturn(stamp);
-        List<Stamp> stamps = List.of(stamp);
-        given(stampRepository.findByFestival(festival)).willReturn(stamps);
+        given(stampRepository.save(any(Stamp.class))).willReturn(stamp1);
+        given(stampRepository.findByFestival(festival)).willReturn(List.of(stamp1));
 
         // when
-        List<StampGetDto> result = stampService.registerStamp(1L);
+        List<StampGetDto> results = stampService.registerStamp(1L);
+        StampGetDto result = results.get(0);
 
         // then
-        assertThat(result).hasSize(1);
+        assertThat(results).hasSize(1);
+        assertThat(result.isStampOn()).isEqualTo(stamp1.isActive());
+        assertThat(result.getStampId()).isEqualTo(stamp1.getId());
+        assertThat(result.getStampFinishCnt()).isEqualTo(stamp1.getFinishCount());
     }
 
     @Test
-    void 축제id로_스탬프_생성_실패() {
+    void 축제id로_스탬프_생성_다중스탬프_조회_성공() {
+        // given
+        given(festivalRepository.findById(anyLong())).willReturn(Optional.ofNullable(festival));
+        given(stampRepository.save(any(Stamp.class))).willReturn(stamp1);
+        given(stampRepository.findByFestival(festival)).willReturn(모든_스탬프());
+
+        // when
+        List<StampGetDto> results = stampService.registerStamp(1L);
+
+        // then
+        assertThat(results).hasSize(3);
+        assertThat(results.get(0).isStampOn()).isEqualTo(stamp1.isActive());
+        assertThat(results.get(0).getStampId()).isEqualTo(stamp1.getId());
+        assertThat(results.get(0).getStampFinishCnt()).isEqualTo(stamp1.getFinishCount());
+    }
+
+    @Test
+    void 스탬프_생성_존재하지_않는_축제_ID_실패() {
         // given
         long notExistFestivalId = 999L;
-        given(festivalRepository.findById(notExistFestivalId)).willReturn(Optional.empty());
+        given(festivalRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> stampService.registerStamp(notExistFestivalId))
@@ -97,15 +112,19 @@ public class StampServiceTest {
 
     @Test
     void 축제_id로_스탬프_조회_성공() {
+        // given
         given(festivalRepository.findById(anyLong())).willReturn(Optional.ofNullable(festival));
-        List<Stamp> stamps = List.of(Stamp.create(festival));
-        given(stampRepository.findByFestival(festival)).willReturn(stamps);
+        given(stampRepository.findByFestival(any(Festival.class))).willReturn(stamps);
 
         // when
-        List<StampGetDto> result = stampService.getStampByFestivalId(1L);
+        List<StampGetDto> results = stampService.getStampByFestivalId(1L);
+        StampGetDto result = results.get(0);
 
         // then
-        assertThat(result).hasSize(1);
+        assertThat(results).hasSize(3);
+        assertThat(result.isStampOn()).isEqualTo(stamp1.isActive());
+        assertThat(result.getStampId()).isEqualTo(stamp1.getId());
+        assertThat(result.getStampFinishCnt()).isEqualTo(stamp1.getFinishCount());
     }
 
     @Test
@@ -121,14 +140,15 @@ public class StampServiceTest {
     @Test
     void 스탬프_상태_변경_성공() {
         // given
-        stamp.switchActivation();
-        given(stampRepository.findById(anyLong())).willReturn(Optional.ofNullable(stamp));
+        given(stampRepository.findById(anyLong())).willReturn(Optional.ofNullable(stamp1));
+        boolean before = stamp1.isActive();
 
         // when
-        stampService.updateStampOn(1L);
+        stampService.updateStampOn(스탬프1);
+        boolean after = stamp1.isActive();
 
         // then
-        assertThat(stamp.isActive()).isTrue();
+        assertThat(after).isEqualTo(!before);
     }
 
     @Test
@@ -143,56 +163,73 @@ public class StampServiceTest {
     @Test
     void 스탬프_삭제_성공() {
         // given
-        given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp));
+        given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp1));
 
         // when
-        stampService.deleteStamp(1L);
+        stampService.deleteStamp(스탬프1);
 
         // then
-        verify(stampRepository, times(1)).delete(stamp);
+        verify(stampRepository, times(1)).delete(stamp1);
     }
 
+    @Test
+    void 스탬프_삭제_실패_스탬프없음() {
+        // given
+        given(stampRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> stampService.deleteStamp(스탬프1)).isInstanceOf(StampNotFoundException.class);
+    }
+
+    // TODO : MissionService로 옮길 예정
     @Test
     void 미션_생성_성공() {
         // given
-        given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp));
+        given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp1));
 
         // when
-        stampService.createMission(1L, missionSetListDto);
+        stampService.createMission(1L, missionSetDtos);
 
         // then
         verify(missionRepository, times(1)).saveAll(anyList());
+        assertThat(stamp1.getMissions()).hasSize(5);
+        //        assertThat(stamp.getMissions())
+        //                .extracting("title")
+        //                .containsExactly("부스 A", "부스 B");
     }
 
     @Test
-    void 미션_생성_실패() {
+    // TODO : MissionService로 옮길 예정
+    void 미션_생성_스탬프_비활성화_실패() {
         // given
-        stamp.switchActivation();
-        given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp));
+        stamp1.switchActivation();
+        given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp1));
 
         // when & then
-        assertThatThrownBy(() -> stampService.createMission(anyLong(), missionSetListDto))
+        assertThatThrownBy(() -> stampService.createMission(스탬프1, missionSetDtos))
                 .isInstanceOf(StampClosedException.class);
     }
 
     @Test
+    // TODO : MissionService로 옮길 예정
     void 미션_리스트_조회_성공() {
         // given
-        Mission mission1 = setUpMission(1L, "미션1");
-        Mission mission2 = setUpMission(2L, "미션2");
-        mission1.addStamp(stamp);
-        mission2.addStamp(stamp);
-        given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp));
+        Mission mission1 = 미션1_생성();
+        Mission mission2 = 미션2_생성();
+        mission1.addStamp(stamp1);
+        mission2.addStamp(stamp1);
+        given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp1));
 
         // when
         List<MissionSummaryGetDto> result = stampService.getMissions(1L);
 
         // then
         assertThat(result).hasSize(2);
-        assertThat(result).extracting("title").containsExactly("미션1", "미션2");
+        assertThat(result).extracting("title").containsExactly("미션 1", "미션 2");
     }
 
     @Test
+    // TODO : MissionService로 옮길 예정
     void 미션_리스트_조회_실패() {
         // given
         given(stampRepository.findById(anyLong())).willReturn(Optional.empty());
@@ -202,15 +239,16 @@ public class StampServiceTest {
     }
 
     @Test
+    // TODO : StampUserService로 이동 예정
     void 해당_스탬프_유저들_조회_성공() {
         // given
-        StampUser stampUser1 = new StampUser(stamp, "암호화번호1", "암호화이름1", 1);
-        stamp.getStampUsers().add(stampUser1);
-        given(stampRepository.findById(anyLong())).willReturn(Optional.ofNullable(stamp));
+        StampUser stampUser1 = new StampUser("암호화번호1", "암호화이름1", 1);
+        stampUser1.addStamp(stamp1);
+        given(stampRepository.findById(anyLong())).willReturn(Optional.ofNullable(stamp1));
         given(encryptService.decryptInfo(anyString())).willReturn("암호화");
 
         // when
-        List<StampUsersGetDto> result = stampService.getStampUsers(1L);
+        List<StampUsersGetDto> result = stampService.getStampUsers(스탬프1);
 
         // then
         assertThat(result).hasSize(1);
@@ -220,35 +258,22 @@ public class StampServiceTest {
     @Test
     void 미션성공_기준_정하기_성공() {
         // given
-        Integer finishCnt = 5;
-        given(stampRepository.findById(1L)).willReturn(Optional.of(stamp));
+        Integer 미션성공_기준 = 5;
+        given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp1));
 
         // when
-        stampService.setFinishCnt(1L, finishCnt);
+        stampService.setFinishCnt(스탬프1, 미션성공_기준);
 
         // then
-        assertThat(stamp.getFinishCount()).isEqualTo(finishCnt);
+        assertThat(stamp1.getFinishCount()).isEqualTo(미션성공_기준);
     }
 
     @Test
     void 미션성공_기준_정하기_실패() {
         // given
-        given(stampRepository.findById(1L)).willReturn(Optional.empty());
+        given(stampRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> stampService.setFinishCnt(1L, 3)).isInstanceOf(StampNotFoundException.class);
-    }
-
-    private Mission setUpMission(Long id, String missionTitle) {
-        Mission mission = new Mission();
-        setField(mission, "id", id);
-        setField(mission, "title", missionTitle);
-        return mission;
-    }
-
-    private List<MissionSetDto> setupMissionSetDtos() {
-        return List.of(
-                new MissionSetDto(1L, "부스 A", "미션 내용 A", "장소 A", "오전 10시", "clearedA.png", "notClearedA.png"),
-                new MissionSetDto(2L, "부스 B", "미션 내용 B", "장소 B", "오전 11시", "clearedB.png", "notClearedB.png"));
+        assertThatThrownBy(() -> stampService.setFinishCnt(스탬프1, anyInt())).isInstanceOf(StampNotFoundException.class);
     }
 }

@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.widget.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.widget.BaseWidget;
@@ -31,6 +31,17 @@ public class MiddleWidget extends BaseWidget implements DisplayOrderUpdatable {
         super(festival, name, url);
         this.imageFeature = ImageFeature.of(image);
         this.displayOrderFeature = DisplayOrderFeature.of(displayOrder);
+        festival.applyBaseWidget(this);
+    }
+
+    public static MiddleWidget of(Festival festival, String name, String url, String image, Integer displayOrder) {
+        return MiddleWidget.builder()
+                .festival(festival)
+                .name(name)
+                .url(url)
+                .image(image)
+                .displayOrder(displayOrder)
+                .build();
     }
 
     public static MiddleWidget from(Festival festival, MiddleWidgetCreateDto middleWidgetCreateDto) {
