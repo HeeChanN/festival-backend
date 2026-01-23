@@ -80,6 +80,23 @@ public class FestivalService {
         return FestivalResDto.from(festival);
     }
 
+    public FestivalLocationDto getFestivalLocationInfo(Long festivalId) {
+        Festival festival = loadFestivalOrThrow(festivalId);
+        return new FestivalLocationDto(festival);
+    }
+
+    @Transactional
+    public void updateFestivalName(Long id, FestivalNameReqDto nameReqDto) {
+        Festival festival = loadFestivalOrThrow(id);
+        festival.updateName(nameReqDto.getName());
+    }
+
+    @Transactional
+    public void updateFestivalSubDomain(Long festivalId, FestivalSubDomainReqDto subdomainReqDto) {
+        Festival festival = loadFestivalOrThrow(festivalId);
+        festival.updateSubdomain(subdomainReqDto.getSubDomain());
+    }
+
     private Festival loadFestivalOrThrow(Long id) {
         return festivalRepository.findById(id).orElseThrow(() -> new FestivalNotFoundException(id));
     }
@@ -87,7 +104,7 @@ public class FestivalService {
     private void validateUniqueFestival(FestivalCreateDto festivalCreateDto) {
         if (festivalRepository.findByName(festivalCreateDto.getName()).isPresent()
                 || festivalRepository
-                        .findBySubAddress(festivalCreateDto.getSubAddress())
+                        .findBySubAddress(festivalCreateDto.getSubDomain())
                         .isPresent()) {
             throw new FestivalAlreadyExistsException();
         }

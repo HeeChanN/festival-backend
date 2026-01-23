@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
 
+import com.halo.eventer.domain.common.Address;
 import com.halo.eventer.domain.duration.Duration;
 import com.halo.eventer.domain.festival.dto.*;
 import com.halo.eventer.domain.image.dto.FileDto;
@@ -13,6 +14,7 @@ import com.halo.eventer.domain.manager.Manager;
 import com.halo.eventer.domain.map.MapCategory;
 import com.halo.eventer.domain.missing_person.MissingPerson;
 import com.halo.eventer.domain.notice.Notice;
+import com.halo.eventer.domain.parking.ParkingManagement;
 import com.halo.eventer.domain.splash.Splash;
 import com.halo.eventer.domain.stamp.Stamp;
 import com.halo.eventer.domain.widget.BaseWidget;
@@ -39,6 +41,9 @@ public class Festival {
     private String backgroundColor;
 
     private String logo;
+
+    @Embedded
+    private Address address;
 
     private double latitude; // 위도
     private double longitude; // 경도
@@ -76,13 +81,16 @@ public class Festival {
     @OneToMany(mappedBy = "festival", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MissingPerson> missingPersons = new ArrayList<>();
 
+    @OneToMany(mappedBy = "festival", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ParkingManagement> parkingManagements = new ArrayList<>();
+
     private Festival(String name, String subAddress) {
         this.name = name;
         this.subAddress = subAddress;
     }
 
     public static Festival from(FestivalCreateDto festivalCreateDto) {
-        return new Festival(festivalCreateDto.getName(), festivalCreateDto.getSubAddress());
+        return new Festival(festivalCreateDto.getName(), festivalCreateDto.getSubDomain());
     }
 
     public void applyDefaultMapCategory() {
@@ -93,7 +101,7 @@ public class Festival {
 
     public void updateFestival(FestivalCreateDto festivalCreateDto) {
         this.name = festivalCreateDto.getName();
-        this.subAddress = festivalCreateDto.getSubAddress();
+        this.subAddress = festivalCreateDto.getSubDomain();
     }
 
     public void updateColor(ColorDto colorDto) {
@@ -108,6 +116,13 @@ public class Festival {
     }
 
     public void updateLocation(FestivalLocationDto festivalLocationDto) {
+        this.address = new Address(
+                festivalLocationDto.getSido(),
+                festivalLocationDto.getSigungu(),
+                festivalLocationDto.getDongmyun(),
+                festivalLocationDto.getRoadName(),
+                festivalLocationDto.getRoadNumber(),
+                festivalLocationDto.getBuildingName());
         this.longitude = festivalLocationDto.getLongitude();
         this.latitude = festivalLocationDto.getLatitude();
     }
@@ -122,5 +137,13 @@ public class Festival {
 
     public void applyBaseWidget(BaseWidget baseWidget) {
         this.baseWidgets.add(baseWidget);
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateSubdomain(String subdomain) {
+        this.subAddress = subdomain;
     }
 }

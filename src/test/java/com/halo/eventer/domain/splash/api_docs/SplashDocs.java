@@ -13,7 +13,7 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 
 public class SplashDocs {
 
-    private static final String TAG = "Splash";
+    private static final String TAG = "스플래시";
 
     public static RestDocumentationResultHandler uploadSplash() {
         return document(

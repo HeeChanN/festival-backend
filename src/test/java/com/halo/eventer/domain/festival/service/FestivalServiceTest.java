@@ -61,7 +61,7 @@ public class FestivalServiceTest {
         // then
         verify(festivalRepository, times(1))
                 .save(argThat(savedFestival -> savedFestival.getName().equals(festivalCreateDto.getName())
-                        && savedFestival.getSubAddress().equals(festivalCreateDto.getSubAddress())));
+                        && savedFestival.getSubAddress().equals(festivalCreateDto.getSubDomain())));
     }
 
     @Test()

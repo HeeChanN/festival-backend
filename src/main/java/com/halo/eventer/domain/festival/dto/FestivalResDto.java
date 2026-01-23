@@ -11,6 +11,7 @@ public class FestivalResDto {
     private Long id;
 
     private String name;
+    private String subDomain;
 
     private String logo;
 
@@ -25,13 +26,15 @@ public class FestivalResDto {
             final String logo,
             final ColorDto colors,
             final double latitude,
-            final double longitude) {
+            final double longitude,
+            final String subDomain) {
         this.id = id;
         this.name = name;
         this.logo = logo;
         this.colors = colors;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.subDomain = subDomain;
     }
 
     public static FestivalResDto from(final Festival festival) {
@@ -42,6 +45,7 @@ public class FestivalResDto {
                 festival.getLogo(),
                 colorDto,
                 festival.getLatitude(),
-                festival.getLongitude());
+                festival.getLongitude(),
+                festival.getSubAddress());
     }
 }

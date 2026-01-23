@@ -33,7 +33,7 @@ public class FestivalTest {
 
         // then
         assertThat(target.getName()).isEqualTo(festival.getName());
-        assertThat(target.getSubAddress()).isEqualTo(festivalCreateDto.getSubAddress());
+        assertThat(target.getSubAddress()).isEqualTo(festivalCreateDto.getSubDomain());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class FestivalTest {
 
         // then
         assertThat(festival.getName()).isEqualTo(festivalCreateDto.getName());
-        assertThat(festival.getSubAddress()).isEqualTo(festivalCreateDto.getSubAddress());
+        assertThat(festival.getSubAddress()).isEqualTo(festivalCreateDto.getSubDomain());
     }
 
     @Test

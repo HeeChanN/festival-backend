@@ -3,6 +3,7 @@ package com.halo.eventer.domain.member;
 import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.halo.eventer.domain.stamp.StampUser;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,12 @@ public class Authority {
     @Setter
     @JsonIgnore
     private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stamp_user_id")
+    @Setter
+    @JsonIgnore
+    private StampUser stampUser;
 
     @Builder
     public Authority(String roleName) {

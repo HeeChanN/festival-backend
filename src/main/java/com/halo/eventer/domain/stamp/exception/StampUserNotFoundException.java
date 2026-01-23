@@ -7,6 +7,10 @@ public class StampUserNotFoundException extends EntityNotFoundException {
         super(String.format("StampUser with %s is not found", uuid));
     }
 
+    public StampUserNotFoundException(long userId) {
+        super(String.format("StampUser with %s is not found", userId));
+    }
+
     public StampUserNotFoundException() {
         super("StampUser could not be found");
     }

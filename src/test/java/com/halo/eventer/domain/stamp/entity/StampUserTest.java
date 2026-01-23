@@ -38,8 +38,8 @@ public class StampUserTest {
 
     @Test
     void 완료_마킹() {
-        stampUser.markAsFinished();
-        assertThat(stampUser.isFinished()).isTrue();
+        stampUser.markAsFinished(true);
+        assertThat(stampUser.getFinished()).isTrue();
     }
 
     @Test

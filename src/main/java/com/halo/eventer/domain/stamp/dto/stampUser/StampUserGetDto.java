@@ -6,10 +6,12 @@ import com.halo.eventer.domain.stamp.StampUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class StampUserGetDto {
 
     private String uuid;
@@ -21,7 +23,7 @@ public class StampUserGetDto {
         return StampUserGetDto.builder()
                 .uuid(stampUser.getUuid())
                 .participantCount(stampUser.getParticipantCount())
-                .finished(stampUser.isFinished())
+                .finished(stampUser.getFinished())
                 .userMissionInfoGetDtos(UserMissionInfoGetDto.fromEntities(stampUser.getUserMissions()))
                 .build();
     }

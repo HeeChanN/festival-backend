@@ -6,10 +6,12 @@ import com.halo.eventer.domain.stamp.StampUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserMissionInfoWithFinishedGetListDto {
 
     private boolean finished;
@@ -17,7 +19,7 @@ public class UserMissionInfoWithFinishedGetListDto {
 
     public static UserMissionInfoWithFinishedGetListDto from(StampUser stampUser) {
         return UserMissionInfoWithFinishedGetListDto.builder()
-                .finished(stampUser.isFinished())
+                .finished(stampUser.getFinished())
                 .userMissionInfoGetDtos(UserMissionInfoGetDto.fromEntities(stampUser.getUserMissions()))
                 .build();
     }

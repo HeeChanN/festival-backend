@@ -10,12 +10,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.stamp.Mission;
 import com.halo.eventer.domain.stamp.Stamp;
-import com.halo.eventer.domain.stamp.dto.mission.MissionDetailGetDto;
 import com.halo.eventer.domain.stamp.dto.mission.MissionUpdateDto;
-import com.halo.eventer.domain.stamp.dto.stamp.MissionSetDto;
-import com.halo.eventer.domain.stamp.dto.stamp.MissionSummaryGetDto;
+import com.halo.eventer.domain.stamp.dto.mission.request.MissionSetReqDto;
+import com.halo.eventer.domain.stamp.dto.mission.response.MissionDetailGetResDto;
+import com.halo.eventer.domain.stamp.dto.mission.response.MissionSummaryResDto;
 import com.halo.eventer.domain.stamp.exception.MissionNotFoundException;
 import com.halo.eventer.domain.stamp.exception.StampClosedException;
 import com.halo.eventer.domain.stamp.exception.StampNotFoundException;
@@ -23,8 +24,9 @@ import com.halo.eventer.domain.stamp.fixture.MissionFixture;
 import com.halo.eventer.domain.stamp.repository.MissionRepository;
 import com.halo.eventer.domain.stamp.repository.StampRepository;
 
+import static com.halo.eventer.domain.festival.FestivalFixture.축제_엔티티;
 import static com.halo.eventer.domain.stamp.fixture.MissionFixture.*;
-import static com.halo.eventer.domain.stamp.fixture.StampFixture.스탬프1;
+import static com.halo.eventer.domain.stamp.fixture.StampFixture.스탬프1_ID;
 import static com.halo.eventer.domain.stamp.fixture.StampFixture.스탬프1_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -47,13 +49,15 @@ public class MissionServiceTest {
     @InjectMocks
     private MissionService missionService;
 
+    private Festival festival;
     private Stamp stamp1;
     private Mission mission;
-    private List<MissionSetDto> missionSetDtos;
+    private List<MissionSetReqDto> missionSetDtos;
 
     @BeforeEach
     void setUp() {
-        stamp1 = 스탬프1_생성();
+        festival = 축제_엔티티();
+        stamp1 = 스탬프1_생성(festival);
         mission = 미션_엔티티_생성();
         missionSetDtos = 미션_셋업_리스트();
     }
@@ -82,7 +86,7 @@ public class MissionServiceTest {
         given(stampRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> missionService.createMission(스탬프1, missionSetDtos))
+        assertThatThrownBy(() -> missionService.createMission(스탬프1_ID, missionSetDtos))
                 .isInstanceOf(StampNotFoundException.class);
     }
 
@@ -93,7 +97,7 @@ public class MissionServiceTest {
         given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp1));
 
         // when & then
-        assertThatThrownBy(() -> missionService.createMission(스탬프1, missionSetDtos))
+        assertThatThrownBy(() -> missionService.createMission(스탬프1_ID, missionSetDtos))
                 .isInstanceOf(StampClosedException.class);
     }
 
@@ -103,10 +107,10 @@ public class MissionServiceTest {
         given(missionRepository.findById(anyLong())).willReturn(Optional.of(mission));
 
         // when
-        MissionDetailGetDto result = missionService.getMission(1L);
+        MissionDetailGetResDto result = missionService.getMission(1L);
 
         // then
-        assertThat(result).usingRecursiveComparison().isEqualTo(MissionDetailGetDto.from(mission));
+        assertThat(result).usingRecursiveComparison().isEqualTo(MissionDetailGetResDto.from(mission));
     }
 
     @Test
@@ -128,7 +132,7 @@ public class MissionServiceTest {
         given(stampRepository.findById(anyLong())).willReturn(Optional.of(stamp1));
 
         // when
-        List<MissionSummaryGetDto> result = missionService.getMissions(1L);
+        List<MissionSummaryResDto> result = missionService.getMissions(1L);
 
         // then
         assertThat(result).hasSize(2);

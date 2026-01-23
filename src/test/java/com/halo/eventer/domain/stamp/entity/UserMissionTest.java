@@ -41,7 +41,7 @@ public class UserMissionTest {
         userMission.markAsComplete();
 
         // then
-        assertThat(userMission.isComplete()).isTrue();
+        assertThat(userMission.getComplete()).isTrue();
     }
 
     @Test
@@ -49,12 +49,12 @@ public class UserMissionTest {
         userMission = UserMission.create(mission, stampUser);
         userMission.markAsComplete();
 
-        boolean before = userMission.isComplete();
+        boolean before = userMission.getComplete();
 
         // when
         userMission.markAsComplete();
 
         // then
-        assertThat(userMission.isComplete()).isEqualTo(before).isTrue();
+        assertThat(userMission.getComplete()).isEqualTo(before).isTrue();
     }
 }

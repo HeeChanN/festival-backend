@@ -21,6 +21,7 @@ public enum ErrorCode {
     FORBIDDEN("C012", "Forbidden", 400),
     ERR_DATA_INTEGRITY_VIOLATION("E001", "Data integrity violation", 409),
     VALIDATION_FAILED("C013", "Validation Failed", 400),
+    MAX_COUNT_EXCEEDED("C014", "Exceeded maximum count (limit: 20)", 400),
 
     // Festival
     SUB_ADDRESS_ALREADY_EXISTS("F001", "subAddress Already Exists", 400),
@@ -38,6 +39,10 @@ public enum ErrorCode {
 
     // StampUser
     STAMP_USER_ALREADY_EXISTS("SU001", "StampUser Already Exists", 400),
+
+    // Stamp
+    INVALID_AUTH_METHOD("ST001", "Stamp Authentication Method Invalid", 400),
+    STAMP_NOT_IN_FESTIVAL("ST002", "Stamp Not In Festival", 400),
 
     // Infra
     SMS_SEND_FAILED("I001", "SMS Send Failed", 500),

@@ -17,7 +17,7 @@ public class UserMissionInfoGetDto {
 
     public static List<UserMissionInfoGetDto> fromEntities(List<UserMission> userMissions) {
         return userMissions.stream()
-                .map(um -> new UserMissionInfoGetDto(um.getId(), um.getMission().getId(), um.isComplete()))
+                .map(um -> new UserMissionInfoGetDto(um.getId(), um.getMission().getId(), um.getComplete()))
                 .collect(Collectors.toList());
     }
 }

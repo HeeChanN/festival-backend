@@ -33,7 +33,7 @@ public class FestivalController {
         return festivalService.findAll();
     }
 
-    @PatchMapping()
+    @PutMapping()
     public FestivalResDto updateFestival(
             @Min(1) @RequestParam("id") Long id, @Valid @RequestBody FestivalCreateDto festivalCreateDto) {
         return festivalService.update(id, festivalCreateDto);
@@ -44,19 +44,36 @@ public class FestivalController {
         festivalService.delete(id);
     }
 
-    @PostMapping("/{festivalId}/color")
+    @PatchMapping("/{festivalId}/color")
     public void addColor(@Min(1) @PathVariable("festivalId") Long festivalId, @Valid @RequestBody ColorDto colorDto) {
         festivalService.updateColor(festivalId, colorDto);
     }
 
-    @PostMapping("/{festivalId}/logo")
+    @PatchMapping("/{festivalId}/logo")
     public void addLogo(@Min(1) @PathVariable("festivalId") Long festivalId, @RequestBody FileDto fileDto) {
         festivalService.updateLogo(festivalId, fileDto);
     }
 
-    @PostMapping("/{festivalId}/location")
+    @PatchMapping("/{festivalId}/location")
     public FestivalResDto updateFestivalLocation(
             @Min(1) @PathVariable("festivalId") Long festivalId, @RequestBody FestivalLocationDto festivalLocationDto) {
         return festivalService.updateLocation(festivalId, festivalLocationDto);
+    }
+
+    @GetMapping("/{festivalId}/location")
+    public FestivalLocationDto getFestivalLocationInfo(@PathVariable("festivalId") Long festivalId) {
+        return festivalService.getFestivalLocationInfo(festivalId);
+    }
+
+    @PatchMapping("/{festivalId}/name")
+    public void updateFestivalName(
+            @PathVariable("festivalId") Long festivalId, @RequestBody FestivalNameReqDto festivalNameReqDto) {
+        festivalService.updateFestivalName(festivalId, festivalNameReqDto);
+    }
+
+    @PatchMapping("/{festivalId}/sub-domain")
+    public void updateFestivalSubDomain(
+            @PathVariable("festivalId") Long festivalId, @RequestBody FestivalSubDomainReqDto festivalSubdomainReqDto) {
+        festivalService.updateFestivalSubDomain(festivalId, festivalSubdomainReqDto);
     }
 }

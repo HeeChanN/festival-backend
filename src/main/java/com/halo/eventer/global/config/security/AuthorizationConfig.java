@@ -20,6 +20,8 @@ public class AuthorizationConfig {
                 .permitAll()
                 .requestMatchers(HttpMethod.GET, SecurityConstants.ACTUATOR_URL)
                 .permitAll() // 내부 모니터링 + 포트번호로 제어
+                .requestMatchers("/api/v2/user/**")
+                .hasRole("STAMP")
                 .anyRequest()
                 .hasRole("ADMIN"));
     }

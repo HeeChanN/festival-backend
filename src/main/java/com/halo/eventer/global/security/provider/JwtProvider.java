@@ -1,6 +1,7 @@
 package com.halo.eventer.global.security.provider;
 
 import java.security.Key;
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import jakarta.annotation.PostConstruct;
@@ -13,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.halo.eventer.global.error.ErrorCode;
+import com.halo.eventer.global.error.exception.BaseException;
 import com.halo.eventer.global.security.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -45,10 +48,12 @@ public class JwtProvider {
         Claims claims = Jwts.claims().setSubject(account);
         claims.put("roles", roles);
         Date now = new Date();
+        long validityMs = Duration.ofDays(7).toMillis();
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + 3600000)) // 만료기간
+                .setExpiration(new Date(now.getTime() + validityMs)) // 만료기간
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -60,6 +65,31 @@ public class JwtProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public String getRole(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        Object raw = claims.get("roles");
+        String role;
+
+        if (raw instanceof List<?> list) {
+            if (list.isEmpty()) throw new BaseException(ErrorCode.UN_AUTHENTICATED);
+            role = String.valueOf(list.get(0)).trim();
+        } else if (raw instanceof String s) {
+            role = s.trim();
+        } else {
+            throw new BaseException(ErrorCode.UN_AUTHENTICATED);
+        }
+
+        if (role.isEmpty()) {
+            throw new BaseException(ErrorCode.UN_AUTHENTICATED);
+        }
+        return role;
     }
 
     // 토큰 검증
@@ -118,7 +148,13 @@ public class JwtProvider {
     // 권한정보 획득
     // Spring Security 인증과정에서 권한확인을 위한 기능
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = customUserDetailService.loadUserByUsername(this.getAccount(token));
+        String role = this.getRole(token);
+        UserDetails userDetails;
+        if (role.equals("STAMP")) {
+            userDetails = customUserDetailService.loadUserByUuid(this.getAccount(token));
+        } else {
+            userDetails = customUserDetailService.loadUserByUsername(this.getAccount(token));
+        }
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 }

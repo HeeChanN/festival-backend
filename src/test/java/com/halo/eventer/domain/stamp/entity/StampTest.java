@@ -33,7 +33,7 @@ public class StampTest {
     void 스탬프_생성() {
         // given & when & then
         assertThat(stamp.getFestival()).isEqualTo(festival);
-        assertThat(stamp.isActive()).isTrue();
+        assertThat(stamp.getActive()).isTrue();
         assertThat(stamp.getFinishCount()).isZero();
     }
 
@@ -43,7 +43,7 @@ public class StampTest {
         stamp.switchActivation();
 
         // then
-        assertThat(stamp.isActive()).isFalse();
+        assertThat(stamp.getActive()).isFalse();
     }
 
     @Test
@@ -53,7 +53,7 @@ public class StampTest {
         stamp.switchActivation();
 
         // then
-        assertThat(stamp.isActive()).isTrue();
+        assertThat(stamp.getActive()).isTrue();
     }
 
     @Test

@@ -29,4 +29,8 @@ public class ApiConstraint {
     public static Constraint JavaxSize(int min, int max) {
         return new Constraint("javax.validation.constraints.Size", Map.of("min", min, "max", max));
     }
+
+    public static Constraint JavaxNotEmpty() {
+        return new Constraint("javax.validation.constraints.NotEmpty", Map.of());
+    }
 }

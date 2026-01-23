@@ -32,7 +32,7 @@ public class StampRepositoryTest {
     @BeforeEach
     void setUp() {
         festival = Festival.from(FestivalFixture.축제_생성용_DTO());
-        stamp = Stamp.create(festival);
+        stamp = Stamp.createWith(festival, "title", true);
         festivalRepository.save(festival);
         stampRepository.save(stamp);
     }

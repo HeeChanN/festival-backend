@@ -15,5 +15,5 @@ public class FestivalCreateDto {
     private String name;
 
     @NotNull
-    private String subAddress;
+    private String subDomain;
 }

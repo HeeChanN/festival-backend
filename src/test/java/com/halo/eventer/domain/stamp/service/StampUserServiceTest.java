@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.stamp.Mission;
 import com.halo.eventer.domain.stamp.Stamp;
 import com.halo.eventer.domain.stamp.StampUser;
@@ -24,6 +25,7 @@ import com.halo.eventer.domain.stamp.repository.StampRepository;
 import com.halo.eventer.domain.stamp.repository.StampUserRepository;
 import com.halo.eventer.global.utils.EncryptService;
 
+import static com.halo.eventer.domain.festival.FestivalFixture.축제_엔티티;
 import static com.halo.eventer.domain.stamp.fixture.MissionFixture.미션1_생성;
 import static com.halo.eventer.domain.stamp.fixture.StampFixture.*;
 import static com.halo.eventer.domain.stamp.fixture.StampUserFixture.*;
@@ -54,6 +56,7 @@ public class StampUserServiceTest {
     private StampUserService stampUserService;
 
     // entity
+    private Festival festival;
     private Stamp stamp1;
     private StampUser stampUser;
     private Mission mission;
@@ -69,7 +72,8 @@ public class StampUserServiceTest {
 
     @BeforeEach
     public void setUp() {
-        stamp1 = 스탬프1_생성();
+        festival = 축제_엔티티();
+        stamp1 = 스탬프1_생성(festival);
         stampUser = 스탬프유저1_생성();
         mission = 미션1_생성();
         userMission1 = 유저미션_엔티티_생성(stampUser, mission);
@@ -210,7 +214,7 @@ public class StampUserServiceTest {
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.isFinished()).isEqualTo(stampUser.isFinished());
+        assertThat(result.isFinished()).isEqualTo(stampUser.getFinished());
     }
 
     @Test
@@ -232,7 +236,7 @@ public class StampUserServiceTest {
         given(encryptService.decryptInfo(anyString())).willReturn("암호화");
 
         // when
-        List<StampUsersGetDto> result = stampUserService.getStampUsers(스탬프1);
+        List<StampUsersGetDto> result = stampUserService.getStampUsers(스탬프1_ID);
 
         // then
         assertThat(result).hasSize(1);
@@ -249,7 +253,7 @@ public class StampUserServiceTest {
         stampUserService.updateUserMission("", 1L);
 
         // then
-        assertThat(userMission1.isComplete()).isEqualTo(true);
+        assertThat(userMission1.getComplete()).isEqualTo(true);
     }
 
     @Test

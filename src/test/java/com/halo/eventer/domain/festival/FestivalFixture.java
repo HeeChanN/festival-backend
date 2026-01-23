@@ -17,7 +17,7 @@ public class FestivalFixture {
     public static FestivalCreateDto 축제_생성용_DTO() {
         FestivalCreateDto festivalCreateDto = new FestivalCreateDto();
         setField(festivalCreateDto, "name", "축제");
-        setField(festivalCreateDto, "subAddress", "주소");
+        setField(festivalCreateDto, "subDomain", "주소");
         return festivalCreateDto;
     }
 
