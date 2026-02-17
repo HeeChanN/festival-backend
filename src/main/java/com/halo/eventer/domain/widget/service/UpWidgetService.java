@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.home.cache.HomeCacheEvictEvent;
 import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetCreateDto;
@@ -32,6 +34,7 @@ public class UpWidgetService {
     private final WidgetRepository widgetRepository;
     private final FestivalRepository festivalRepository;
     private final WidgetPageHelper widgetPageHelper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public UpWidgetResDto create(Long festivalId, UpWidgetCreateDto upWidgetCreateDto) {
@@ -44,6 +47,7 @@ public class UpWidgetService {
                 upWidgetCreateDto.getUrl(),
                 upWidgetCreateDto.getPeriodStart(),
                 upWidgetCreateDto.getPeriodEnd()));
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
         return UpWidgetResDto.from(widget);
     }
 
@@ -73,12 +77,18 @@ public class UpWidgetService {
         widget.updateProperties(
                 new UpWidgetProperties(widgetCreateDto.getPeriodStart(), widgetCreateDto.getPeriodEnd()));
 
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(widget.getFestival().getId()));
         return UpWidgetResDto.from(widget);
     }
 
     @Transactional
     public void delete(Long upWidgetId) {
-        widgetRepository.deleteById(upWidgetId);
+        Widget widget = widgetRepository
+                .findById(upWidgetId)
+                .orElseThrow(() -> new WidgetNotFoundException(upWidgetId, WidgetType.UP));
+        Long festivalId = widget.getFestival().getId();
+        widgetRepository.delete(widget);
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
     }
 
     @Transactional(readOnly = true)

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.halo.eventer.domain.festival.Festival;
@@ -41,6 +42,9 @@ public class MainWidgetServiceTest {
 
     @Mock
     private WidgetRepository widgetRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private MainWidgetService mainWidgetService;
@@ -109,9 +113,18 @@ public class MainWidgetServiceTest {
 
     @Test
     void 메인위젯_삭제_테스트() {
+        given(widgetRepository.findById(mainWidgetId)).willReturn(Optional.of(mainWidget));
+
         mainWidgetService.delete(mainWidgetId);
 
-        then(widgetRepository).should().deleteById(mainWidgetId);
+        then(widgetRepository).should().delete(mainWidget);
+    }
+
+    @Test
+    void 메인위젯_삭제_없는경우_예외() {
+        given(widgetRepository.findById(mainWidgetId)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> mainWidgetService.delete(mainWidgetId)).isInstanceOf(WidgetNotFoundException.class);
     }
 
     private void assertResultDtoEqualsWidget(MainWidgetResDto result, Widget widget) {

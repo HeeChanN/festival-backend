@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.home.cache.HomeCacheEvictEvent;
 import com.halo.eventer.domain.notice.ArticleType;
 import com.halo.eventer.domain.notice.Notice;
 import com.halo.eventer.domain.notice.dto.*;
@@ -30,11 +32,13 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final FestivalRepository festivalRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public NoticeResDto create(Long festivalId, NoticeCreateReqDto noticeCreateReqDto) {
         Festival festival = loadFestivalOrThrow(festivalId);
         Notice notice = noticeRepository.save(Notice.from(festival, noticeCreateReqDto));
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
         return NoticeResDto.from(notice);
     }
 
@@ -75,6 +79,7 @@ public class NoticeService {
     public NoticeResDto updatePicked(Long noticeId, Boolean pick) {
         Notice notice = loadNoticeOrThrow(noticeId);
         notice.updatePicked(pick);
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(notice.getFestival().getId()));
         return NoticeResDto.from(notice);
     }
 
@@ -82,12 +87,16 @@ public class NoticeService {
     public NoticeResDto updateNotice(Long noticeId, NoticeUpdateReqDto noticeUpdateReqDto) {
         Notice notice = loadNoticeOrThrow(noticeId);
         notice.updateNotice(noticeUpdateReqDto);
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(notice.getFestival().getId()));
         return NoticeResDto.from(notice);
     }
 
     @Transactional
     public void delete(Long id) {
-        noticeRepository.deleteById(id);
+        Notice notice = loadNoticeOrThrow(id);
+        Long festivalId = notice.getFestival().getId();
+        noticeRepository.delete(notice);
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
     }
 
     @Transactional(readOnly = true)
@@ -104,6 +113,10 @@ public class NoticeService {
         List<Notice> notices = noticeRepository.findAllById(noticeIdToRankMap.keySet());
 
         Notice.reOrderPickedNotices(notices, noticeIdToRankMap);
+        if (!notices.isEmpty()) {
+            eventPublisher.publishEvent(
+                    new HomeCacheEvictEvent(notices.get(0).getFestival().getId()));
+        }
         return PickedNoticeResDto.noticesToPikedNoticeResDtos(notices);
     }
 

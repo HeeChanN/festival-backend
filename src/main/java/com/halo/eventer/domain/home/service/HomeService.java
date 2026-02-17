@@ -14,18 +14,26 @@ import com.halo.eventer.domain.missing_person.MissingPerson;
 import com.halo.eventer.domain.missing_person.service.MissingPersonService;
 import com.halo.eventer.domain.notice.dto.PickedNoticeResDto;
 import com.halo.eventer.domain.notice.service.NoticeService;
+import com.halo.eventer.global.cache.DistributedCacheManager;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class HomeService {
 
+    private static final String HOME_CACHE_KEY_PREFIX = "home:";
+
     private final NoticeService noticeService;
     private final FestivalRepository festivalRepository;
     private final MissingPersonService missingPersonService;
+    private final DistributedCacheManager distributedCacheManager;
 
     @Transactional(readOnly = true)
     public HomeDto getMainPage(Long festivalId) {
+        return distributedCacheManager.get(HOME_CACHE_KEY_PREFIX + festivalId, () -> loadHomeDto(festivalId));
+    }
+
+    private HomeDto loadHomeDto(Long festivalId) {
         Festival festival = getFestival(festivalId);
         return new HomeDto(getBanner(festivalId), festival, LocalDateTime.now(), getMissingPersons(festivalId));
     }
