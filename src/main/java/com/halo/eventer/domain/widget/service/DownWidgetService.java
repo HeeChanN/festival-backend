@@ -3,12 +3,14 @@ package com.halo.eventer.domain.widget.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.home.cache.HomeCacheEvictEvent;
 import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.down_widget.DownWidgetCreateDto;
@@ -25,6 +27,7 @@ public class DownWidgetService {
 
     private final WidgetRepository widgetRepository;
     private final FestivalRepository festivalRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public DownWidgetResDto create(Long festivalId, DownWidgetCreateDto downWidgetCreateDto) {
@@ -37,6 +40,7 @@ public class DownWidgetService {
                 downWidgetCreateDto.getUrl(),
                 com.halo.eventer.global.constants.DisplayOrderConstants.DISPLAY_ORDER_DEFAULT));
 
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
         return DownWidgetResDto.from(widget);
     }
 
@@ -52,12 +56,17 @@ public class DownWidgetService {
         Widget widget =
                 widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.DOWN));
         widget.updateBaseField(downWidgetCreateDto.getName(), downWidgetCreateDto.getUrl());
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(widget.getFestival().getId()));
         return DownWidgetResDto.from(widget);
     }
 
     @Transactional
     public void delete(Long id) {
-        widgetRepository.deleteById(id);
+        Widget widget =
+                widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.DOWN));
+        Long festivalId = widget.getFestival().getId();
+        widgetRepository.delete(widget);
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
     }
 
     @Transactional
@@ -66,6 +75,7 @@ public class DownWidgetService {
 
         DisplayOrderUtils.updateDisplayOrder(widgets, orderRequests);
 
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
         return widgets.stream().map(DownWidgetResDto::from).collect(Collectors.toList());
     }
 }
