@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -49,6 +50,9 @@ public class NoticeServiceTest {
 
     @Mock
     private FestivalRepository festivalRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private NoticeService noticeService;
@@ -204,11 +208,14 @@ public class NoticeServiceTest {
 
     @Test
     void notice_삭제() {
+        // given
+        given(noticeRepository.findById(noticeId)).willReturn(Optional.of(notice));
+
         // when
         noticeService.delete(noticeId);
 
         // then
-        verify(noticeRepository, times(1)).deleteById(noticeId);
+        verify(noticeRepository, times(1)).delete(notice);
     }
 
     @Test

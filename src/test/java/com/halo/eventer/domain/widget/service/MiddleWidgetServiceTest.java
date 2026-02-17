@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -54,6 +55,9 @@ public class MiddleWidgetServiceTest {
 
     @Mock
     private WidgetPageHelper widgetPageHelper;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private MiddleWidgetService middleWidgetService;
@@ -151,9 +155,11 @@ public class MiddleWidgetServiceTest {
 
     @Test
     void 중간위젯_삭제_테스트() {
+        given(widgetRepository.findById(middleWidgetId)).willReturn(Optional.of(middleWidget));
+
         middleWidgetService.delete(middleWidgetId);
 
-        then(widgetRepository).should().deleteById(middleWidgetId);
+        then(widgetRepository).should().delete(middleWidget);
     }
 
     @Test

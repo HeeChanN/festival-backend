@@ -3,12 +3,14 @@ package com.halo.eventer.domain.widget.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.home.cache.HomeCacheEvictEvent;
 import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.main_widget.MainWidgetCreateDto;
@@ -24,6 +26,7 @@ public class MainWidgetService {
 
     private final FestivalRepository festivalRepository;
     private final WidgetRepository widgetRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public MainWidgetResDto create(Long festivalId, MainWidgetCreateDto mainWidgetCreateDto) {
@@ -37,6 +40,7 @@ public class MainWidgetService {
                 mainWidgetCreateDto.getImage(),
                 mainWidgetCreateDto.getDescription()));
 
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
         return MainWidgetResDto.from(widget);
     }
 
@@ -54,11 +58,16 @@ public class MainWidgetService {
         widget.updateBaseField(mainWidgetCreateDto.getName(), mainWidgetCreateDto.getUrl());
         widget.updateProperties(
                 new MainWidgetProperties(mainWidgetCreateDto.getImage(), mainWidgetCreateDto.getDescription()));
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(widget.getFestival().getId()));
         return MainWidgetResDto.from(widget);
     }
 
     @Transactional
     public void delete(Long id) {
-        widgetRepository.deleteById(id);
+        Widget widget =
+                widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.MAIN));
+        Long festivalId = widget.getFestival().getId();
+        widgetRepository.delete(widget);
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
     }
 }

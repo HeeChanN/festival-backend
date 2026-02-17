@@ -3,6 +3,7 @@ package com.halo.eventer.domain.home.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class HomeService {
     private final FestivalRepository festivalRepository;
     private final MissingPersonService missingPersonService;
 
+    @Cacheable(value = "home", key = "#festivalId")
     @Transactional(readOnly = true)
     public HomeDto getMainPage(Long festivalId) {
         Festival festival = getFestival(festivalId);

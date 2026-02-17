@@ -3,6 +3,7 @@ package com.halo.eventer.domain.widget.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.home.cache.HomeCacheEvictEvent;
 import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.middle_widget.MiddleWidgetCreateDto;
@@ -33,6 +35,7 @@ public class MiddleWidgetService {
     private final WidgetRepository widgetRepository;
     private final FestivalRepository festivalRepository;
     private final WidgetPageHelper widgetPageHelper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public MiddleWidgetResDto create(Long festivalId, MiddleWidgetCreateDto middleWidgetCreateDto) {
@@ -46,6 +49,7 @@ public class MiddleWidgetService {
                 middleWidgetCreateDto.getImage(),
                 com.halo.eventer.global.constants.DisplayOrderConstants.DISPLAY_ORDER_DEFAULT));
 
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
         return MiddleWidgetResDto.from(widget);
     }
 
@@ -77,12 +81,17 @@ public class MiddleWidgetService {
         widget.updateBaseField(middleWidgetCreateDto.getName(), middleWidgetCreateDto.getUrl());
         widget.updateProperties(new MiddleWidgetProperties(middleWidgetCreateDto.getImage()));
 
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(widget.getFestival().getId()));
         return MiddleWidgetResDto.from(widget);
     }
 
     @Transactional
     public void delete(Long id) {
-        widgetRepository.deleteById(id);
+        Widget widget =
+                widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.MIDDLE));
+        Long festivalId = widget.getFestival().getId();
+        widgetRepository.delete(widget);
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
     }
 
     @Transactional
@@ -91,6 +100,7 @@ public class MiddleWidgetService {
 
         DisplayOrderUtils.updateDisplayOrder(widgets, orderRequests);
 
+        eventPublisher.publishEvent(new HomeCacheEvictEvent(festivalId));
         return widgets.stream().map(MiddleWidgetResDto::from).collect(Collectors.toList());
     }
 

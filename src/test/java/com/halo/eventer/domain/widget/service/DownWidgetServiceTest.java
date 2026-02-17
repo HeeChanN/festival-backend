@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.halo.eventer.domain.festival.Festival;
@@ -41,6 +42,9 @@ public class DownWidgetServiceTest {
 
     @Mock
     private WidgetRepository widgetRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private DownWidgetService downWidgetService;
@@ -109,9 +113,11 @@ public class DownWidgetServiceTest {
 
     @Test
     void 하단위젯_삭제_테스트() {
+        given(widgetRepository.findById(downWidgetId)).willReturn(Optional.of(downWidget));
+
         downWidgetService.delete(downWidgetId);
 
-        then(widgetRepository).should().deleteById(downWidgetId);
+        then(widgetRepository).should().delete(downWidget);
     }
 
     @Test

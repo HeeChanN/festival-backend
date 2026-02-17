@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -55,6 +56,9 @@ public class SquareWidgetServiceTest {
 
     @Mock
     private WidgetPageHelper widgetPageHelper;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private SquareWidgetService squareWidgetService;
@@ -152,9 +156,11 @@ public class SquareWidgetServiceTest {
 
     @Test
     void 정사각형위젯_삭제_테스트() {
+        given(widgetRepository.findById(squareWidgetId)).willReturn(Optional.of(squareWidget));
+
         squareWidgetService.delete(squareWidgetId);
 
-        then(widgetRepository).should().deleteById(squareWidgetId);
+        then(widgetRepository).should().delete(squareWidget);
     }
 
     @Test
