@@ -13,12 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetResDto;
-import com.halo.eventer.domain.widget.entity.UpWidget;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
-import com.halo.eventer.domain.widget.repository.UpWidgetRepository;
+import com.halo.eventer.domain.widget.properties.UpWidgetProperties;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 import com.halo.eventer.domain.widget.util.WidgetPageHelper;
 import com.halo.eventer.global.common.page.PagedResponse;
 import com.halo.eventer.global.common.sort.SortOption;
@@ -28,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UpWidgetService {
 
-    private final UpWidgetRepository upWidgetRepository;
+    private final WidgetRepository widgetRepository;
     private final FestivalRepository festivalRepository;
     private final WidgetPageHelper widgetPageHelper;
 
@@ -37,16 +38,20 @@ public class UpWidgetService {
         Festival festival =
                 festivalRepository.findById(festivalId).orElseThrow(() -> new FestivalNotFoundException(festivalId));
 
-        UpWidget upWidget = upWidgetRepository.save(UpWidget.from(festival, upWidgetCreateDto));
-        return UpWidgetResDto.from(upWidget);
+        Widget widget = widgetRepository.save(Widget.createUpWidget(
+                festival,
+                upWidgetCreateDto.getName(),
+                upWidgetCreateDto.getUrl(),
+                upWidgetCreateDto.getPeriodStart(),
+                upWidgetCreateDto.getPeriodEnd()));
+        return UpWidgetResDto.from(widget);
     }
 
     @Transactional(readOnly = true)
     public UpWidgetResDto getUpWidget(Long id) {
-        UpWidget upWidget =
-                upWidgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.UP));
+        Widget widget = widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.UP));
 
-        return UpWidgetResDto.from(upWidget);
+        return UpWidgetResDto.from(widget);
     }
 
     @Transactional(readOnly = true)
@@ -55,30 +60,30 @@ public class UpWidgetService {
         validateFestival(festivalId);
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<UpWidget> upWidgetPage =
-                widgetPageHelper.findWidgetsBySort(UpWidget.class, festivalId, sortOption, pageable);
+        Page<Widget> widgetPage = widgetPageHelper.findWidgetsBySort(WidgetType.UP, festivalId, sortOption, pageable);
 
-        return widgetPageHelper.getPagedResponse(upWidgetPage, UpWidgetResDto::from);
+        return widgetPageHelper.getPagedResponse(widgetPage, UpWidgetResDto::from);
     }
 
     @Transactional
     public UpWidgetResDto update(Long id, UpWidgetCreateDto widgetCreateDto) {
-        UpWidget upWidget =
-                upWidgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.UP));
+        Widget widget = widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.UP));
 
-        upWidget.updateUpWidget(widgetCreateDto);
+        widget.updateBaseField(widgetCreateDto.getName(), widgetCreateDto.getUrl());
+        widget.updateProperties(
+                new UpWidgetProperties(widgetCreateDto.getPeriodStart(), widgetCreateDto.getPeriodEnd()));
 
-        return UpWidgetResDto.from(upWidget);
+        return UpWidgetResDto.from(widget);
     }
 
     @Transactional
     public void delete(Long upWidgetId) {
-        upWidgetRepository.deleteById(upWidgetId);
+        widgetRepository.deleteById(upWidgetId);
     }
 
     @Transactional(readOnly = true)
     public List<UpWidgetResDto> getUpWidgetsByNow(Long festivalId, LocalDateTime now) {
-        return upWidgetRepository.findAllByFestivalIdAndPeriod(festivalId, now).stream()
+        return widgetRepository.findUpWidgetsByFestivalIdAndPeriod(festivalId, now).stream()
                 .map(UpWidgetResDto::from)
                 .collect(Collectors.toList());
     }

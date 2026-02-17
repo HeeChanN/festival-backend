@@ -2,7 +2,8 @@ package com.halo.eventer.domain.widget.dto.up_widget;
 
 import java.time.LocalDateTime;
 
-import com.halo.eventer.domain.widget.entity.UpWidget;
+import com.halo.eventer.domain.widget.Widget;
+import com.halo.eventer.domain.widget.properties.UpWidgetProperties;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,15 +38,16 @@ public class UpWidgetResDto {
         this.updatedAt = updatedAt;
     }
 
-    public static UpWidgetResDto from(UpWidget upWidget) {
+    public static UpWidgetResDto from(Widget widget) {
+        UpWidgetProperties props = widget.getTypedProperties(UpWidgetProperties.class);
         return UpWidgetResDto.builder()
-                .id(upWidget.getId())
-                .name(upWidget.getName())
-                .url(upWidget.getUrl())
-                .periodStart(upWidget.getPeriodFeature().getPeriodStart())
-                .periodEnd(upWidget.getPeriodFeature().getPeriodEnd())
-                .createdAt(upWidget.getCreatedAt())
-                .updatedAt(upWidget.getUpdatedAt())
+                .id(widget.getId())
+                .name(widget.getName())
+                .url(widget.getUrl())
+                .periodStart(props.getPeriodStart())
+                .periodEnd(props.getPeriodEnd())
+                .createdAt(widget.getCreatedAt())
+                .updatedAt(widget.getUpdatedAt())
                 .build();
     }
 

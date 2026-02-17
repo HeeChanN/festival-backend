@@ -21,12 +21,14 @@ import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.FestivalFixture;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetFixture;
+import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.middle_widget.MiddleWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.middle_widget.MiddleWidgetResDto;
-import com.halo.eventer.domain.widget.entity.MiddleWidget;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
-import com.halo.eventer.domain.widget.repository.MiddleWidgetRepository;
+import com.halo.eventer.domain.widget.properties.MiddleWidgetProperties;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 import com.halo.eventer.domain.widget.util.WidgetPageHelper;
 import com.halo.eventer.global.common.dto.OrderUpdateRequest;
 import com.halo.eventer.global.common.page.PageInfo;
@@ -48,7 +50,7 @@ public class MiddleWidgetServiceTest {
     private FestivalRepository festivalRepository;
 
     @Mock
-    private MiddleWidgetRepository middleWidgetRepository;
+    private WidgetRepository widgetRepository;
 
     @Mock
     private WidgetPageHelper widgetPageHelper;
@@ -57,7 +59,7 @@ public class MiddleWidgetServiceTest {
     private MiddleWidgetService middleWidgetService;
 
     private Festival festival;
-    private MiddleWidget middleWidget;
+    private Widget middleWidget;
     private MiddleWidgetCreateDto middleWidgetCreateDto;
     final long middleWidgetId = 1L;
 
@@ -71,58 +73,47 @@ public class MiddleWidgetServiceTest {
 
     @Test
     void 중간위젯_생성_테스트() {
-        // given
         final long festivalId = 1L;
         given(festivalRepository.findById(festivalId)).willReturn(Optional.of(festival));
-        given(middleWidgetRepository.save(any(MiddleWidget.class))).willReturn(middleWidget);
+        given(widgetRepository.save(any(Widget.class))).willReturn(middleWidget);
 
-        // when
         MiddleWidgetResDto result = middleWidgetService.create(festivalId, middleWidgetCreateDto);
 
-        // then
-        assertResultDtoEqualsMiddleWidget(result, middleWidget);
+        assertResultDtoEqualsWidget(result, middleWidget);
     }
 
     @Test
     void 중간위젯_생성_축제_없을때_예외() {
-        // given
         final long festivalId = 1L;
         given(festivalRepository.findById(festivalId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> middleWidgetService.create(festivalId, middleWidgetCreateDto))
                 .isInstanceOf(FestivalNotFoundException.class);
     }
 
     @Test
     void 중간위젯_id_단일조회() {
-        // given
-        given(middleWidgetRepository.findById(middleWidgetId)).willReturn(Optional.of(middleWidget));
+        given(widgetRepository.findById(middleWidgetId)).willReturn(Optional.of(middleWidget));
 
-        // when
         MiddleWidgetResDto result = middleWidgetService.getMiddleWidget(middleWidgetId);
 
-        // then
-        assertResultDtoEqualsMiddleWidget(result, middleWidget);
+        assertResultDtoEqualsWidget(result, middleWidget);
     }
 
     @Test
     void 중간위젯_id_단일조회시_없을때_예외() {
-        // given
-        given(middleWidgetRepository.findById(middleWidgetId)).willReturn(Optional.empty());
+        given(widgetRepository.findById(middleWidgetId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> middleWidgetService.getMiddleWidget(middleWidgetId))
                 .isInstanceOf(WidgetNotFoundException.class);
     }
 
     @Test
     void 중간위젯_offset_페이징_조회_테스트() {
-        // given
         final long festivalId = 1L;
         final int page = 0, size = 10;
         Pageable pageable = PageRequest.of(page, size);
-        Page<MiddleWidget> widgetPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+        Page<Widget> widgetPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
         PageInfo pageInfo = PageInfo.builder()
                 .pageNumber(widgetPage.getNumber())
                 .pageSize(widgetPage.getSize())
@@ -130,70 +121,60 @@ public class MiddleWidgetServiceTest {
                 .totalPages(widgetPage.getTotalPages())
                 .build();
         PagedResponse<MiddleWidgetResDto> expected = new PagedResponse<>(Collections.emptyList(), pageInfo);
-        given(widgetPageHelper.findWidgetsBySort(MiddleWidget.class, festivalId, SortOption.CREATED_AT, pageable))
+        given(widgetPageHelper.findWidgetsBySort(WidgetType.MIDDLE, festivalId, SortOption.CREATED_AT, pageable))
                 .willReturn(widgetPage);
         given(festivalRepository.existsById(festivalId)).willReturn(true);
         given(widgetPageHelper.getPagedResponse(any(), any(Function.class))).willReturn(expected);
 
-        // when
         PagedResponse<MiddleWidgetResDto> result =
                 middleWidgetService.getMiddleWidgetsWithOffsetPaging(festivalId, SortOption.CREATED_AT, page, size);
 
-        // then
         assertThat(result).isSameAs(expected);
     }
 
     @Test
     void 중간위젯_수정_테스트() {
-        // given
-        given(middleWidgetRepository.findById(middleWidgetId)).willReturn(Optional.of(middleWidget));
+        given(widgetRepository.findById(middleWidgetId)).willReturn(Optional.of(middleWidget));
 
-        // when
         MiddleWidgetResDto result = middleWidgetService.update(middleWidgetId, middleWidgetCreateDto);
 
-        // then
-        assertResultDtoEqualsMiddleWidget(result, middleWidget);
+        assertResultDtoEqualsWidget(result, middleWidget);
     }
 
     @Test
     void 중간위젯_수정할때_조회되지_않는경우_예외() {
-        // given
-        given(middleWidgetRepository.findById(middleWidgetId)).willReturn(Optional.empty());
+        given(widgetRepository.findById(middleWidgetId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> middleWidgetService.update(middleWidgetId, middleWidgetCreateDto))
                 .isInstanceOf(WidgetNotFoundException.class);
     }
 
     @Test
     void 중간위젯_삭제_테스트() {
-        // when
         middleWidgetService.delete(middleWidgetId);
 
-        // then
-        then(middleWidgetRepository).should().deleteById(middleWidgetId);
+        then(widgetRepository).should().deleteById(middleWidgetId);
     }
 
     @Test
     void 중간위젯_순서_수정_테스트() {
-        // given
         final long festivalId = 1L;
         final int displayOrder = 1;
-        given(middleWidgetRepository.findAllByFestivalId(festivalId)).willReturn(List.of(middleWidget));
+        given(widgetRepository.findAllByFestivalIdAndWidgetType(festivalId, WidgetType.MIDDLE))
+                .willReturn(List.of(middleWidget));
         List<OrderUpdateRequest> request = List.of(OrderUpdateRequest.of(middleWidgetId, displayOrder));
 
-        // when
-        List<MiddleWidgetResDto> result = middleWidgetService.updateDisplayOrder(middleWidgetId, request);
+        List<MiddleWidgetResDto> result = middleWidgetService.updateDisplayOrder(festivalId, request);
 
-        // then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getDisplayOrder()).isEqualTo(displayOrder);
     }
 
-    private void assertResultDtoEqualsMiddleWidget(MiddleWidgetResDto result, MiddleWidget middleWidget) {
-        assertThat(result.getName()).isEqualTo(middleWidget.getName());
-        assertThat(result.getUrl()).isEqualTo(middleWidget.getUrl());
-        assertThat(result.getDisplayOrder())
-                .isEqualTo(middleWidget.getDisplayOrderFeature().getDisplayOrder());
+    private void assertResultDtoEqualsWidget(MiddleWidgetResDto result, Widget widget) {
+        MiddleWidgetProperties props = widget.getTypedProperties(MiddleWidgetProperties.class);
+        assertThat(result.getName()).isEqualTo(widget.getName());
+        assertThat(result.getUrl()).isEqualTo(widget.getUrl());
+        assertThat(result.getImage()).isEqualTo(props.getImage());
+        assertThat(result.getDisplayOrder()).isEqualTo(widget.getDisplayOrder());
     }
 }

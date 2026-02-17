@@ -15,12 +15,14 @@ import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.FestivalFixture;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetFixture;
+import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.main_widget.MainWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.main_widget.MainWidgetResDto;
-import com.halo.eventer.domain.widget.entity.MainWidget;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
-import com.halo.eventer.domain.widget.repository.MainWidgetRepository;
+import com.halo.eventer.domain.widget.properties.MainWidgetProperties;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,13 +40,13 @@ public class MainWidgetServiceTest {
     private FestivalRepository festivalRepository;
 
     @Mock
-    private MainWidgetRepository mainWidgetRepository;
+    private WidgetRepository widgetRepository;
 
     @InjectMocks
     private MainWidgetService mainWidgetService;
 
     private Festival festival;
-    private MainWidget mainWidget;
+    private Widget mainWidget;
     private MainWidgetCreateDto mainWidgetCreateDto;
     final long mainWidgetId = 1L;
 
@@ -58,80 +60,66 @@ public class MainWidgetServiceTest {
 
     @Test
     void 메인위젯_생성_테스트() {
-        // given
         final long festivalId = 1L;
         given(festivalRepository.findById(festivalId)).willReturn(Optional.of(festival));
-        given(mainWidgetRepository.save(any(MainWidget.class))).willReturn(mainWidget);
+        given(widgetRepository.save(any(Widget.class))).willReturn(mainWidget);
 
-        // when
         MainWidgetResDto result = mainWidgetService.create(festivalId, mainWidgetCreateDto);
 
-        // then
-        assertResultDtoEqualsMainWidget(result, mainWidget);
+        assertResultDtoEqualsWidget(result, mainWidget);
     }
 
     @Test
     void 메인위젯_생성_축제_없을때_예외() {
-        // given
         final long festivalId = 1L;
         given(festivalRepository.findById(festivalId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> mainWidgetService.create(festivalId, mainWidgetCreateDto))
                 .isInstanceOf(FestivalNotFoundException.class);
     }
 
     @Test
     void 메인위젯_리스트_조회() {
-        // given
         final long festivalId = 1L;
-        given(mainWidgetRepository.findAllByFestivalId(festivalId)).willReturn(List.of(mainWidget));
+        given(widgetRepository.findAllByFestivalIdAndWidgetType(festivalId, WidgetType.MAIN))
+                .willReturn(List.of(mainWidget));
 
-        // when
         List<MainWidgetResDto> result = mainWidgetService.getAllMainWidget(festivalId);
 
-        // then
         assertThat(result).hasSize(1);
-        assertResultDtoEqualsMainWidget(result.get(0), mainWidget);
+        assertResultDtoEqualsWidget(result.get(0), mainWidget);
     }
 
     @Test
     void 메인위젯_수정_테스트() {
-        // given
-        given(mainWidgetRepository.findById(mainWidgetId)).willReturn(Optional.of(mainWidget));
+        given(widgetRepository.findById(mainWidgetId)).willReturn(Optional.of(mainWidget));
 
-        // when
         MainWidgetResDto result = mainWidgetService.update(mainWidgetId, mainWidgetCreateDto);
 
-        // then
-        assertResultDtoEqualsMainWidget(result, mainWidget);
+        assertResultDtoEqualsWidget(result, mainWidget);
     }
 
     @Test
     void 메인위젯_수정할때_없는경우_예외() {
-        // given
-        given(mainWidgetRepository.findById(mainWidgetId)).willReturn(Optional.empty());
+        given(widgetRepository.findById(mainWidgetId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> mainWidgetService.update(mainWidgetId, mainWidgetCreateDto))
                 .isInstanceOf(WidgetNotFoundException.class);
     }
 
     @Test
     void 메인위젯_삭제_테스트() {
-        // when
         mainWidgetService.delete(mainWidgetId);
 
-        // then
-        then(mainWidgetRepository).should().deleteById(mainWidgetId);
+        then(widgetRepository).should().deleteById(mainWidgetId);
     }
 
-    private void assertResultDtoEqualsMainWidget(MainWidgetResDto result, MainWidget mainWidget) {
-        assertThat(result.getName()).isEqualTo(mainWidget.getName());
-        assertThat(result.getUrl()).isEqualTo(mainWidget.getUrl());
-        assertThat(result.getId()).isEqualTo(mainWidget.getId());
-        assertThat(result.getImage()).isEqualTo(mainWidget.getImageFeature().getImage());
-        assertThat(result.getDescription())
-                .isEqualTo(mainWidget.getDescriptionFeature().getDescription());
+    private void assertResultDtoEqualsWidget(MainWidgetResDto result, Widget widget) {
+        MainWidgetProperties props = widget.getTypedProperties(MainWidgetProperties.class);
+        assertThat(result.getName()).isEqualTo(widget.getName());
+        assertThat(result.getUrl()).isEqualTo(widget.getUrl());
+        assertThat(result.getId()).isEqualTo(widget.getId());
+        assertThat(result.getImage()).isEqualTo(props.getImage());
+        assertThat(result.getDescription()).isEqualTo(props.getDescription());
     }
 }

@@ -22,11 +22,13 @@ import org.springframework.test.context.ActiveProfiles;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.widget.Widget;
+import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetResDto;
-import com.halo.eventer.domain.widget.entity.UpWidget;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
-import com.halo.eventer.domain.widget.repository.UpWidgetRepository;
+import com.halo.eventer.domain.widget.properties.UpWidgetProperties;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 import com.halo.eventer.domain.widget.util.WidgetPageHelper;
 import com.halo.eventer.global.common.page.PageInfo;
 import com.halo.eventer.global.common.page.PagedResponse;
@@ -47,7 +49,7 @@ public class UpWidgetServiceTest {
     private FestivalRepository festivalRepository;
 
     @Mock
-    private UpWidgetRepository upWidgetRepository;
+    private WidgetRepository widgetRepository;
 
     @Mock
     private WidgetPageHelper widgetPageHelper;
@@ -56,11 +58,11 @@ public class UpWidgetServiceTest {
     private UpWidgetService upWidgetService;
 
     private Festival festival;
-    private UpWidget upWidget;
+    private Widget upWidget;
     private UpWidgetCreateDto upWidgetCreateDto;
     private Pageable pageable;
-    private List<UpWidget> upWidgetList;
-    private Page<UpWidget> upWidgetPage;
+    private List<Widget> upWidgetList;
+    private Page<Widget> upWidgetPage;
     private PagedResponse<UpWidgetResDto> pagedResponse;
     private PageInfo pageInfo;
 
@@ -70,7 +72,7 @@ public class UpWidgetServiceTest {
     @BeforeEach
     void setUp() {
         festival = new Festival();
-        upWidget = UpWidget.of(festival, "이름", "url", LocalDateTime.now(), LocalDateTime.now());
+        upWidget = Widget.createUpWidget(festival, "이름", "url", LocalDateTime.now(), LocalDateTime.now());
         upWidgetCreateDto = UpWidgetCreateDto.of("이름", "url", LocalDateTime.now(), LocalDateTime.now());
         pageable = PageRequest.of(0, 10);
         upWidgetList = Collections.singletonList(upWidget);
@@ -81,152 +83,125 @@ public class UpWidgetServiceTest {
                 .totalElements(upWidgetPage.getTotalElements())
                 .totalPages(upWidgetPage.getTotalPages())
                 .build();
-        pagedResponse = new PagedResponse<UpWidgetResDto>(
+        pagedResponse = new PagedResponse<>(
                 upWidgetList.stream().map(UpWidgetResDto::from).collect(Collectors.toList()), pageInfo);
     }
 
     @Test
     void 상단위젯_생성() {
-        // given
         given(festivalRepository.findById(festivalId)).willReturn(Optional.of(festival));
-        given(upWidgetRepository.save(any())).willReturn(upWidget);
+        given(widgetRepository.save(any())).willReturn(upWidget);
 
-        // when
         UpWidgetResDto result = upWidgetService.create(festivalId, upWidgetCreateDto);
 
-        // then
+        UpWidgetProperties props = upWidget.getTypedProperties(UpWidgetProperties.class);
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo(upWidget.getName());
         assertThat(result.getUrl()).isEqualTo(upWidget.getUrl());
-        assertThat(result.getPeriodStart())
-                .isEqualTo(upWidget.getPeriodFeature().getPeriodStart());
-        assertThat(result.getPeriodEnd()).isEqualTo(upWidget.getPeriodFeature().getPeriodEnd());
+        assertThat(result.getPeriodStart()).isEqualTo(props.getPeriodStart());
+        assertThat(result.getPeriodEnd()).isEqualTo(props.getPeriodEnd());
     }
 
     @Test
     void 상단위젯_생성_축제_없을때_예외() {
-        // given
         given(festivalRepository.findById(festivalId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> upWidgetService.create(festivalId, upWidgetCreateDto))
                 .isInstanceOf(FestivalNotFoundException.class);
     }
 
     @Test
     void 상단위젯_단일_조회() {
-        // given
-        given(upWidgetRepository.findById(upWidgetId)).willReturn(Optional.of(upWidget));
+        given(widgetRepository.findById(upWidgetId)).willReturn(Optional.of(upWidget));
 
-        // when
         UpWidgetResDto result = upWidgetService.getUpWidget(upWidgetId);
 
-        // then
+        UpWidgetProperties props = upWidget.getTypedProperties(UpWidgetProperties.class);
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo(upWidget.getName());
         assertThat(result.getUrl()).isEqualTo(upWidget.getUrl());
-        assertThat(result.getPeriodStart())
-                .isEqualTo(upWidget.getPeriodFeature().getPeriodStart());
-        assertThat(result.getPeriodEnd()).isEqualTo(upWidget.getPeriodFeature().getPeriodEnd());
+        assertThat(result.getPeriodStart()).isEqualTo(props.getPeriodStart());
+        assertThat(result.getPeriodEnd()).isEqualTo(props.getPeriodEnd());
     }
 
     @Test
     void 상단위젯_없을때_예외() {
-        // given
-        given(upWidgetRepository.findById(upWidgetId)).willReturn(Optional.empty());
+        given(widgetRepository.findById(upWidgetId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> upWidgetService.getUpWidget(upWidgetId)).isInstanceOf(WidgetNotFoundException.class);
     }
 
     @Test
     void 상단위젯_번호_페이징_조회() {
-        // given
-        given(widgetPageHelper.findWidgetsBySort(UpWidget.class, festivalId, SortOption.CREATED_AT, pageable))
+        given(widgetPageHelper.findWidgetsBySort(WidgetType.UP, festivalId, SortOption.CREATED_AT, pageable))
                 .willReturn(upWidgetPage);
         given(festivalRepository.existsById(festivalId)).willReturn(true);
         given(widgetPageHelper.getPagedResponse(any(), any(Function.class))).willReturn(pagedResponse);
 
-        // when
         PagedResponse<UpWidgetResDto> result =
                 upWidgetService.getUpWidgetsWithOffsetPaging(festivalId, SortOption.CREATED_AT, 0, 10);
         UpWidgetResDto target = result.getContent().get(0);
 
-        // then
+        UpWidgetProperties props = upWidget.getTypedProperties(UpWidgetProperties.class);
         assertThat(result).isNotNull();
         assertThat(result.getContent()).hasSize(1);
         assertThat(target.getName()).isEqualTo(upWidget.getName());
         assertThat(target.getUrl()).isEqualTo(upWidget.getUrl());
-        assertThat(target.getPeriodStart())
-                .isEqualTo(upWidget.getPeriodFeature().getPeriodStart());
-        assertThat(target.getPeriodEnd()).isEqualTo(upWidget.getPeriodFeature().getPeriodEnd());
+        assertThat(target.getPeriodStart()).isEqualTo(props.getPeriodStart());
+        assertThat(target.getPeriodEnd()).isEqualTo(props.getPeriodEnd());
     }
 
     @Test
     void 상단위젯_번호_페이징_축제_없을때_예외() {
-        // given
         given(festivalRepository.existsById(festivalId)).willReturn(false);
 
-        // when & then
         assertThatThrownBy(() -> upWidgetService.getUpWidgetsWithOffsetPaging(festivalId, SortOption.CREATED_AT, 0, 10))
                 .isInstanceOf(FestivalNotFoundException.class);
     }
 
     @Test
     void 상단위젯_수정() {
-        // given
-        given(upWidgetRepository.findById(upWidgetId)).willReturn(Optional.of(upWidget));
+        given(widgetRepository.findById(upWidgetId)).willReturn(Optional.of(upWidget));
 
-        // when
         UpWidgetResDto result = upWidgetService.update(upWidgetId, upWidgetCreateDto);
 
-        // then
         assertThat(result).isNotNull();
-        assertThat(result.getName()).isEqualTo(upWidget.getName());
-        assertThat(result.getUrl()).isEqualTo(upWidget.getUrl());
-        assertThat(result.getPeriodStart())
-                .isEqualTo(upWidget.getPeriodFeature().getPeriodStart());
-        assertThat(result.getPeriodEnd()).isEqualTo(upWidget.getPeriodFeature().getPeriodEnd());
+        assertThat(result.getName()).isEqualTo(upWidgetCreateDto.getName());
+        assertThat(result.getUrl()).isEqualTo(upWidgetCreateDto.getUrl());
     }
 
     @Test
     void 상단위젯_수정_상단위젯_없을때_예외() {
-        // given
-        given(upWidgetRepository.findById(upWidgetId)).willReturn(Optional.empty());
+        given(widgetRepository.findById(upWidgetId)).willReturn(Optional.empty());
 
-        // when
         assertThatThrownBy(() -> upWidgetService.update(upWidgetId, upWidgetCreateDto))
                 .isInstanceOf(WidgetNotFoundException.class);
     }
 
     @Test
     void 상단_위젯_삭제() {
-        // given
-        doNothing().when(upWidgetRepository).deleteById(upWidgetId);
+        doNothing().when(widgetRepository).deleteById(upWidgetId);
 
-        // when
         upWidgetService.delete(upWidgetId);
 
-        // then
-        verify(upWidgetRepository, times(1)).deleteById(upWidgetId);
+        verify(widgetRepository, times(1)).deleteById(upWidgetId);
     }
 
     @Test
     void 상단_위젯_오늘날짜_시간으로_조회() {
-        // given
         LocalDateTime now = LocalDateTime.now();
-        given(upWidgetRepository.findAllByFestivalIdAndPeriod(festivalId, now)).willReturn(upWidgetList);
+        given(widgetRepository.findUpWidgetsByFestivalIdAndPeriod(festivalId, now))
+                .willReturn(upWidgetList);
 
-        // when
         List<UpWidgetResDto> result = upWidgetService.getUpWidgetsByNow(festivalId, now);
         UpWidgetResDto target = result.get(0);
-        // then
+
+        UpWidgetProperties props = upWidget.getTypedProperties(UpWidgetProperties.class);
         assertThat(result).isNotNull();
         assertThat(result).hasSize(1);
         assertThat(target.getName()).isEqualTo(upWidget.getName());
         assertThat(target.getUrl()).isEqualTo(upWidget.getUrl());
-        assertThat(target.getPeriodStart())
-                .isEqualTo(upWidget.getPeriodFeature().getPeriodStart());
-        assertThat(target.getPeriodEnd()).isEqualTo(upWidget.getPeriodFeature().getPeriodEnd());
+        assertThat(target.getPeriodStart()).isEqualTo(props.getPeriodStart());
+        assertThat(target.getPeriodEnd()).isEqualTo(props.getPeriodEnd());
     }
 }

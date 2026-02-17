@@ -8,15 +8,16 @@ import com.halo.eventer.domain.widget.dto.main_widget.MainWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.middle_widget.MiddleWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetCreateDto;
-import com.halo.eventer.domain.widget.entity.*;
 
+import static com.halo.eventer.global.constants.DisplayOrderConstants.DISPLAY_ORDER_DEFAULT;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class WidgetFixture {
 
-    public static SquareWidget 정사각형_위젯_엔티티(Festival festival, SquareWidgetCreateDto dto) {
-        return SquareWidget.from(festival, dto);
+    public static Widget 정사각형_위젯_엔티티(Festival festival, SquareWidgetCreateDto dto) {
+        return Widget.createSquareWidget(
+                festival, dto.getName(), dto.getUrl(), dto.getImage(), dto.getDescription(), DISPLAY_ORDER_DEFAULT);
     }
 
     public static SquareWidgetCreateDto 정사각형_위젯_생성_DTO() {
@@ -37,8 +38,8 @@ public class WidgetFixture {
         return dto;
     }
 
-    public static MiddleWidget 중간_위젯_엔티티(Festival festival, MiddleWidgetCreateDto dto) {
-        return MiddleWidget.from(festival, dto);
+    public static Widget 중간_위젯_엔티티(Festival festival, MiddleWidgetCreateDto dto) {
+        return Widget.createMiddleWidget(festival, dto.getName(), dto.getUrl(), dto.getImage(), DISPLAY_ORDER_DEFAULT);
     }
 
     public static MiddleWidgetCreateDto 중간_위젯_생성_DTO() {
@@ -57,8 +58,8 @@ public class WidgetFixture {
         return dto;
     }
 
-    public static MainWidget 메인_위젯_엔티티(Festival festival, MainWidgetCreateDto dto) {
-        return MainWidget.from(festival, dto);
+    public static Widget 메인_위젯_엔티티(Festival festival, MainWidgetCreateDto dto) {
+        return Widget.createMainWidget(festival, dto.getName(), dto.getUrl(), dto.getImage(), dto.getDescription());
     }
 
     public static MainWidgetCreateDto 메인_위젯_생성_DTO() {
@@ -79,8 +80,8 @@ public class WidgetFixture {
         return dto;
     }
 
-    public static DownWidget 하단_위젯_엔티티(Festival festival, DownWidgetCreateDto dto) {
-        return DownWidget.from(festival, dto);
+    public static Widget 하단_위젯_엔티티(Festival festival, DownWidgetCreateDto dto) {
+        return Widget.createDownWidget(festival, dto.getName(), dto.getUrl(), DISPLAY_ORDER_DEFAULT);
     }
 
     public static DownWidgetCreateDto 하단_위젯_생성_DTO() {
@@ -97,8 +98,8 @@ public class WidgetFixture {
         return dto;
     }
 
-    public static UpWidget 상단_위젯_엔티티(Festival festival, UpWidgetCreateDto dto) {
-        return UpWidget.from(festival, dto);
+    public static Widget 상단_위젯_엔티티(Festival festival, UpWidgetCreateDto dto) {
+        return Widget.createUpWidget(festival, dto.getName(), dto.getUrl(), dto.getPeriodStart(), dto.getPeriodEnd());
     }
 
     public static UpWidgetCreateDto 상단_위젯_생성_DTO() {

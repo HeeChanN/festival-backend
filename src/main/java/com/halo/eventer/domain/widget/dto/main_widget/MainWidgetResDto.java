@@ -1,6 +1,7 @@
 package com.halo.eventer.domain.widget.dto.main_widget;
 
-import com.halo.eventer.domain.widget.entity.MainWidget;
+import com.halo.eventer.domain.widget.Widget;
+import com.halo.eventer.domain.widget.properties.MainWidgetProperties;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,13 +24,14 @@ public class MainWidgetResDto {
         this.description = description;
     }
 
-    public static MainWidgetResDto from(MainWidget mainWidget) {
+    public static MainWidgetResDto from(Widget widget) {
+        MainWidgetProperties props = widget.getTypedProperties(MainWidgetProperties.class);
         return MainWidgetResDto.builder()
-                .id(mainWidget.getId())
-                .name(mainWidget.getName())
-                .url(mainWidget.getUrl())
-                .description(mainWidget.getDescriptionFeature().getDescription())
-                .image(mainWidget.getImageFeature().getImage())
+                .id(widget.getId())
+                .name(widget.getName())
+                .url(widget.getUrl())
+                .description(props.getDescription())
+                .image(props.getImage())
                 .build();
     }
 }

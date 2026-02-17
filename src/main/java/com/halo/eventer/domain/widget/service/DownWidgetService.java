@@ -9,12 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.down_widget.DownWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.down_widget.DownWidgetResDto;
-import com.halo.eventer.domain.widget.entity.DownWidget;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
-import com.halo.eventer.domain.widget.repository.DownWidgetRepository;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 import com.halo.eventer.global.common.dto.OrderUpdateRequest;
 import com.halo.eventer.global.util.DisplayOrderUtils;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DownWidgetService {
 
-    private final DownWidgetRepository downWidgetRepository;
+    private final WidgetRepository widgetRepository;
     private final FestivalRepository festivalRepository;
 
     @Transactional
@@ -31,34 +31,38 @@ public class DownWidgetService {
         Festival festival =
                 festivalRepository.findById(festivalId).orElseThrow(() -> new FestivalNotFoundException(festivalId));
 
-        DownWidget downWidget = downWidgetRepository.save(DownWidget.from(festival, downWidgetCreateDto));
+        Widget widget = widgetRepository.save(Widget.createDownWidget(
+                festival,
+                downWidgetCreateDto.getName(),
+                downWidgetCreateDto.getUrl(),
+                com.halo.eventer.global.constants.DisplayOrderConstants.DISPLAY_ORDER_DEFAULT));
 
-        return DownWidgetResDto.from(downWidget);
+        return DownWidgetResDto.from(widget);
     }
 
     @Transactional(readOnly = true)
     public List<DownWidgetResDto> getAllDownWidgets(Long festivalId) {
-        return downWidgetRepository.findAllByFestivalId(festivalId).stream()
+        return widgetRepository.findAllByFestivalIdAndWidgetType(festivalId, WidgetType.DOWN).stream()
                 .map(DownWidgetResDto::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public DownWidgetResDto update(Long id, DownWidgetCreateDto downWidgetCreateDto) {
-        DownWidget downWidget =
-                downWidgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.DOWN));
-        downWidget.updateDownWidget(downWidgetCreateDto);
-        return DownWidgetResDto.from(downWidget);
+        Widget widget =
+                widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.DOWN));
+        widget.updateBaseField(downWidgetCreateDto.getName(), downWidgetCreateDto.getUrl());
+        return DownWidgetResDto.from(widget);
     }
 
     @Transactional
     public void delete(Long id) {
-        downWidgetRepository.deleteById(id);
+        widgetRepository.deleteById(id);
     }
 
     @Transactional
     public List<DownWidgetResDto> updateDisplayOrder(Long festivalId, List<OrderUpdateRequest> orderRequests) {
-        List<DownWidget> widgets = downWidgetRepository.findAllByFestivalId(festivalId);
+        List<Widget> widgets = widgetRepository.findAllByFestivalIdAndWidgetType(festivalId, WidgetType.DOWN);
 
         DisplayOrderUtils.updateDisplayOrder(widgets, orderRequests);
 

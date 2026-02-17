@@ -1,6 +1,7 @@
 package com.halo.eventer.domain.widget.dto.middle_widget;
 
-import com.halo.eventer.domain.widget.entity.MiddleWidget;
+import com.halo.eventer.domain.widget.Widget;
+import com.halo.eventer.domain.widget.properties.MiddleWidgetProperties;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,13 +24,14 @@ public class MiddleWidgetResDto {
         this.displayOrder = displayOrder;
     }
 
-    public static MiddleWidgetResDto from(MiddleWidget middleWidget) {
+    public static MiddleWidgetResDto from(Widget widget) {
+        MiddleWidgetProperties props = widget.getTypedProperties(MiddleWidgetProperties.class);
         return MiddleWidgetResDto.builder()
-                .id(middleWidget.getId())
-                .name(middleWidget.getName())
-                .url(middleWidget.getUrl())
-                .image(middleWidget.getImageFeature().getImage())
-                .displayOrder(middleWidget.getDisplayOrderFeature().getDisplayOrder())
+                .id(widget.getId())
+                .name(widget.getName())
+                .url(widget.getUrl())
+                .image(props.getImage())
+                .displayOrder(widget.getDisplayOrder())
                 .build();
     }
 }

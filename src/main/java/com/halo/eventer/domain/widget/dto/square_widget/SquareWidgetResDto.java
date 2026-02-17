@@ -1,6 +1,7 @@
 package com.halo.eventer.domain.widget.dto.square_widget;
 
-import com.halo.eventer.domain.widget.entity.SquareWidget;
+import com.halo.eventer.domain.widget.Widget;
+import com.halo.eventer.domain.widget.properties.SquareWidgetProperties;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,14 +27,15 @@ public class SquareWidgetResDto {
         this.displayOrder = displayOrder;
     }
 
-    public static SquareWidgetResDto from(SquareWidget squareWidget) {
+    public static SquareWidgetResDto from(Widget widget) {
+        SquareWidgetProperties props = widget.getTypedProperties(SquareWidgetProperties.class);
         return SquareWidgetResDto.builder()
-                .id(squareWidget.getId())
-                .name(squareWidget.getName())
-                .url(squareWidget.getUrl())
-                .description(squareWidget.getDescriptionFeature().getDescription())
-                .icon(squareWidget.getImageFeature().getImage())
-                .displayOrder(squareWidget.getDisplayOrderFeature().getDisplayOrder())
+                .id(widget.getId())
+                .name(widget.getName())
+                .url(widget.getUrl())
+                .description(props.getDescription())
+                .icon(props.getImage())
+                .displayOrder(widget.getDisplayOrder())
                 .build();
     }
 }

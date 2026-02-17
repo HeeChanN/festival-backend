@@ -15,12 +15,13 @@ import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.FestivalFixture;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetFixture;
+import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.down_widget.DownWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.down_widget.DownWidgetResDto;
-import com.halo.eventer.domain.widget.entity.DownWidget;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
-import com.halo.eventer.domain.widget.repository.DownWidgetRepository;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 import com.halo.eventer.global.common.dto.OrderUpdateRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,13 +40,13 @@ public class DownWidgetServiceTest {
     private FestivalRepository festivalRepository;
 
     @Mock
-    private DownWidgetRepository downWidgetRepository;
+    private WidgetRepository widgetRepository;
 
     @InjectMocks
     private DownWidgetService downWidgetService;
 
     private Festival festival;
-    private DownWidget downWidget;
+    private Widget downWidget;
     private DownWidgetCreateDto downWidgetCreateDto;
     final long downWidgetId = 1L;
 
@@ -59,95 +60,78 @@ public class DownWidgetServiceTest {
 
     @Test
     void 하단위젯_생성_테스트() {
-        // given
         final long festivalId = 1L;
         given(festivalRepository.findById(festivalId)).willReturn(Optional.of(festival));
-        given(downWidgetRepository.save(any(DownWidget.class))).willReturn(downWidget);
+        given(widgetRepository.save(any(Widget.class))).willReturn(downWidget);
 
-        // when
         DownWidgetResDto result = downWidgetService.create(festivalId, downWidgetCreateDto);
 
-        // then
-        assertResultDtoEqualsDownWidget(result, downWidget);
+        assertResultDtoEqualsWidget(result, downWidget);
     }
 
     @Test
     void 하단위젯_생성_축제_없을때_예외() {
-        // given
         final long festivalId = 1L;
         given(festivalRepository.findById(festivalId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> downWidgetService.create(festivalId, downWidgetCreateDto))
                 .isInstanceOf(FestivalNotFoundException.class);
     }
 
     @Test
     void 하단위젯_리스트_조회() {
-        // given
         final long festivalId = 1L;
-        given(downWidgetRepository.findAllByFestivalId(festivalId)).willReturn(List.of(downWidget));
+        given(widgetRepository.findAllByFestivalIdAndWidgetType(festivalId, WidgetType.DOWN))
+                .willReturn(List.of(downWidget));
 
-        // when
         List<DownWidgetResDto> result = downWidgetService.getAllDownWidgets(festivalId);
 
-        // then
         assertThat(result).hasSize(1);
-        assertResultDtoEqualsDownWidget(result.get(0), downWidget);
+        assertResultDtoEqualsWidget(result.get(0), downWidget);
     }
 
     @Test
     void 하단위젯_수정_테스트() {
-        // given
-        given(downWidgetRepository.findById(downWidgetId)).willReturn(Optional.of(downWidget));
+        given(widgetRepository.findById(downWidgetId)).willReturn(Optional.of(downWidget));
 
-        // when
         DownWidgetResDto result = downWidgetService.update(downWidgetId, downWidgetCreateDto);
 
-        // then
-        assertResultDtoEqualsDownWidget(result, downWidget);
+        assertResultDtoEqualsWidget(result, downWidget);
     }
 
     @Test
     void 하단위젯_수정할때_없는경우_예외() {
-        // given
-        given(downWidgetRepository.findById(downWidgetId)).willReturn(Optional.empty());
+        given(widgetRepository.findById(downWidgetId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> downWidgetService.update(downWidgetId, downWidgetCreateDto))
                 .isInstanceOf(WidgetNotFoundException.class);
     }
 
     @Test
     void 하단위젯_삭제_테스트() {
-        // when
         downWidgetService.delete(downWidgetId);
 
-        // then
-        then(downWidgetRepository).should().deleteById(downWidgetId);
+        then(widgetRepository).should().deleteById(downWidgetId);
     }
 
     @Test
     void 하단위젯_순서_수정_테스트() {
-        // given
         final long festivalId = 1L;
         final int displayOrder = 1;
-        given(downWidgetRepository.findAllByFestivalId(festivalId)).willReturn(List.of(downWidget));
+        given(widgetRepository.findAllByFestivalIdAndWidgetType(festivalId, WidgetType.DOWN))
+                .willReturn(List.of(downWidget));
         List<OrderUpdateRequest> request = List.of(OrderUpdateRequest.of(downWidgetId, displayOrder));
 
-        // when
-        List<DownWidgetResDto> result = downWidgetService.updateDisplayOrder(downWidgetId, request);
+        List<DownWidgetResDto> result = downWidgetService.updateDisplayOrder(festivalId, request);
 
-        // then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getDisplayOrder()).isEqualTo(displayOrder);
     }
 
-    private void assertResultDtoEqualsDownWidget(DownWidgetResDto result, DownWidget downWidget) {
-        assertThat(result.getName()).isEqualTo(downWidget.getName());
-        assertThat(result.getUrl()).isEqualTo(downWidget.getUrl());
-        assertThat(result.getId()).isEqualTo(downWidget.getId());
-        assertThat(result.getDisplayOrder())
-                .isEqualTo(downWidget.getDisplayOrderFeature().getDisplayOrder());
+    private void assertResultDtoEqualsWidget(DownWidgetResDto result, Widget widget) {
+        assertThat(result.getName()).isEqualTo(widget.getName());
+        assertThat(result.getUrl()).isEqualTo(widget.getUrl());
+        assertThat(result.getId()).isEqualTo(widget.getId());
+        assertThat(result.getDisplayOrder()).isEqualTo(widget.getDisplayOrder());
     }
 }

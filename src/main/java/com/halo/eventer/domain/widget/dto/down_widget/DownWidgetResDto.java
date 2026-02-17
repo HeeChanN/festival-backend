@@ -1,6 +1,6 @@
 package com.halo.eventer.domain.widget.dto.down_widget;
 
-import com.halo.eventer.domain.widget.entity.DownWidget;
+import com.halo.eventer.domain.widget.Widget;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,12 +21,12 @@ public class DownWidgetResDto {
         this.displayOrder = displayOrder;
     }
 
-    public static DownWidgetResDto from(DownWidget downWidget) {
+    public static DownWidgetResDto from(Widget widget) {
         return DownWidgetResDto.builder()
-                .id(downWidget.getId())
-                .name(downWidget.getName())
-                .url(downWidget.getUrl())
-                .displayOrder(downWidget.getDisplayOrderFeature().getDisplayOrder())
+                .id(widget.getId())
+                .name(widget.getName())
+                .url(widget.getUrl())
+                .displayOrder(widget.getDisplayOrder())
                 .build();
     }
 }

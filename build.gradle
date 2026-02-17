@@ -74,6 +74,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    //JSON column support
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.9.0'
+
     //db driver
     runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2'

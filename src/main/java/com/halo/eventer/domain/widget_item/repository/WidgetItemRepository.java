@@ -11,7 +11,7 @@ import com.halo.eventer.domain.widget_item.WidgetItem;
 
 public interface WidgetItemRepository extends JpaRepository<WidgetItem, Long> {
 
-    @Query("SELECT wi FROM WidgetItem wi WHERE wi.baseWidget.id = :widgetId ")
+    @Query("SELECT wi FROM WidgetItem wi WHERE wi.widget.id = :widgetId ")
     List<WidgetItem> findAllWidgetItemsByBaseWidgetId(@Param("widgetId") Long widgetId);
 
     @Query("SELECT wi FROM WidgetItem wi LEFT JOIN FETCH wi.images WHERE wi.id = :id ")

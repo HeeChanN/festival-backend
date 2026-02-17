@@ -21,12 +21,14 @@ import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.FestivalFixture;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetFixture;
+import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetResDto;
-import com.halo.eventer.domain.widget.entity.SquareWidget;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
-import com.halo.eventer.domain.widget.repository.SquareWidgetRepository;
+import com.halo.eventer.domain.widget.properties.SquareWidgetProperties;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 import com.halo.eventer.domain.widget.util.WidgetPageHelper;
 import com.halo.eventer.global.common.dto.OrderUpdateRequest;
 import com.halo.eventer.global.common.page.PageInfo;
@@ -49,7 +51,7 @@ public class SquareWidgetServiceTest {
     private FestivalRepository festivalRepository;
 
     @Mock
-    private SquareWidgetRepository squareWidgetRepository;
+    private WidgetRepository widgetRepository;
 
     @Mock
     private WidgetPageHelper widgetPageHelper;
@@ -58,7 +60,7 @@ public class SquareWidgetServiceTest {
     private SquareWidgetService squareWidgetService;
 
     private Festival festival;
-    private SquareWidget squareWidget;
+    private Widget squareWidget;
     private SquareWidgetCreateDto squareWidgetCreateDto;
     final long squareWidgetId = 1L;
 
@@ -72,58 +74,47 @@ public class SquareWidgetServiceTest {
 
     @Test
     void 정사각형위젯_생성_테스트() {
-        // given
         final long festivalId = 1L;
         given(festivalRepository.findById(festivalId)).willReturn(Optional.of(festival));
-        given(squareWidgetRepository.save(any(SquareWidget.class))).willReturn(squareWidget);
+        given(widgetRepository.save(any(Widget.class))).willReturn(squareWidget);
 
-        // when
         SquareWidgetResDto result = squareWidgetService.create(festivalId, squareWidgetCreateDto);
 
-        // then
-        assertResultDtoEqualsSquareWidget(result, squareWidget);
+        assertResultDtoEqualsWidget(result, squareWidget);
     }
 
     @Test
     void 정사각형위젯_생성_축제_없을때_예외() {
-        // given
         final long festivalId = 1L;
         given(festivalRepository.findById(festivalId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> squareWidgetService.create(festivalId, squareWidgetCreateDto))
                 .isInstanceOf(FestivalNotFoundException.class);
     }
 
     @Test
     void 정사각형위젯_id_단일조회() {
-        // given
-        given(squareWidgetRepository.findById(squareWidgetId)).willReturn(Optional.of(squareWidget));
+        given(widgetRepository.findById(squareWidgetId)).willReturn(Optional.of(squareWidget));
 
-        // when
         SquareWidgetResDto result = squareWidgetService.getSquareWidget(squareWidgetId);
 
-        // then
-        assertResultDtoEqualsSquareWidget(result, squareWidget);
+        assertResultDtoEqualsWidget(result, squareWidget);
     }
 
     @Test
     void 정사각형위젯_id_단일조회시_없을때_예외() {
-        // given
-        given(squareWidgetRepository.findById(squareWidgetId)).willReturn(Optional.empty());
+        given(widgetRepository.findById(squareWidgetId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> squareWidgetService.getSquareWidget(squareWidgetId))
                 .isInstanceOf(WidgetNotFoundException.class);
     }
 
     @Test
     void 정사각형위젯_offset_페이징_조회_테스트() {
-        // given
         final long festivalId = 1L;
         final int page = 0, size = 10;
         Pageable pageable = PageRequest.of(page, size);
-        Page<SquareWidget> widgetPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+        Page<Widget> widgetPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
         PageInfo pageInfo = PageInfo.builder()
                 .pageNumber(widgetPage.getNumber())
                 .pageSize(widgetPage.getSize())
@@ -131,73 +122,61 @@ public class SquareWidgetServiceTest {
                 .totalPages(widgetPage.getTotalPages())
                 .build();
         PagedResponse<SquareWidgetResDto> expected = new PagedResponse<>(Collections.emptyList(), pageInfo);
-        given(widgetPageHelper.findWidgetsBySort(SquareWidget.class, festivalId, SortOption.CREATED_AT, pageable))
+        given(widgetPageHelper.findWidgetsBySort(WidgetType.SQUARE, festivalId, SortOption.CREATED_AT, pageable))
                 .willReturn(widgetPage);
         given(festivalRepository.existsById(festivalId)).willReturn(true);
         given(widgetPageHelper.getPagedResponse(any(), any(Function.class))).willReturn(expected);
 
-        // when
         PagedResponse<SquareWidgetResDto> result =
                 squareWidgetService.getSquareWidgetsWithOffsetPaging(festivalId, SortOption.CREATED_AT, page, size);
 
-        // then
         assertThat(result).isSameAs(expected);
     }
 
     @Test
     void 정사각형위젯_수정_테스트() {
-        // given
-        given(squareWidgetRepository.findById(squareWidgetId)).willReturn(Optional.of(squareWidget));
+        given(widgetRepository.findById(squareWidgetId)).willReturn(Optional.of(squareWidget));
 
-        // when
         SquareWidgetResDto result = squareWidgetService.update(squareWidgetId, squareWidgetCreateDto);
 
-        // then
-        assertResultDtoEqualsSquareWidget(result, squareWidget);
+        assertResultDtoEqualsWidget(result, squareWidget);
     }
 
     @Test
     void 정사각형위젯_수정할때_조회되지_않는경우_예외() {
-        // given
-        given(squareWidgetRepository.findById(squareWidgetId)).willReturn(Optional.empty());
+        given(widgetRepository.findById(squareWidgetId)).willReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> squareWidgetService.update(squareWidgetId, squareWidgetCreateDto))
                 .isInstanceOf(WidgetNotFoundException.class);
     }
 
     @Test
     void 정사각형위젯_삭제_테스트() {
-        // when
         squareWidgetService.delete(squareWidgetId);
 
-        // then
-        then(squareWidgetRepository).should().deleteById(squareWidgetId);
+        then(widgetRepository).should().deleteById(squareWidgetId);
     }
 
     @Test
     void 정사각형위젯_순서_수정_테스트() {
-        // given
         final long festivalId = 1L;
         final int displayOrder = 1;
-        given(squareWidgetRepository.findAllByFestivalId(festivalId)).willReturn(List.of(squareWidget));
+        given(widgetRepository.findAllByFestivalIdAndWidgetType(festivalId, WidgetType.SQUARE))
+                .willReturn(List.of(squareWidget));
         List<OrderUpdateRequest> request = List.of(OrderUpdateRequest.of(squareWidgetId, displayOrder));
 
-        // when
-        List<SquareWidgetResDto> result = squareWidgetService.updateDisplayOrder(squareWidgetId, request);
+        List<SquareWidgetResDto> result = squareWidgetService.updateDisplayOrder(festivalId, request);
 
-        // then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getDisplayOrder()).isEqualTo(displayOrder);
     }
 
-    private void assertResultDtoEqualsSquareWidget(SquareWidgetResDto result, SquareWidget squareWidget) {
-        assertThat(result.getName()).isEqualTo(squareWidget.getName());
-        assertThat(result.getUrl()).isEqualTo(squareWidget.getUrl());
-        assertThat(result.getDescription())
-                .isEqualTo(squareWidget.getDescriptionFeature().getDescription());
-        assertThat(result.getIcon()).isEqualTo(squareWidget.getImageFeature().getImage());
-        assertThat(result.getDisplayOrder())
-                .isEqualTo(squareWidget.getDisplayOrderFeature().getDisplayOrder());
+    private void assertResultDtoEqualsWidget(SquareWidgetResDto result, Widget widget) {
+        SquareWidgetProperties props = widget.getTypedProperties(SquareWidgetProperties.class);
+        assertThat(result.getName()).isEqualTo(widget.getName());
+        assertThat(result.getUrl()).isEqualTo(widget.getUrl());
+        assertThat(result.getDescription()).isEqualTo(props.getDescription());
+        assertThat(result.getIcon()).isEqualTo(props.getImage());
+        assertThat(result.getDisplayOrder()).isEqualTo(widget.getDisplayOrder());
     }
 }

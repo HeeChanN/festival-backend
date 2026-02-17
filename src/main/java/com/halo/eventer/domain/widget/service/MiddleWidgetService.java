@@ -12,12 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.middle_widget.MiddleWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.middle_widget.MiddleWidgetResDto;
-import com.halo.eventer.domain.widget.entity.MiddleWidget;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
-import com.halo.eventer.domain.widget.repository.MiddleWidgetRepository;
+import com.halo.eventer.domain.widget.properties.MiddleWidgetProperties;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 import com.halo.eventer.domain.widget.util.WidgetPageHelper;
 import com.halo.eventer.global.common.dto.OrderUpdateRequest;
 import com.halo.eventer.global.common.page.PagedResponse;
@@ -29,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MiddleWidgetService {
 
-    private final MiddleWidgetRepository middleWidgetRepository;
+    private final WidgetRepository widgetRepository;
     private final FestivalRepository festivalRepository;
     private final WidgetPageHelper widgetPageHelper;
 
@@ -38,18 +39,22 @@ public class MiddleWidgetService {
         Festival festival =
                 festivalRepository.findById(festivalId).orElseThrow(() -> new FestivalNotFoundException(festivalId));
 
-        MiddleWidget middleWidget = middleWidgetRepository.save(MiddleWidget.from(festival, middleWidgetCreateDto));
+        Widget widget = widgetRepository.save(Widget.createMiddleWidget(
+                festival,
+                middleWidgetCreateDto.getName(),
+                middleWidgetCreateDto.getUrl(),
+                middleWidgetCreateDto.getImage(),
+                com.halo.eventer.global.constants.DisplayOrderConstants.DISPLAY_ORDER_DEFAULT));
 
-        return MiddleWidgetResDto.from(middleWidget);
+        return MiddleWidgetResDto.from(widget);
     }
 
     @Transactional(readOnly = true)
     public MiddleWidgetResDto getMiddleWidget(Long id) {
-        MiddleWidget middleWidget = middleWidgetRepository
-                .findById(id)
-                .orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.MIDDLE));
+        Widget widget =
+                widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.MIDDLE));
 
-        return MiddleWidgetResDto.from(middleWidget);
+        return MiddleWidgetResDto.from(widget);
     }
 
     @Transactional(readOnly = true)
@@ -58,31 +63,31 @@ public class MiddleWidgetService {
         validateFestival(festivalId);
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<MiddleWidget> middleWidgetPage =
-                widgetPageHelper.findWidgetsBySort(MiddleWidget.class, festivalId, sortOption, pageable);
+        Page<Widget> widgetPage =
+                widgetPageHelper.findWidgetsBySort(WidgetType.MIDDLE, festivalId, sortOption, pageable);
 
-        return widgetPageHelper.getPagedResponse(middleWidgetPage, MiddleWidgetResDto::from);
+        return widgetPageHelper.getPagedResponse(widgetPage, MiddleWidgetResDto::from);
     }
 
     @Transactional
     public MiddleWidgetResDto update(Long id, MiddleWidgetCreateDto middleWidgetCreateDto) {
-        MiddleWidget middleWidget = middleWidgetRepository
-                .findById(id)
-                .orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.MIDDLE));
+        Widget widget =
+                widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.MIDDLE));
 
-        middleWidget.updateMiddleWidget(middleWidgetCreateDto);
+        widget.updateBaseField(middleWidgetCreateDto.getName(), middleWidgetCreateDto.getUrl());
+        widget.updateProperties(new MiddleWidgetProperties(middleWidgetCreateDto.getImage()));
 
-        return MiddleWidgetResDto.from(middleWidget);
+        return MiddleWidgetResDto.from(widget);
     }
 
     @Transactional
     public void delete(Long id) {
-        middleWidgetRepository.deleteById(id);
+        widgetRepository.deleteById(id);
     }
 
     @Transactional
     public List<MiddleWidgetResDto> updateDisplayOrder(Long festivalId, List<OrderUpdateRequest> orderRequests) {
-        List<MiddleWidget> widgets = middleWidgetRepository.findAllByFestivalId(festivalId);
+        List<Widget> widgets = widgetRepository.findAllByFestivalIdAndWidgetType(festivalId, WidgetType.MIDDLE);
 
         DisplayOrderUtils.updateDisplayOrder(widgets, orderRequests);
 

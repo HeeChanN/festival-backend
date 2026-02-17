@@ -11,10 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.halo.eventer.domain.image.ImageRepository;
 import com.halo.eventer.domain.image.dto.FileDto;
 import com.halo.eventer.domain.image.dto.ImageDto;
-import com.halo.eventer.domain.widget.BaseWidget;
+import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
-import com.halo.eventer.domain.widget.repository.BaseWidgetRepository;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 import com.halo.eventer.domain.widget_item.WidgetItem;
 import com.halo.eventer.domain.widget_item.dto.WidgetItemCreateDto;
 import com.halo.eventer.domain.widget_item.dto.WidgetItemResDto;
@@ -28,15 +28,15 @@ public class WidgetItemService {
 
     private final WidgetItemRepository widgetItemRepository;
     private final ImageRepository imageRepository;
-    private final BaseWidgetRepository baseWidgetRepository;
+    private final WidgetRepository widgetRepository;
 
     @Transactional
     public WidgetItemResDto create(Long widgetId, WidgetItemCreateDto widgetItemCreateDto) {
-        BaseWidget baseWidget = baseWidgetRepository
+        Widget widget = widgetRepository
                 .findById(widgetId)
                 .orElseThrow(() -> new WidgetNotFoundException(widgetId, WidgetType.DEFAULT));
 
-        WidgetItem widgetItem = widgetItemRepository.save(WidgetItem.from(baseWidget, widgetItemCreateDto));
+        WidgetItem widgetItem = widgetItemRepository.save(WidgetItem.from(widget, widgetItemCreateDto));
         return WidgetItemResDto.from(widgetItem);
     }
 

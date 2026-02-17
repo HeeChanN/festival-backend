@@ -12,12 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetResDto;
-import com.halo.eventer.domain.widget.entity.SquareWidget;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
-import com.halo.eventer.domain.widget.repository.SquareWidgetRepository;
+import com.halo.eventer.domain.widget.properties.SquareWidgetProperties;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 import com.halo.eventer.domain.widget.util.WidgetPageHelper;
 import com.halo.eventer.global.common.dto.OrderUpdateRequest;
 import com.halo.eventer.global.common.page.PagedResponse;
@@ -29,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SquareWidgetService {
 
-    private final SquareWidgetRepository squareWidgetRepository;
+    private final WidgetRepository widgetRepository;
     private final FestivalRepository festivalRepository;
     private final WidgetPageHelper widgetPageHelper;
 
@@ -38,17 +39,22 @@ public class SquareWidgetService {
         Festival festival =
                 festivalRepository.findById(festivalId).orElseThrow(() -> new FestivalNotFoundException(festivalId));
 
-        SquareWidget squareWidget = squareWidgetRepository.save(SquareWidget.from(festival, squareWidgetCreateDto));
-        return SquareWidgetResDto.from(squareWidget);
+        Widget widget = widgetRepository.save(Widget.createSquareWidget(
+                festival,
+                squareWidgetCreateDto.getName(),
+                squareWidgetCreateDto.getUrl(),
+                squareWidgetCreateDto.getImage(),
+                squareWidgetCreateDto.getDescription(),
+                com.halo.eventer.global.constants.DisplayOrderConstants.DISPLAY_ORDER_DEFAULT));
+        return SquareWidgetResDto.from(widget);
     }
 
     @Transactional(readOnly = true)
     public SquareWidgetResDto getSquareWidget(Long id) {
-        SquareWidget squareWidget = squareWidgetRepository
-                .findById(id)
-                .orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.SQUARE));
+        Widget widget =
+                widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.SQUARE));
 
-        return SquareWidgetResDto.from(squareWidget);
+        return SquareWidgetResDto.from(widget);
     }
 
     @Transactional(readOnly = true)
@@ -57,29 +63,30 @@ public class SquareWidgetService {
         validateFestival(festivalId);
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<SquareWidget> squareWidgetPage =
-                widgetPageHelper.findWidgetsBySort(SquareWidget.class, festivalId, sortOption, pageable);
+        Page<Widget> widgetPage =
+                widgetPageHelper.findWidgetsBySort(WidgetType.SQUARE, festivalId, sortOption, pageable);
 
-        return widgetPageHelper.getPagedResponse(squareWidgetPage, SquareWidgetResDto::from);
+        return widgetPageHelper.getPagedResponse(widgetPage, SquareWidgetResDto::from);
     }
 
     @Transactional
     public SquareWidgetResDto update(Long id, SquareWidgetCreateDto squareWidgetCreateDto) {
-        SquareWidget squareWidget = squareWidgetRepository
-                .findById(id)
-                .orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.SQUARE));
-        squareWidget.updateSquareWidget(squareWidgetCreateDto);
-        return SquareWidgetResDto.from(squareWidget);
+        Widget widget =
+                widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.SQUARE));
+        widget.updateBaseField(squareWidgetCreateDto.getName(), squareWidgetCreateDto.getUrl());
+        widget.updateProperties(
+                new SquareWidgetProperties(squareWidgetCreateDto.getImage(), squareWidgetCreateDto.getDescription()));
+        return SquareWidgetResDto.from(widget);
     }
 
     @Transactional
     public void delete(Long id) {
-        squareWidgetRepository.deleteById(id);
+        widgetRepository.deleteById(id);
     }
 
     @Transactional
     public List<SquareWidgetResDto> updateDisplayOrder(Long festivalId, List<OrderUpdateRequest> orderRequests) {
-        List<SquareWidget> widgets = squareWidgetRepository.findAllByFestivalId(festivalId);
+        List<Widget> widgets = widgetRepository.findAllByFestivalIdAndWidgetType(festivalId, WidgetType.SQUARE);
 
         DisplayOrderUtils.updateDisplayOrder(widgets, orderRequests);
 

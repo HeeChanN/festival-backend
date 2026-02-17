@@ -17,7 +17,7 @@ import com.halo.eventer.domain.notice.Notice;
 import com.halo.eventer.domain.parking.ParkingManagement;
 import com.halo.eventer.domain.splash.Splash;
 import com.halo.eventer.domain.stamp.Stamp;
-import com.halo.eventer.domain.widget.BaseWidget;
+import com.halo.eventer.domain.widget.Widget;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -61,7 +61,7 @@ public class Festival {
     private List<Duration> durations = new ArrayList<>();
 
     @OneToMany(mappedBy = "festival", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<BaseWidget> baseWidgets = new ArrayList<>();
+    private List<Widget> widgets = new ArrayList<>();
 
     @OneToMany(mappedBy = "festival", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Inquiry> inquiries = new ArrayList<>();
@@ -135,8 +135,8 @@ public class Festival {
         this.missingPersons.add(missingPerson);
     }
 
-    public void applyBaseWidget(BaseWidget baseWidget) {
-        this.baseWidgets.add(baseWidget);
+    public void applyWidget(Widget widget) {
+        this.widgets.add(widget);
     }
 
     public void updateName(String name) {

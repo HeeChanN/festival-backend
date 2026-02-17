@@ -8,9 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import com.halo.eventer.domain.widget.BaseWidget;
+import com.halo.eventer.domain.widget.Widget;
+import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.exception.SortOptionNotFoundException;
-import com.halo.eventer.domain.widget.repository.BaseWidgetRepository;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 import com.halo.eventer.global.common.page.PageInfo;
 import com.halo.eventer.global.common.page.PagedResponse;
 import com.halo.eventer.global.common.sort.SortOption;
@@ -20,23 +21,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WidgetPageHelper {
 
-    private final BaseWidgetRepository baseWidgetRepository;
+    private final WidgetRepository widgetRepository;
 
-    public <E extends BaseWidget> Page<E> findWidgetsBySort(
-            Class<E> childClass, Long festivalId, SortOption sortOption, Pageable pageable) {
+    public Page<Widget> findWidgetsBySort(
+            WidgetType widgetType, Long festivalId, SortOption sortOption, Pageable pageable) {
         switch (sortOption) {
             case CREATED_AT:
-                return baseWidgetRepository.findChildCreateDesc(childClass, festivalId, pageable);
+                return widgetRepository.findByFestivalIdAndWidgetTypeOrderByCreatedAtDesc(
+                        festivalId, widgetType, pageable);
 
             case UPDATED_AT:
-                return baseWidgetRepository.findChildUpdateDesc(childClass, festivalId, pageable);
+                return widgetRepository.findByFestivalIdAndWidgetTypeOrderByUpdatedAtDesc(
+                        festivalId, widgetType, pageable);
 
             default:
                 throw new SortOptionNotFoundException("Unsupported sortOption: " + sortOption);
         }
     }
 
-    public <E extends BaseWidget, D> PagedResponse<D> getPagedResponse(Page<E> page, Function<E, D> toDto) {
+    public <D> PagedResponse<D> getPagedResponse(Page<Widget> page, Function<Widget, D> toDto) {
         List<D> dtoList = page.getContent().stream().map(toDto).collect(Collectors.toList());
 
         PageInfo pageInfo = PageInfo.builder()

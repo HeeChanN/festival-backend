@@ -5,7 +5,7 @@ import java.util.List;
 import jakarta.persistence.*;
 
 import com.halo.eventer.domain.image.Image;
-import com.halo.eventer.domain.widget.BaseWidget;
+import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget_item.dto.WidgetItemCreateDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,20 +36,20 @@ public class WidgetItem {
     private List<Image> images = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "base_widget_id")
-    private BaseWidget baseWidget;
+    @JoinColumn(name = "widget_id")
+    private Widget widget;
 
     @Builder
-    public WidgetItem(String name, String description, String icon, BaseWidget baseWidget) {
+    public WidgetItem(String name, String description, String icon, Widget widget) {
         this.name = name;
         this.description = description;
         this.icon = icon;
-        this.baseWidget = baseWidget;
+        this.widget = widget;
     }
 
-    public static WidgetItem from(BaseWidget baseWidget, WidgetItemCreateDto widgetItemCreateDto) {
+    public static WidgetItem from(Widget widget, WidgetItemCreateDto widgetItemCreateDto) {
         return WidgetItem.builder()
-                .baseWidget(baseWidget)
+                .widget(widget)
                 .name(widgetItemCreateDto.getName())
                 .description(widgetItemCreateDto.getDescription())
                 .icon(widgetItemCreateDto.getIcon())

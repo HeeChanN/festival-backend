@@ -9,12 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
 import com.halo.eventer.domain.festival.repository.FestivalRepository;
+import com.halo.eventer.domain.widget.Widget;
 import com.halo.eventer.domain.widget.WidgetType;
 import com.halo.eventer.domain.widget.dto.main_widget.MainWidgetCreateDto;
 import com.halo.eventer.domain.widget.dto.main_widget.MainWidgetResDto;
-import com.halo.eventer.domain.widget.entity.MainWidget;
 import com.halo.eventer.domain.widget.exception.WidgetNotFoundException;
-import com.halo.eventer.domain.widget.repository.MainWidgetRepository;
+import com.halo.eventer.domain.widget.properties.MainWidgetProperties;
+import com.halo.eventer.domain.widget.repository.WidgetRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,35 +23,42 @@ import lombok.RequiredArgsConstructor;
 public class MainWidgetService {
 
     private final FestivalRepository festivalRepository;
-    private final MainWidgetRepository mainWidgetRepository;
+    private final WidgetRepository widgetRepository;
 
     @Transactional
     public MainWidgetResDto create(Long festivalId, MainWidgetCreateDto mainWidgetCreateDto) {
         Festival festival =
                 festivalRepository.findById(festivalId).orElseThrow(() -> new FestivalNotFoundException(festivalId));
 
-        MainWidget mainWidget = mainWidgetRepository.save(MainWidget.from(festival, mainWidgetCreateDto));
+        Widget widget = widgetRepository.save(Widget.createMainWidget(
+                festival,
+                mainWidgetCreateDto.getName(),
+                mainWidgetCreateDto.getUrl(),
+                mainWidgetCreateDto.getImage(),
+                mainWidgetCreateDto.getDescription()));
 
-        return MainWidgetResDto.from(mainWidget);
+        return MainWidgetResDto.from(widget);
     }
 
     @Transactional(readOnly = true)
     public List<MainWidgetResDto> getAllMainWidget(Long festivalId) {
-        return mainWidgetRepository.findAllByFestivalId(festivalId).stream()
+        return widgetRepository.findAllByFestivalIdAndWidgetType(festivalId, WidgetType.MAIN).stream()
                 .map(MainWidgetResDto::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public MainWidgetResDto update(Long id, MainWidgetCreateDto mainWidgetCreateDto) {
-        MainWidget mainWidget =
-                mainWidgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.MAIN));
-        mainWidget.updateMainWidget(mainWidgetCreateDto);
-        return MainWidgetResDto.from(mainWidget);
+        Widget widget =
+                widgetRepository.findById(id).orElseThrow(() -> new WidgetNotFoundException(id, WidgetType.MAIN));
+        widget.updateBaseField(mainWidgetCreateDto.getName(), mainWidgetCreateDto.getUrl());
+        widget.updateProperties(
+                new MainWidgetProperties(mainWidgetCreateDto.getImage(), mainWidgetCreateDto.getDescription()));
+        return MainWidgetResDto.from(widget);
     }
 
     @Transactional
     public void delete(Long id) {
-        mainWidgetRepository.deleteById(id);
+        widgetRepository.deleteById(id);
     }
 }
