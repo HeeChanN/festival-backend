@@ -16,7 +16,6 @@ import com.halo.eventer.domain.widget.dto.main_widget.MainWidgetResDto;
 import com.halo.eventer.domain.widget.dto.middle_widget.MiddleWidgetResDto;
 import com.halo.eventer.domain.widget.dto.square_widget.SquareWidgetResDto;
 import com.halo.eventer.domain.widget.dto.up_widget.UpWidgetResDto;
-import com.halo.eventer.domain.widget.properties.UpWidgetProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,9 +31,9 @@ public class HomeDto {
     private List<MissingPersonPopupDto> missingPersonDtos;
 
     public HomeDto(
-            List<PickedNoticeResDto> banner, Festival festival, LocalDateTime now, List<MissingPerson> missingPersons) {
+            List<PickedNoticeResDto> banner, Festival festival, List<MissingPerson> missingPersons) {
         this.banner = banner;
-        this.upWidgets = filterUpWidgets(festival.getWidgets(), now);
+        this.upWidgets = filterWidgets(festival.getWidgets(), WidgetType.UP, UpWidgetResDto::from);
         this.mainWidgets = filterWidgets(festival.getWidgets(), WidgetType.MAIN, MainWidgetResDto::from);
         this.middleBanners = filterWidgets(festival.getWidgets(), WidgetType.MIDDLE, MiddleWidgetResDto::from);
         this.squareWidgets = filterWidgets(festival.getWidgets(), WidgetType.SQUARE, SquareWidgetResDto::from);
@@ -43,15 +42,11 @@ public class HomeDto {
                 missingPersons.stream().map(MissingPersonPopupDto::new).collect(Collectors.toList());
     }
 
-    private List<UpWidgetResDto> filterUpWidgets(List<Widget> widgets, LocalDateTime now) {
-        return widgets.stream()
-                .filter(w -> w.getWidgetType() == WidgetType.UP)
-                .filter(w -> {
-                    UpWidgetProperties props = w.getTypedProperties(UpWidgetProperties.class);
-                    return !now.isBefore(props.getPeriodStart()) && !now.isAfter(props.getPeriodEnd());
-                })
-                .map(UpWidgetResDto::from)
+    public HomeDto filterByTime(LocalDateTime now) {
+        this.upWidgets = this.upWidgets.stream()
+                .filter(up -> !now.isBefore(up.getPeriodStart()) && !now.isAfter(up.getPeriodEnd()))
                 .collect(Collectors.toList());
+        return this;
     }
 
     private <D> List<D> filterWidgets(List<Widget> widgets, WidgetType type, Function<Widget, D> mapper) {

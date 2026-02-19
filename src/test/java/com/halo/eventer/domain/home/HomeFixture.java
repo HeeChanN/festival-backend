@@ -21,7 +21,7 @@ public class HomeFixture {
     private HomeFixture() {}
 
     public static HomeDto 메인화면_응답() {
-        return new HomeDto(banner(), festival(), LocalDateTime.now(), missingPersons());
+        return new HomeDto(banner(), festival(), missingPersons());
     }
 
     private static List<PickedNoticeResDto> banner() {
