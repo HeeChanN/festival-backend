@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.halo.eventer.domain.festival.Festival;
 import com.halo.eventer.domain.festival.exception.FestivalNotFoundException;
@@ -28,14 +27,14 @@ public class HomeService {
     private final MissingPersonService missingPersonService;
     private final DistributedCacheManager distributedCacheManager;
 
-    @Transactional(readOnly = true)
     public HomeDto getMainPage(Long festivalId) {
-        return distributedCacheManager.get(HOME_CACHE_KEY_PREFIX + festivalId, () -> loadHomeDto(festivalId));
+        HomeDto cached = distributedCacheManager.get(HOME_CACHE_KEY_PREFIX + festivalId, () -> loadHomeDto(festivalId));
+        return cached.filterByTime(LocalDateTime.now());
     }
 
     private HomeDto loadHomeDto(Long festivalId) {
         Festival festival = getFestival(festivalId);
-        return new HomeDto(getBanner(festivalId), festival, LocalDateTime.now(), getMissingPersons(festivalId));
+        return new HomeDto(getBanner(festivalId), festival, getMissingPersons(festivalId));
     }
 
     private List<PickedNoticeResDto> getBanner(Long festivalId) {

@@ -21,7 +21,7 @@ public class DistributedCacheManager {
         this.publisher = publisher;
         this.cache = Caffeine.newBuilder()
                 .maximumSize(100)
-                .expireAfterWrite(Duration.ofHours(1))
+                .expireAfterWrite(Duration.ofMinutes(1))
                 .recordStats()
                 .build();
     }
